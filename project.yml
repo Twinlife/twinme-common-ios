@@ -1,0 +1,172 @@
+name: TwinmeCommonFramework
+
+############
+# Options
+############
+
+options:
+  minimumXcodeGenVersion: 2.10
+  groupSortPosition: top
+  generateEmptyDirectories: true
+  createIntermediateGroups: true
+  deploymentTarget: 
+    iOS: "12.0"
+
+
+
+projectReferences:
+  TwinmeFramework:
+    path: ../TwinmeFramework/Twinme.xcodeproj
+  Notification:
+    path: ../Notification/Notification.xcodeproj
+
+############
+# Targets
+############
+
+targetTemplates:
+  TwinmeCommon:
+    type: library.static
+    platform: iOS
+
+    settings:
+      base:
+        #iPhone only
+        TARGETED_DEVICE_FAMILY: 1
+        GCC_PREPROCESSOR_DEFINITIONS: "$(inherited) ${flavorName}"
+        GCC_PREFIX_HEADER: "../Twinme/Twinme-Prefix.pch"
+        PUBLIC_HEADERS_FOLDER_PATH: "include/TwinmeCommon"
+        ONLY_ACTIVE_ARCH: NO
+        #update this setting if you add a new pod to the Podfile
+        OTHER_LDFLAGS: '$(inherited) -ObjC -l"CocoaLumberjack" -l"FMDB" -l"KissXML" -l"SQLCipher" -l"SSZipArchive" -l"SlackTextViewController" -l"XMPPFramework" -l"iconv" -l"icucore" -l"idn" -l"resolv" -l"xml2" -l"z" -framework "CFNetwork" -framework "CoreData" -framework "CoreLocation" -framework "Security" -framework "SystemConfiguration"'
+      configs:
+        debug:
+          HEADER_SEARCH_PATHS: 
+            - ${SRCROOT}/../Pods/Headers/Public/**
+            - ${TARGET_BUILD_DIR}/include
+        release:
+          HEADER_SEARCH_PATHS:
+            - ${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack
+            - ${SRCROOT}/../Pods/Headers/Public/SSZipArchive
+            - ${SRCROOT}/../WebRTCFramework/Headers
+            - ${SRCROOT}/../Pods/Headers/Public
+            - ${TARGET_BUILD_DIR}/include
+
+    # scheme
+    scheme:
+      gatherCoverageData: false
+        
+    # sources
+    sources:
+      - path: TwinmeCommon
+        includes: 
+          - "**/*.m"
+        excludes:
+          - "Location/*.m"
+        buildPhase: sources
+
+      - path: TwinmeCommon
+        includes:
+          - "**/*.h"
+        headerVisibility: public
+        buildPhase:
+          copyFiles:
+            destination: productsDirectory
+            subpath: include/TwinmeCommon
+
+    # dependencies
+    dependencies:
+      - target: TwinmeFramework/${twinmeTargetName}
+      - target: Notification/${notificationTargetName}
+
+targets:
+
+
+  # -----------
+  # Mytwinlife
+  # -----------
+
+  TwinmeCommonMytwinlife:
+    templates:
+      - TwinmeCommon
+    templateAttributes:
+      flavorName: MYTWINLIFE
+      twinmeTargetName: TwinmeMytwinlife
+      notificationTargetName: NotificationMytwinlife
+    sources:
+      - path: TwinmeCommon/Location
+        includes:
+          - "NoopLocationManager.m"
+        buildPhase: sources
+
+  # -----------
+  # MytwinlifePlus
+  # -----------
+
+  TwinmeCommonMytwinlifePlus:
+    templates:
+      - TwinmeCommon
+    templateAttributes:
+      flavorName: MYTWINLIFE_PLUS
+      twinmeTargetName: TwinmeMytwinlifePlus
+      notificationTargetName: NotificationMytwinlifePlus
+    sources:
+      - path: TwinmeCommon/Location
+        includes:
+          - "NoopLocationManager.m"
+        buildPhase: sources
+
+  # -----------
+  # Twinme
+  # -----------
+
+  TwinmeCommonTwinme:
+    templates:
+      - TwinmeCommon
+    templateAttributes:
+      flavorName: TWINME
+      twinmeTargetName: TwinmeTwinme
+      notificationTargetName: NotificationTwinme
+    sources:
+      - path: TwinmeCommon/Location
+        includes:
+          - "NoopLocationManager.m"
+        buildPhase: sources
+
+
+  # -----------
+  # Twinme Plus
+  # -----------
+
+  TwinmeCommonTwinmePlus:
+    templates:
+      - TwinmeCommon
+    templateAttributes:
+      flavorName: TWINME_PLUS
+      twinmeTargetName: TwinmeTwinmePlus
+      notificationTargetName: NotificationTwinmePlus
+    sources:
+      - path: TwinmeCommon/Location
+        includes:
+          - "NoopLocationManager.m"
+        buildPhase: sources
+
+  
+  # -----------
+  # Skred
+  # -----------
+
+  TwinmeCommonSkred:
+    templates:
+      - TwinmeCommon
+    templateAttributes:
+      flavorName: SKRED
+      twinmeTargetName: TwinmeSkred
+      notificationTargetName: NotificationSkred
+    sources:
+      - path: TwinmeCommon/Location
+        includes:
+          - "TLLocationManager.m"
+        buildPhase: sources
+
+  
