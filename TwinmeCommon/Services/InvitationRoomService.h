@@ -18,6 +18,8 @@
 
 - (void)onSendTwincodeToContacts;
 
+- (void)onGetTwincodeURI:(nonnull TLTwincodeURI *)uri;
+
 @end
 
 //
@@ -27,6 +29,8 @@
 @interface InvitationRoomService : AbstractTwinmeService
 
 - (nullable instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext delegate:(nonnull id <InvitationRoomServiceDelegate>)delegate;
+
+- (void)initWithRoom:(nonnull TLContact *)room;
 
 - (void)getContacts;
 

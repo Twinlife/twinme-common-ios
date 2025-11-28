@@ -26,11 +26,15 @@ static const int ddLogLevel = DDLogLevelVerbose;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-static const int GET_CONTACTS = 1 << 0;
-static const int GET_CONTACTS_DONE = 1 << 1;
-static const int FIND_CONTACTS = 1 << 2;
-static const int FIND_CONTACTS_DONE = 1 << 3;
-static const int PUSH_TWINCODE = 1 << 5;
+static const int GET_TWINCODE = 1 << 0;
+static const int GET_TWINCODE_DONE = 1 << 1;
+static const int GET_INVITATION_LINK = 1 << 2;
+static const int GET_INVITATION_LINK_DONE = 1 << 3;
+static const int GET_CONTACTS = 1 << 4;
+static const int GET_CONTACTS_DONE = 1 << 5;
+static const int FIND_CONTACTS = 1 << 6;
+static const int FIND_CONTACTS_DONE = 1 << 7;
+static const int PUSH_TWINCODE = 1 << 8;
 
 //
 // Interface: InvitationRoomService ()
@@ -42,6 +46,7 @@ static const int PUSH_TWINCODE = 1 << 5;
 @interface InvitationRoomService ()
 
 @property (nonatomic, nullable) TLContact *room;
+@property (nonatomic, nullable) TLTwincodeOutbound *twincodeOutbound;
 @property (nonatomic, nullable) NSString *findName;
 @property (nonatomic, nullable) NSMutableArray *contactsToInvite;
 @property (nonatomic, nullable) TLContact *currentContact;
@@ -197,6 +202,16 @@ static const int PUSH_TWINCODE = 1 << 5;
     [super dispose];
 }
 
+- (void)initWithRoom:(nonnull TLContact *)room {
+    DDLogVerbose(@"%@ initWithRoom: %@", LOG_TAG, room);
+    
+    self.room = room;
+    self.work |= GET_TWINCODE;
+    self.state &= ~(GET_TWINCODE | GET_TWINCODE_DONE);
+    
+    [self onOperation];
+}
+
 - (void)getContacts {
     DDLogVerbose(@"%@ getContacts", LOG_TAG);
     
@@ -277,11 +292,74 @@ static const int PUSH_TWINCODE = 1 << 5;
     }
 }
 
+- (void)onGetTwincode:(nullable TLTwincodeOutbound *)twincodeOutbound errorCode:(TLBaseServiceErrorCode)errorCode {
+    DDLogVerbose(@"%@ onGetTwincode: %@ errorCode: %d", LOG_TAG, twincodeOutbound, errorCode);
+
+    if (errorCode != TLBaseServiceErrorCodeSuccess || !twincodeOutbound) {
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+            [self runOnGetTwincodeNotFound];
+        } else {
+            [self onErrorWithOperationId:GET_TWINCODE errorCode:errorCode errorParameter:self.room.publicPeerTwincodeOutboundId.UUIDString];
+        }
+        return;
+    }
+    
+    if (twincodeOutbound) {
+        self.state |= GET_TWINCODE_DONE;
+        self.work = GET_INVITATION_LINK;
+        self.state &= ~(GET_INVITATION_LINK | GET_INVITATION_LINK_DONE);
+        self.twincodeOutbound = twincodeOutbound;
+        [self runOnGetTwincodeWithTwincode:twincodeOutbound avatar:nil];
+        
+        [self onOperation];
+    }
+}
+
+- (void)onCreateURI:(TLBaseServiceErrorCode)errorCode uri:(nullable TLTwincodeURI *)uri {
+    DDLogVerbose(@"%@ onCreateURI: %d uri: %@", LOG_TAG, errorCode, uri);
+
+    self.state |= GET_INVITATION_LINK_DONE;
+    
+    if (uri) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [(id<InvitationRoomServiceDelegate>)self.delegate onGetTwincodeURI:uri];
+        });
+    }
+    [self onOperation];
+}
+
 - (void)onOperation {
     DDLogVerbose(@"%@ onOperation", LOG_TAG);
     
     if (!self.isTwinlifeReady) {
         return;
+    }
+    
+    if (self.room && self.room.publicPeerTwincodeOutboundId && ((self.work & GET_TWINCODE) != 0)) {
+        if ((self.state & GET_TWINCODE) == 0) {
+            self.state |= GET_TWINCODE;
+            
+            [[self.twinmeContext getTwincodeOutboundService] getTwincodeWithTwincodeId:self.room.publicPeerTwincodeOutboundId refreshPeriod:TL_REFRESH_PERIOD withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeOutbound *twincodeOutbound) {
+                [self onGetTwincode:twincodeOutbound errorCode:errorCode];
+            }];
+            return;
+        }
+        if ((self.state & GET_TWINCODE_DONE) == 0) {
+            return;
+        }
+    }
+    
+    if (self.twincodeOutbound && ((self.work & GET_INVITATION_LINK) != 0)) {
+        if ((self.state & GET_INVITATION_LINK) == 0) {
+            self.state |= GET_INVITATION_LINK;
+            [[self.twinmeContext getTwincodeOutboundService] createURIWithTwincodeKind:TLTwincodeURIKindInvitation twincodeOutbound:self.twincodeOutbound withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *uri) {
+                [self onCreateURI:errorCode uri:uri];
+            }];
+            return;
+        }
+        if ((self.state & GET_INVITATION_LINK_DONE) == 0) {
+            return;
+        }
     }
     
     // We must get the list of contacts.

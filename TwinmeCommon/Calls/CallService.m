@@ -930,6 +930,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
                 }
             }
         }
+        
         [self setSpeaker:speaker];
     }
     call.identityAvatar = [[self.twinmeContext getImageService] getCachedImageWithImageId:contact.identityAvatarId kind:TLImageServiceKindThumbnail];
@@ -1112,10 +1113,10 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
             [call addPeerWithConnection:connection];
             callIsKnown = YES;
         }
-        
+                
         if (!connection && !mustTerminate && !callIsKnown) {
             TLSchedule *schedule = originator.identityCapabilities.schedule;
-            
+        
             if (schedule && ![schedule isNowInRange]) {
                 mustTerminate = YES;
                 reason = TLPeerConnectionServiceTerminateReasonSchedule;
@@ -1192,7 +1193,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
             reason = TLPeerConnectionServiceTerminateReasonGone;
         }
     }
-
+    
     if (mustTerminate) {
         [[self.twinmeContext getPeerConnectionService] terminatePeerConnectionWithPeerConnectionId:peerConnectionId terminateReason:reason];
         
@@ -1393,7 +1394,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
     // Mute the camera if we have an active call which is using it.
     // By muting the camera, the peer will display our avatar instead of a freezed image.
     @synchronized (self) {
-        if (self.activeCall && self.activeCall.videoSourceOn) {
+        if (self.activeCall && !CALL_IS_ON_HOLD([self.activeCall status]) && self.activeCall.videoSourceOn) {
             [self setCameraMute:YES];
             self.restartCameraCall = self.activeCall;
         }
@@ -3914,10 +3915,23 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {
     DDLogVerbose(@"%@ provider: %@ didActivateAudioSession: %@", LOG_TAG, provider, audioSession);
     DDLogInfo(@"%@ CallKit audio session activated", LOG_TAG);
-
+    
+    BOOL speaker = NO;
+    RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+    for (AVAudioSessionPortDescription *portDescription in rtcAudioSession.currentRoute.outputs) {
+        if ([portDescription.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
+            speaker = YES;
+            break;
+        }
+    }
+    
     [[RTC_OBJC_TYPE(RTCAudioSession) sharedInstance] audioSessionDidActivate:audioSession];
     [[RTC_OBJC_TYPE(RTCAudioSession) sharedInstance] setIsAudioEnabled:YES];
 
+    if (speaker) {
+        [self setSpeaker:speaker];
+    }
+    
     CallState *call = [self currentCall];
     if (call) {
         [self activateAudioWithCall:call];
