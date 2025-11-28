@@ -26,6 +26,8 @@
 
 - (void)onErrorLimitReached;
 
+@optional - (void)onGetProxyUri:(nullable TLTwincodeURI *)twincodeURI proxyescriptor:(nonnull TLSNIProxyDescriptor *)proxyDescriptor;
+
 @end
 
 //
@@ -35,6 +37,8 @@
 @interface ProxyService : AbstractTwinmeService
 
 - (nullable instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext delegate:(nonnull id<ProxyServiceDelegate>)delegate;
+
+- (void)getProxyURI:(nullable TLSNIProxyDescriptor *)proxyDescriptor;
 
 - (void)verifyProxyURI:(nonnull NSURL *)proxyURI proxyDescriptor:(nullable TLSNIProxyDescriptor *)proxyDescriptor;
 

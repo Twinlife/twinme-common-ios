@@ -28,6 +28,9 @@
 /// Generate the QR-code image for the given twincode URI.
 + (nonnull UIImage *)makeQRCodeWithUri:(nonnull TLTwincodeURI *)uri scale:(CGFloat) scale;
 
+/// Generate the QR-code image for the given string URI.
++ (nonnull UIImage *)makeQRCode:(nonnull NSString *)uri scale:(CGFloat)scale;
+
 /// Play haptic feedback with given style and hapticFeedbackMode
 + (void)hapticFeedback:(UIImpactFeedbackStyle)style hapticFeedbackMode:(HapticFeedbackMode)mode;
 

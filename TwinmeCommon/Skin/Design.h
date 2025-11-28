@@ -433,6 +433,8 @@ typedef enum {
 
 + (CGFloat)BUTTON_PADDING;
 
++ (CGFloat)TEXT_PADDING;
+
 //
 // Radius
 //

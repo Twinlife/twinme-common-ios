@@ -54,13 +54,23 @@ static const int ddLogLevel = DDLogLevelWarning;
     return progress;
 }
 
-+ (nonnull UIImage *)makeQRCodeWithUri:(nonnull TLTwincodeURI *)uri scale:(CGFloat) scale {
++ (nonnull UIImage *)makeQRCodeWithUri:(nonnull TLTwincodeURI *)uri scale:(CGFloat)scale {
     DDLogVerbose(@"%@ makeQRCodeWithUri: %@", LOG_TAG, uri);
+    
+    if (uri.uri) {
+        return [self makeQRCode:uri.uri scale:scale];
+    }
+    
+    return [UIImage new];
+}
+
++ (nonnull UIImage *)makeQRCode:(nonnull NSString *)uri scale:(CGFloat)scale {
+    DDLogVerbose(@"%@ makeQRCode: %@", LOG_TAG, uri);
     
     if (@available(iOS 13.0, *)) {
         CIFilter<CIQRCodeGenerator> *filter = [CIFilter QRCodeGenerator];
         
-        filter.message = [uri.uri dataUsingEncoding:NSUTF8StringEncoding];;
+        filter.message = [uri dataUsingEncoding:NSUTF8StringEncoding];;
         filter.correctionLevel = @"M";
         
         CIImage *outputImage = filter.outputImage;
@@ -76,7 +86,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         
         return resizedImage;
     } else {
-        NSData *urlText = [uri.uri dataUsingEncoding:NSUTF8StringEncoding];
+        NSData *urlText = [uri dataUsingEncoding:NSUTF8StringEncoding];
         CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
         [filter setValue:urlText forKey:@"inputMessage"];
         [filter setValue:@"M" forKey:@"inputCorrectionLevel"];

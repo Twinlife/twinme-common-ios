@@ -2059,7 +2059,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
         [self.keyCheckSessionHandler setCallParticipantDelegateWithDelegate:self.callParticipantDelegate];
     }
     
-    return self.keyCheckSessionHandler != nil;
+    return self.keyCheckSessionHandler != nil && ![self isKeyCheckDone];
 }
 
 - (nullable WordCheckChallenge*)getKeyCheckCurrentWord {

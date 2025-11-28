@@ -58,6 +58,19 @@ static const int ddLogLevel = DDLogLevelWarning;
     }];
 }
 
+- (void)getProxyURI:(nullable TLSNIProxyDescriptor *)proxyDescriptor {
+    DDLogVerbose(@"%@ getProxyURI: %@", LOG_TAG, proxyDescriptor);
+    
+    NSURL *proxyURI = [NSURL URLWithString:proxyDescriptor.proxyDescription];
+    [self parseUriWithUri:proxyURI withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
+        if ([(id)self.delegate respondsToSelector:@selector(onGetProxyUri:proxyescriptor:)]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [(id<ProxyServiceDelegate>)self.delegate onGetProxyUri:twincodeURI proxyescriptor:proxyDescriptor];
+            });
+        }
+    }];
+}
+
 - (void)deleteProxy:(nonnull TLSNIProxyDescriptor *)proxyDescriptor {
     DDLogVerbose(@"%@ deleteProxy: %@", LOG_TAG, proxyDescriptor);
     
@@ -65,6 +78,10 @@ static const int ddLogLevel = DDLogLevelWarning;
         NSMutableArray *proxies = [[self.twinmeContext getConnectivityService] getUserProxies];
         [proxies removeObject:proxyDescriptor];
         [[self.twinmeContext getConnectivityService] saveWithUserProxies:proxies];
+        
+        if (proxies.count == 0) {
+            [[self.twinmeContext getConnectivityService] saveWithProxyEnabled:NO];
+        }
         
         if ([(id)self.delegate respondsToSelector:@selector(onDeleteProxy:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
