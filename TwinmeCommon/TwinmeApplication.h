@@ -187,6 +187,14 @@ typedef enum {
 - (void)setDefaultKeyboardHeight:(CGFloat)keyboardHeight;
 
 //
+// Audio Player
+//
+
+- (CGFloat)getAudioPlayerRate;
+
+- (void)updateAudioPlayerRate;
+
+//
 // Appearance
 //
 

@@ -13,6 +13,9 @@
 #import <WebRTC/RTCDispatcher.h>
 #import <WebRTC/RTCAudioSession.h>
 
+#import "ApplicationDelegate.h"
+#import "TwinmeApplication.h"
+
 #import "AudioPlayerManager.h"
 
 #if 0
@@ -176,7 +179,12 @@ static AudioPlayerManager *sharedInstance = nil;
         NSError *error = nil;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
         if (error == nil){
+            ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+            TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
             self.audioPlayer.delegate = self;
+            self.audioPlayer.enableRate = YES;
+            self.audioPlayer.rate = [twinmeApplication getAudioPlayerRate];
+            
             [self.audioPlayer play];
             if (currentTime > 0.0) {
                 [self.audioPlayer setCurrentTime:currentTime];
@@ -207,6 +215,17 @@ static AudioPlayerManager *sharedInstance = nil;
     [super releaseAudioSession];
 }
 
+- (void)updateRate {
+    DDLogVerbose(@"%@ updateRate", LOG_TAG);
+    
+    if (self.audioPlayer) {
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+        [twinmeApplication updateAudioPlayerRate];
+        self.audioPlayer.rate = [twinmeApplication getAudioPlayerRate];
+    }
+}
+
 - (BOOL)isPlaying {
     return [self.audioPlayer isPlaying];
 }
@@ -235,6 +254,17 @@ static AudioPlayerManager *sharedInstance = nil;
 
 - (float)duration {
     return self.audioPlayer.duration;
+}
+
+- (float)rate {
+    
+    if (self.audioPlayer) {
+        return self.audioPlayer.rate;
+    } else {
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+        TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+        return [twinmeApplication getAudioPlayerRate];
+    }
 }
 
 - (void)setCurrentTime:(float)currentTime {

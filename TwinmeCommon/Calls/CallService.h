@@ -25,7 +25,10 @@
 
 +(nonnull TLAssertPoint *)CALL_STATUS;
 +(nonnull TLAssertPoint *)UNKNOWN_ERROR;
-
++(nonnull TLAssertPoint *)CALLKIT_END_ERROR;
++(nonnull TLAssertPoint *)CALLKIT_START_ERROR;
++(nonnull TLAssertPoint *)CALLKIT_HOLD_ERROR;
++(nonnull TLAssertPoint *)CALLKIT_RESUME_ERROR;
 
 @end
 

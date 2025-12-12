@@ -289,6 +289,10 @@ typedef void (^CallStartedAction) (BOOL success);
 
 TL_CREATE_ASSERT_POINT(CALL_STATUS, 4100)
 TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
+TL_CREATE_ASSERT_POINT(CALLKIT_END_ERROR, 4102);
+TL_CREATE_ASSERT_POINT(CALLKIT_START_ERROR, 4103);
+TL_CREATE_ASSERT_POINT(CALLKIT_HOLD_ERROR, 4104);
+TL_CREATE_ASSERT_POINT(CALLKIT_RESUME_ERROR, 4105);
 
 @end
 
@@ -1284,6 +1288,8 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
                 CallService *strongSelf = weakSelf;
                 if (error) {
                     NSLog(@"requestTransaction failed: %@", error.localizedDescription);
+                    TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_START_ERROR], [TLAssertValue initWithPeerConnectionId:peerConnectionId], [TLAssertValue initWithNSError:error], nil);
+
                 } else if (strongSelf) {
                     
                     // Remember this was a successfull CallKit invocation so that we close it.
@@ -1799,6 +1805,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
             DDLogVerbose(@"%@ completion: CXEndCallAction: %@", LOG_TAG, call.callKitUUID);
             if (error) {
                 NSLog(@"requestTransaction failed: %@", error.localizedDescription);
+                TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_END_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
                 [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
             }
         }];
@@ -2735,6 +2742,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
         CallService *strongSelf = weakSelf;
         if (error) {
             NSLog(@"requestTransaction failed: %@", error.localizedDescription);
+            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_START_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
         } else if (strongSelf) {
             
             // Remember this was a successfull CallKit invocation so that we close it.
@@ -3275,6 +3283,9 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:setHeldCallAction];
     [self.cxCallController requestTransaction:transaction completion:^(NSError *error) {
         //NOOP
+        if (error) {
+            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_HOLD_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
+        }
     }];
 }
 
@@ -3298,6 +3309,9 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4101)
     CXTransaction *transaction = [[CXTransaction alloc] initWithAction:setHeldCallAction];
     [self.cxCallController requestTransaction:transaction completion:^(NSError *error) {
         //NOOP
+        if (error) {
+            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_RESUME_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
+        }
     }];
 }
 
