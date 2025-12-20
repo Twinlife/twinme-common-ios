@@ -48,12 +48,17 @@ static const int ddLogLevel = DDLogLevelWarning;
     return self;
 }
 
-- (void)verifyProxyURI:(nonnull NSURL *)proxyURI proxyDescriptor:(nullable TLSNIProxyDescriptor *)proxyDescriptor {
-    DDLogVerbose(@"%@ verifyProxyURI: %@ proxyDescriptor: %@", LOG_TAG, proxyURI, proxyDescriptor);
+- (void)verifyProxyURI:(nonnull NSString *)proxy proxyDescriptor:(nullable TLSNIProxyDescriptor *)proxyDescriptor {
+    DDLogVerbose(@"%@ verifyProxyURI: %@ proxyDescriptor: %@", LOG_TAG, proxy, proxyDescriptor);
     
     self.proxyDescriptor = proxyDescriptor;
     
-    [self parseUriWithUri:proxyURI withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
+    NSURL *proxyUri = [NSURL URLWithString:proxy];
+    if (!proxyUri) {
+        proxyUri = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/%@", TLTwincodeURI.PROXY_ACTION, proxy]];
+    }
+    
+    [self parseUriWithUri:proxyUri withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
         [self onParseURI:errorCode uri:twincodeURI];
     }];
 }
@@ -61,8 +66,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)getProxyURI:(nullable TLSNIProxyDescriptor *)proxyDescriptor {
     DDLogVerbose(@"%@ getProxyURI: %@", LOG_TAG, proxyDescriptor);
     
-    NSURL *proxyURI = [NSURL URLWithString:proxyDescriptor.proxyDescription];
-    [self parseUriWithUri:proxyURI withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
+    NSURL *proxyUri = [NSURL URLWithString:proxyDescriptor.proxyDescription];
+    if (!proxyUri) {
+        proxyUri = [NSURL URLWithString:[NSString stringWithFormat:@"https://%@/%@", TLTwincodeURI.PROXY_ACTION, proxyDescriptor.proxyDescription]];
+    }
+    
+    [self parseUriWithUri:proxyUri withBlock:^(TLBaseServiceErrorCode errorCode, TLTwincodeURI *twincodeURI) {
         if ([(id)self.delegate respondsToSelector:@selector(onGetProxyUri:proxyescriptor:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(id<ProxyServiceDelegate>)self.delegate onGetProxyUri:twincodeURI proxyescriptor:proxyDescriptor];
@@ -114,11 +123,13 @@ static const int ddLogLevel = DDLogLevelWarning;
             }
         }
         
-        TLSNIProxyDescriptor *proxy = [TLSNIProxyDescriptor createWithProxyDescription:twincodeUri.uri];
-        if (self.proxyDescriptor) {
-            [proxies replaceObjectAtIndex:proxyPosition withObject:proxy];
-        } else {
-            [proxies addObject:proxy];
+        TLSNIProxyDescriptor *proxy = [TLSNIProxyDescriptor createWithProxyDescription:twincodeUri.label];
+        if (proxy) {
+            if (self.proxyDescriptor) {
+                [proxies replaceObjectAtIndex:proxyPosition withObject:proxy];
+            } else {
+                [proxies addObject:proxy];
+            }
         }
         
         [[self.twinmeContext getConnectivityService] saveWithUserProxies:proxies];

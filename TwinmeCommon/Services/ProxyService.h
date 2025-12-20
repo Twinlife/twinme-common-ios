@@ -40,7 +40,7 @@
 
 - (void)getProxyURI:(nullable TLSNIProxyDescriptor *)proxyDescriptor;
 
-- (void)verifyProxyURI:(nonnull NSURL *)proxyURI proxyDescriptor:(nullable TLSNIProxyDescriptor *)proxyDescriptor;
+- (void)verifyProxyURI:(nonnull NSString *)proxyURI proxyDescriptor:(nullable TLSNIProxyDescriptor *)proxyDescriptor;
 
 - (void)deleteProxy:(nonnull TLSNIProxyDescriptor *)proxyDescriptor;
 

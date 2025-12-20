@@ -1255,7 +1255,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESUME_ERROR, 4105);
                     // it appears in the missed calls.
                     if (error.code != CXErrorCodeIncomingCallErrorCallUUIDAlreadyExists && error.code != CXErrorCodeIncomingCallErrorFilteredByBlockList && error.code != CXErrorCodeIncomingCallErrorFilteredByDoNotDisturb) {
                         NSLog(@"reportNewIncomingCallWithUUID error: %@ pushKit: %d", error, fromPushKit);
-                        
+                        TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_START_ERROR], [TLAssertValue initWithPeerConnectionId:peerConnectionId], [TLAssertValue initWithNSError:error], nil);
+
                         // [strongSelf terminateCallWithTerminateReason:TLPeerConnectionServiceTerminateReasonDecline];
                     }
                 } else if (strongSelf) {
