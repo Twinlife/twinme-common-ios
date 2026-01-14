@@ -241,6 +241,8 @@ typedef enum {
 
 - (void)startKeyCheckWithLanguage:(nullable NSLocale *)language;
 
+- (void)stopKeyCheck;
+
 - (void)addWordCheckResultWithWordIndex:(int)wordIndex result:(BOOL)result;
 
 - (BOOL)isKeyCheckRunning;

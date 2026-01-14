@@ -69,6 +69,9 @@ typedef enum {
 /// When > 0, the peer camera (1=FRONT, 2=BACK) that we control.
 @property (nonatomic) int remoteActiveCamera;
 
+/// Returns true if user ask for camera control and waiting for peer response.
+@property (nonatomic) BOOL isWaitingForCameraControlAnswer;
+
 - (nonnull instancetype)initWithCallConnection:(nonnull CallConnection *)callConnection name:(nullable NSString *)name description:(nullable NSString *)description participantId:(int)participantId;
 
 /// Get the participant avatar (it could come from the Contact but also provided by other means for group calls).

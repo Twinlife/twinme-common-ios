@@ -46,15 +46,9 @@ typedef enum {
 } HapticFeedbackMode;
 
 typedef enum {
-    SendImageSizeSmall,
-    SendImageSizeMedium,
-    SendImageSizeOriginal
-} SendImageSize;
-
-typedef enum {
-    SendVideoSizeLower,
-    SendVideoSizeOriginal
-} SendVideoSize;
+    QualityMediaStandard,
+    QualityMediaOrginal
+} QualityMedia;
 
 typedef enum {
     OnboardingTypeCertifiedRelation,
@@ -162,13 +156,9 @@ typedef enum {
 
 - (void)setDefaultTabWithTab:(DefaultTab)defaultTab;
 
-- (SendImageSize)sendImageSize;
+- (QualityMedia)qualityMedia;
 
-- (void)setSendImageSizeWithSize:(SendImageSize)sendImageSize;
-
-- (SendVideoSize)sendVideoSize;
-
-- (void)setSendVideoSizeWithSize:(SendVideoSize)sendVideoSize;
+- (void)setQualityMediaWithQuality:(QualityMedia)qualityMedia;
 
 - (TLDisplayCallsMode)displayCallsMode;
 

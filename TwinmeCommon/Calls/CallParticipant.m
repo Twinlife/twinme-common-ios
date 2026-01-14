@@ -323,6 +323,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 /// Ask the peer to get the control of its camera.
 - (void)remoteAskControl {
     
+    self.isWaitingForCameraControlAnswer = YES;
     [self.callConnection sendCameraControlWithMode:CameraControlModeCheck camera:0 scale:0];
 }
 

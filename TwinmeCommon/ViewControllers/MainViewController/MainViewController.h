@@ -14,7 +14,8 @@
 @class TLSpace;
 @class CallState;
 @class TwinmeNavigationController;
-@class CallState;
+@class TLContact;
+@class TLGroup;
 
 @protocol MainSpaceDelegate <NSObject>
 
@@ -27,6 +28,8 @@
 @property (nonatomic, nullable) TLProfile *profile;
 @property (nonatomic, nullable) TLSpace *space;
 @property (nonatomic, nullable) NSURL *shareContentURL;
+@property (nonatomic, nullable) INPerson *inPersonToCall;
+@property (nonatomic) BOOL startVideoCall;
 
 - (BOOL)isInitialized;
 
