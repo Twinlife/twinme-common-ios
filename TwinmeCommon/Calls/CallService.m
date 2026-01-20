@@ -63,20 +63,6 @@ static const int ddLogLevel = DDLogLevelInfo;
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
 
-// Operations on the Call (note: they can override the operations on the CallConnection
-// but we try to avoid that and reserve the first 16 values for the call).
-static const int START_CALL = 1 << 0;
-static const int START_CALL_DONE = 1 << 1;
-static const int START_OUTGOING_RINGTONE = 1 << 2;
-static const int SEND_DEVICE_RINGING = 1 << 3;
-static const int ACCEPTED_CALL = 1 << 4;
-static const int ACCEPTED_CALL_DONE = 1 << 5;
-static const int DELETE_INCOMING_NOTIFICATION = 1 << 6;
-static const int DELETE_INCOMING_NOTIFICATION_DONE = 1 << 7;
-static const int TERMINATE_CALL = 1 << 8;
-static const int TERMINATE_CALL_DONE = 1 << 9;
-static const int FINISH_CALLKIT = 1 << 10;
-
 #define CONNECT_TIMEOUT 15.0 // After accepting a call, delay before we get the connection.
 
 typedef void (^CallStartedAction) (BOOL success);
@@ -912,6 +898,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     configuration.includesCallsInRecents = !recentCallsHidden && (!originator || !originator.identityCapabilities.hasDiscreet);
     configuration.supportedHandleTypes = [NSSet setWithObject:@(CXHandleTypeGeneric)];
     configuration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"call_kit_icon.png"]);
+    configuration.supportsVideo = YES;
     
     BOOL enable = [self.twinmeApplication hasSoundEnable] && [self.twinmeApplication hasNotificationSoundWithType:video ? NotificationSoundTypeVideoCall : NotificationSoundTypeAudioCall];
     

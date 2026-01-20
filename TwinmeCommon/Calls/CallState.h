@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022-2025 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -22,6 +22,21 @@ typedef enum {
     TO_DEVICE=2
 } TransferDirection;
 
+// Operations on the Call (note: they can override the operations on the CallConnection
+// but we try to avoid that and reserve the first 16 values for the call).
+#define START_CALL                         (1 << 0)
+#define START_CALL_DONE                    (1 << 1)
+#define START_OUTGOING_RINGTONE            (1 << 2)
+#define SEND_DEVICE_RINGING                (1 << 3)
+#define ACCEPTED_CALL                      (1 << 4)
+#define ACCEPTED_CALL_DONE                 (1 << 5)
+#define DELETE_INCOMING_NOTIFICATION       (1 << 6)
+#define DELETE_INCOMING_NOTIFICATION_DONE  (1 << 7)
+#define TERMINATE_CALL                     (1 << 8)
+#define TERMINATE_CALL_DONE                (1 << 9)
+#define CREATE_CALL_ROOM                   (1 << 10)
+#define CREATE_CALL_ROOM_DONE              (1 << 11)
+#define FINISH_CALLKIT                     (1 << 12)
 
 @protocol RTC_OBJC_TYPE(RTCVideoRenderer);
 @class TLPeerConnectionService;
@@ -37,9 +52,6 @@ typedef enum {
 @class TLGeolocationDescriptor;
 @class WordCheckResult;
 @class TLPeerSessionInfo;
-
-#define CREATE_CALL_ROOM                   (1 << 10)
-#define CREATE_CALL_ROOM_DONE              (1 << 11)
 
 /**
  * The call state associated with an Audio or Video call:

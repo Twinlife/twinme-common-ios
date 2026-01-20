@@ -53,6 +53,8 @@
 
 - (void)refreshTab;
 
+- (void)startCallFromRecents;
+
 #if defined(TWINME)
 - (void)activeProfile:(nonnull TLProfile *)profile;
 #endif
