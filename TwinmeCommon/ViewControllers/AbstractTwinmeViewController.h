@@ -53,9 +53,9 @@
 
 - (nonnull UISpace *)createUISpaceWithSpace:(nonnull TLSpace *)space service:(nonnull AbstractTwinmeService *)service withRefresh:(nonnull void (^)(void))block;
 
-- (nonnull TLSpaceSettings *)currentSpaceSettings;
-
 #endif
+
+- (nonnull TLSpaceSettings *)currentSpaceSettings;
 
 - (void)finish;
 

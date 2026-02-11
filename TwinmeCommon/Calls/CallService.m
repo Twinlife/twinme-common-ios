@@ -846,7 +846,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 #endif
         configuration.supportedHandleTypes = [NSSet setWithObject:@(CXHandleTypeGeneric)];
         configuration.iconTemplateImageData = UIImagePNGRepresentation([UIImage imageNamed:@"call_kit_icon.png"]);
-        configuration.ringtoneSound = @"twinme_audio_call.caf";
+        
+        NotificationSound *notificationCallSound = [self.twinmeApplication getNotificationSoundWithType:NotificationSoundTypeAudioCall];
+        configuration.ringtoneSound = notificationCallSound != nil ? notificationCallSound.soundPath : @"twinme_audio_call.caf";
 
         // Make sure to create one instance of the CXProvider (defer the synchronization and use a check-lock-check pattern).
         @synchronized (self) {
@@ -902,7 +904,14 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     
     BOOL enable = [self.twinmeApplication hasSoundEnable] && [self.twinmeApplication hasNotificationSoundWithType:video ? NotificationSoundTypeVideoCall : NotificationSoundTypeAudioCall];
     
-    configuration.ringtoneSound = enable ? @"twinme_audio_call.caf" : @"silence.mp3";
+    NotificationSound *notificationCallSound = [self.twinmeApplication getNotificationSoundWithType:video ? NotificationSoundTypeVideoCall:NotificationSoundTypeAudioCall];
+    
+    NSString *soundPath = @"twinme_audio_call.caf";
+    if (notificationCallSound) {
+        soundPath = notificationCallSound.soundPath;
+    }
+    
+    configuration.ringtoneSound = enable ? soundPath : @"silence.mp3";
     
     return configuration;
 }

@@ -192,13 +192,7 @@ typedef enum {
 
 - (void)setDisplayModeWithMode:(DisplayMode)displayMode;
 
-#ifdef TWINME
-- (BOOL)darkModeEnable;
-#endif
-
-#if defined(SKRED) || defined(TWINME_PLUS)
 - (BOOL)darkModeEnable:(TLSpaceSettings *)spaceSettings;
-#endif
 
 - (FontSize)fontSize;
 
@@ -285,6 +279,22 @@ typedef enum {
 - (NSUUID *)getInvitationSubscriptionTwincode;
 
 - (void)setInvitationSubscriptionTwincodeWithTwincode:(NSUUID *)twincode;
+
+//
+// Warning Location Background
+//
+
+- (BOOL)startWarningLocationBackground;
+
+- (void)setShowWarningLocationBackgroundWithState:(BOOL)state;
+
+//
+// Warning Location Fine
+//
+
+- (BOOL)startWarningLocationFine;
+
+- (void)setShowWarningLocationFineWithState:(BOOL)state;
 
 //
 // Space onboarding
