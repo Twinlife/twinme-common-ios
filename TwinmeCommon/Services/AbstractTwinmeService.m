@@ -606,10 +606,16 @@ TL_CREATE_ASSERT_POINT(INVALID_CONVERSATION_ID, 4003)
     }
 }
 
-- (void)runOnGetTwincodeNotFound {
+- (void)runOnGetTwincodeNotFound:(TLBaseServiceErrorCode)errorCode {
     DDLogVerbose(@"%@ runOnGetTwincodeNotFound", LOG_TAG);
 
     id delegate = self.delegate;
+    if (errorCode == TLBaseServiceErrorCodeExpired && [delegate respondsToSelector:@selector(onGetTwincodeExpired)]) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [(id<TwincodeTwinmeDelegate>)delegate onGetTwincodeExpired];
+        });
+        return;
+    }
     if ([delegate respondsToSelector:@selector(onGetTwincodeNotFound)]) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [(id<TwincodeTwinmeDelegate>)delegate onGetTwincodeNotFound];

@@ -596,7 +596,7 @@ static const int COUNT_VALID_INVITATIONS_DONE = 1 << 19;
         return;
     }
     
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound && operationId == GET_INVITATION_CODE) {
+    if ((errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) && operationId == GET_INVITATION_CODE) {
         if (self.delegate) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(id<InvitationCodeServiceDelegate>)self.delegate onGetInvitationCodeNotFound];

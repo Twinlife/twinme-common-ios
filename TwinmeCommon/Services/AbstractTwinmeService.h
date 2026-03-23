@@ -128,6 +128,8 @@
 
 - (void)onGetTwincodeNotFound;
 
+- (void)onGetTwincodeExpired;
+
 @end
 
 //

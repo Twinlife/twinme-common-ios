@@ -24,6 +24,9 @@ typedef enum {
 
 // Operations on the Call (note: they can override the operations on the CallConnection
 // but we try to avoid that and reserve the first 16 values for the call).
+#define WAIT_CONFERENCE                    (1 << 13)
+#define JOIN_CONFERENCE                    (1 << 14)
+#define JOIN_CONFERENCE_DONE               (1 << 15)
 #define START_CALL                         (1 << 0)
 #define START_CALL_DONE                    (1 << 1)
 #define START_OUTGOING_RINGTONE            (1 << 2)
@@ -194,7 +197,7 @@ typedef enum {
 - (void)leaveCallRoomWithRequestId:(int64_t)requestId;
 
 /// Update the call room setup to indicate our member id once we have joined the call room.
-- (void)updateCallRoomWithMemberId:(nonnull NSString *)memberId;
+- (void)updateCallRoomWithMemberId:(nonnull NSString *)memberId callRoomId:(nonnull NSUUID *)callRoomId;
 
 - (void)sendMessage;
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2022-2025 twinlife SA.
+ *  Copyright (c) 2022-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -14,10 +14,14 @@
 #define CALL_TERMINATED     0x40
 #define CALL_PEER_ON_HOLD   0x80
 #define CALL_ON_HOLD        0x100
+#define CALL_WAITING        0x200
 
 typedef enum {
     // No Audio/Video call (we are ready to make calls).
     CallStatusNone = 0,
+
+    // The conference call is waiting for participants and the conference to start.
+    CallStatusWaiting = CALL_WAITING,
 
     // An incoming Audio call (not yet accepted).
     CallStatusIncomingCall = CALL_INCOMING,
@@ -65,6 +69,8 @@ typedef enum {
 // Helper macros to test the call status.
 // Call flow: IS_INCOMING => IS_ACCEPTED => IS_ACTIVE => CallStatusTerminated
 //            IS_OUTGOING => IS_ACCEPTED => IS_ACTIVE => CallStatusTerminated
+//            IS_WAITING  => IS_OUTGOING => IS_ACTIVE => CallStatusTerminated
+#define CALL_IS_WAITING(S)  ((S) & CALL_WAITING)
 #define CALL_IS_INCOMING(S) ((S) & CALL_INCOMING)
 #define CALL_IS_OUTGOING(S) ((S) & CALL_OUTGOING)
 #define CALL_IS_ACCEPTED(S) ((S) & CALL_ACCEPTED)
@@ -76,13 +82,13 @@ typedef enum {
 #define CALL_IS_TERMINATED(S)    ((S) & CALL_TERMINATED)
 
 // Change call status to the accepted state.
-#define CALL_TO_ACCEPTED(S) ((S) | CALL_ACCEPTED)
+#define CALL_TO_ACCEPTED(S) (((S) & ~CALL_WAITING) | CALL_ACCEPTED)
 
 // Change call status to the active/connected state.
-#define CALL_TO_ACTIVE(S)   ((S) | CALL_ACTIVE)
+#define CALL_TO_ACTIVE(S)   (((S) & ~CALL_WAITING) | CALL_ACTIVE)
 
 // Change call status to supporting video.
-#define CALL_TO_VIDEO(S)    ((S) | CALL_VIDEO)
+#define CALL_TO_VIDEO(S)    (((S) & ~CALL_WAITING) | CALL_VIDEO)
 
 typedef enum {
     /// Ignore this update connection

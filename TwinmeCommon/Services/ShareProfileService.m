@@ -51,7 +51,7 @@ static const int GET_INVITATION_LINK_DONE = 1 << 13;
 
 - (void)onGetCurrentSpace:(nullable TLSpace *)space;
 
-- (void)onChangeProfileTwincode:(nonnull TLProfile *)profile;
+- (void)onChangeProfileTwincode:(TLBaseServiceErrorCode)errorCode profile:(TLProfile *)profile;
 
 - (void)onCreateContact:(nonnull TLContact *)contact;
 
@@ -87,17 +87,6 @@ static const int GET_INVITATION_LINK_DONE = 1 << 13;
     DDLogVerbose(@"%@ onCreateContactWithRequestId: %lld contact: %@", LOG_TAG, requestId, contact);
 
     [(ShareProfileService *)self.service onCreateContact:contact];
-}
-
-- (void)onChangeProfileTwincodeWithRequestId:(int64_t)requestId profile:(nonnull TLProfile *)profile {
-    DDLogVerbose(@"%@ onChangeProfileTwincodeWithRequestId: %lld profile: %@", LOG_TAG, requestId, profile);
-    
-    int operationId = [self.service getOperation:requestId];
-    if (!operationId) {
-        return;
-    }
-    
-    [(ShareProfileService *)self.service onChangeProfileTwincode:profile];
 }
 
 @end
@@ -195,10 +184,11 @@ static const int GET_INVITATION_LINK_DONE = 1 << 13;
         if ((self.state & CHANGE_PROFILE_TWINCODE) == 0) {
             self.state |= CHANGE_PROFILE_TWINCODE;
             
-            int64_t requestId = [self newOperation:CHANGE_PROFILE_TWINCODE];
-            DDLogVerbose(@"%@ changeProfileTwincodeWithRequestId: %lld profile: %@", LOG_TAG, requestId, self.profile);
+            DDLogVerbose(@"%@ changeProfileTwincodeWithProfile: %@", LOG_TAG, self.profile);
             
-            [self.twinmeContext changeProfileTwincodeWithRequestId:requestId profile:self.profile];
+            [self.twinmeContext changeProfileTwincodeWithProfile:self.profile withBlock:^(TLBaseServiceErrorCode errorCode, TLProfile * _Nullable profile) {
+                [self onChangeProfileTwincode:errorCode profile:profile];
+            }];
             return;
         }
         
@@ -275,8 +265,13 @@ static const int GET_INVITATION_LINK_DONE = 1 << 13;
     });
 }
 
-- (void)onChangeProfileTwincode:(TLProfile *)profile {
+- (void)onChangeProfileTwincode:(TLBaseServiceErrorCode)errorCode profile:(TLProfile *)profile {
     DDLogVerbose(@"%@ onChangeProfileTwincode: %@", LOG_TAG, profile);
+    
+    if (errorCode == TLBaseServiceErrorCodeTwinlifeOffline) {
+        self.restarted = YES;
+        return;
+    }
     
     self.state |= CHANGE_PROFILE_TWINCODE_DONE;
     self.twincodeOutbound = profile.twincodeOutbound;

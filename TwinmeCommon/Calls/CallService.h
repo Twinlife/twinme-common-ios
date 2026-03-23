@@ -114,8 +114,11 @@ typedef enum {
 /// Create the call service with the twinme context and application (only once during startup).
 - (nonnull instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext twinmeApplication:(nonnull TwinmeApplication *)twinmeApplication enableCallkit:(BOOL)enableCallkit;
 
-/// Start an outgoing call with the contact.
-- (void)startCallWithOriginator:(nonnull id<TLOriginator>)originator mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController;
+/// Start an outgoing call with the contact and returns:
+/// - TLBaseServiceErrorCodeSuccess if the call is started,
+/// - TLBaseServiceErrorCodeExists if a call is already running,
+/// - TLBaseServiceErrorCodeNoPermission if the object forbids the call (such as out of schedule),
+- (TLBaseServiceErrorCode)startCallWithOriginator:(nonnull id<TLOriginator>)originator mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController;
 
 /// Start an incoming call with the peer connection Id for the contact.
 - (void)startCallWithPeerConnectionId:(nonnull NSUUID *)peerConnectionId originator:(nonnull id<TLOriginator>)originator offer:(nonnull TLOffer *)offer inBackground:(BOOL)inBackground fromPushKit:(BOOL)fromPushKit;

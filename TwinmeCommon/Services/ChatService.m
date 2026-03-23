@@ -918,7 +918,7 @@ static const int FIND_CONVERSATIONS_DONE = 1 << 12;
         return;
     }
 
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case GET_GROUP_MEMBER:
                 [self nextGroupMember];

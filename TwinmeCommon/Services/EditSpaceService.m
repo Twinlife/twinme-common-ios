@@ -546,7 +546,7 @@ static const int SET_CURRENT_SPACE = 1 << 18;
         return;
     }
     
-    if (operationId == DELETE_SPACE && errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (operationId == DELETE_SPACE && (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired)) {
         self.state |= DELETE_SPACE_DONE;
         [self onOperation];
         return;

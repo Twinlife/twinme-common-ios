@@ -233,7 +233,7 @@ static const int UPDATE_DESCRIPTOR = 1 << 0;
     [self startOperation];
 }
 
-- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSMutableDictionary<NSUUID *, TLDescriptorAnnotationPair*> * _Nonnull list))block {
+- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair*> *> * _Nonnull list))block {
     DDLogVerbose(@"%@ listAnnotationsWithDescriptorId: %@", LOG_TAG, descriptorId);
 
     [self.twinmeContext listAnnotationsWithDescriptorId:descriptorId withBlock:block];

@@ -169,7 +169,7 @@ static const int UPDATE_CONTACT_DONE = 1 << 1;
         return;
     }
     
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound && operationId == UPDATE_CONTACT) {
+    if ((errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) && operationId == UPDATE_CONTACT) {
         self.state |= UPDATE_CONTACT_DONE;
         [self runOnDeleteContact:self.contact.uuid];
         return;

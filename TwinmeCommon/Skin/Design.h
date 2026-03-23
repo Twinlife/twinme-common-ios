@@ -458,6 +458,12 @@ typedef enum {
 + (UIFont *)getSampleEmojiFont:(EmojiSize)emojiSize;
 
 //
+//  Backup
+//
+
++ (UIFont *)getBackupWordFont;
+
+//
 // Animation show / close view like AbstractConfimeView
 //
 

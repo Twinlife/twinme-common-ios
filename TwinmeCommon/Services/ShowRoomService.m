@@ -513,7 +513,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         return;
     }
     if (operationId == DELETE_ROOM) {
-        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
             self.state |= DELETE_ROOM_DONE;
             dispatch_async(dispatch_get_main_queue(), ^{
                 [(id<ShowRoomServiceDelegate>)self.delegate onDeleteRoom:self.room.uuid];

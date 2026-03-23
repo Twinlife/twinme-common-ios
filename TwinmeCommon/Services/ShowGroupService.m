@@ -564,7 +564,7 @@ static const int GET_TWINCODE_DONE = 1 << 15;
         self.restarted = YES;
         return;
     }
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case GET_GROUP:
                 self.state |= GET_GROUP_DONE;

@@ -374,7 +374,7 @@ static const int MOVE_GROUP_SPACE_DONE = 1 << 21;
         dispatch_async(dispatch_get_main_queue(), ^{
             [(id<GroupInvitationServiceDelegate>)self.delegate onGetInvitationWithInvitationDescriptor:self.invitationDescriptor avatar:nil];
         });
-    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         [self onInvitationDeleted];
     } else {
         [self onErrorWithOperationId:GET_TWINCODE errorCode:errorCode errorParameter:self.invitationDescriptor.groupTwincodeId.UUIDString];
@@ -585,7 +585,7 @@ static const int MOVE_GROUP_SPACE_DONE = 1 << 21;
         self.restarted = YES;
         return;
     }
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         // The invitation descriptor can be valid but the group has been removed.
         // Trigger the delete invitation locally through the markDescriptorDeleted()
         // and notify the activity through the onDeleteInvitation() callback when markDescriptorDeleted has finished.

@@ -623,8 +623,8 @@ static const int SET_CURRENT_SPACE_DONE = 1 << 19;
     DDLogVerbose(@"%@ onGetTwincode: %@ errorCode: %d", LOG_TAG, twincodeOutbound, errorCode);
 
     if (errorCode != TLBaseServiceErrorCodeSuccess || !twincodeOutbound) {
-        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
-            [self runOnGetTwincodeNotFound];
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
+            [self runOnGetTwincodeNotFound:errorCode];
         } else {
             [self onErrorWithOperationId:GET_TWINCODE errorCode:errorCode errorParameter:self.twincodeOutboundId.UUIDString];
         }
@@ -660,11 +660,11 @@ static const int SET_CURRENT_SPACE_DONE = 1 << 19;
         id <TLConversation> conversation = [[self.twinmeContext getConversationService] getConversationWithSubject:group];
         if (!conversation) {
             // This group has been deleted.
-            [self runOnGetTwincodeNotFound];
+            [self runOnGetTwincodeNotFound:errorCode];
         }
-    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         // Group not found means the invitation is invalid.
-        [self runOnGetTwincodeNotFound];
+        [self runOnGetTwincodeNotFound:errorCode];
     } else {
         [self onErrorWithOperationId:GET_GROUP errorCode:errorCode errorParameter:nil];
     }
@@ -677,9 +677,9 @@ static const int SET_CURRENT_SPACE_DONE = 1 << 19;
     self.state |= GET_CONTACT_DONE;
     if (contact) {
         
-    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         // Contact not found means the invitation is invalid.
-        [self runOnGetTwincodeNotFound];
+        [self runOnGetTwincodeNotFound:errorCode];
     } else {
         [self onErrorWithOperationId:GET_CONTACT errorCode:errorCode errorParameter:nil];
     }
@@ -729,26 +729,26 @@ static const int SET_CURRENT_SPACE_DONE = 1 << 19;
         return;
     }
     
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case GET_TWINCODE:
                 self.state |= GET_TWINCODE_DONE;
-                [self runOnGetTwincodeNotFound];
+                [self runOnGetTwincodeNotFound:errorCode];
                 break;
                 
             case GET_CONTACT:
                 self.state |= GET_CONTACT_DONE;
-                [self runOnGetTwincodeNotFound];
+                [self runOnGetTwincodeNotFound:errorCode];
                 break;
                 
             case GET_GROUP:
                 self.state |= GET_GROUP_DONE;
-                [self runOnGetTwincodeNotFound];
+                [self runOnGetTwincodeNotFound:errorCode];
                 break;
                 
             case CREATE_CONTACT:
                 self.state |= CREATE_CONTACT_DONE;
-                [self runOnGetTwincodeNotFound];
+                [self runOnGetTwincodeNotFound:errorCode];
                 break;
                 
             case DELETE_DESCRIPTOR:

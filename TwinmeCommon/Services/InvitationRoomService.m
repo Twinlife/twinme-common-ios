@@ -296,8 +296,8 @@ static const int PUSH_TWINCODE = 1 << 8;
     DDLogVerbose(@"%@ onGetTwincode: %@ errorCode: %d", LOG_TAG, twincodeOutbound, errorCode);
 
     if (errorCode != TLBaseServiceErrorCodeSuccess || !twincodeOutbound) {
-        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
-            [self runOnGetTwincodeNotFound];
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
+            [self runOnGetTwincodeNotFound:errorCode];
         } else {
             [self onErrorWithOperationId:GET_TWINCODE errorCode:errorCode errorParameter:self.room.publicPeerTwincodeOutboundId.UUIDString];
         }

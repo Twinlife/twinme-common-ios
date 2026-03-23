@@ -152,7 +152,7 @@
 //
 - (void)runOnGetTwincodeWithTwincode:(nonnull TLTwincodeOutbound *)twincode avatar:(nullable UIImage *)avatar;
 
-- (void)runOnGetTwincodeNotFound;
+- (void)runOnGetTwincodeNotFound:(TLBaseServiceErrorCode)errorCode;
 
 - (nonnull UIImage *)getImageWithContact:(nonnull id<TLOriginator>)originator;
 

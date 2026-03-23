@@ -345,7 +345,7 @@ static const int UPDATE_SPACE_DONE = 1 << 5;
 - (void)onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {
     DDLogVerbose(@"%@ onErrorWithOperationId: %d errorCode: %d errorParameter: %@", LOG_TAG, operationId, errorCode, errorParameter);
 
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case GET_SPACE:
                 [self runOnGetSpaceNotFound];

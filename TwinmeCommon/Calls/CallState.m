@@ -162,7 +162,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         if (self.terminateReason != TLPeerConnectionServiceTerminateReasonUnknown) {
             result = CallStatusTerminated;
         } else if (self.peers.count == 0) {
-            result = CallStatusTerminated;
+            result = (self.state & WAIT_CONFERENCE) != 0 ? CallStatusWaiting : CallStatusTerminated;
         } else {
             BOOL allPeersOnHold = YES;
             CallStatus relevantStatus = [self.peers[0] callStatus];
@@ -530,11 +530,12 @@ static const int ddLogLevel = DDLogLevelWarning;
     [self.peerCallService leaveCallRoomWithRequestId:requestId callRoomId:self.callRoomId memberId:self.callRoomMemberId];
 }
 
-- (void)updateCallRoomWithMemberId:(nonnull NSString *)memberId {
+- (void)updateCallRoomWithMemberId:(nonnull NSString *)memberId callRoomId:(nonnull NSUUID *)callRoomId {
     DDLogVerbose(@"%@ updateCallRoomWithMemberId: %@", LOG_TAG, memberId);
     
     @synchronized (self) {
         self.callRoomMemberId = memberId;
+        self.callRoomId = callRoomId;
     }
 }
 

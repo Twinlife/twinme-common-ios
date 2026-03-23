@@ -62,6 +62,10 @@ typedef enum {
     OnboardingTypeRemoteCameraSettings,
     OnboardingTypeTransferCall,
     OnboardingTypeProxy,
+    OnboardingTypeBackup,
+    OnboardingTypeRestore,
+    OnboardingTypeVerifyBackup,
+    OnboardingTypeBackupBeta,
     OnboardingTypeCount
 } OnboardingType;
 
@@ -226,6 +230,15 @@ typedef enum {
 - (void)setIsVideoInFitMode:(BOOL)state;
 
 - (BOOL)askCallQualityWithCallDuration:(int)duration;
+
+//
+// Last Backup
+//
+
+- (BOOL)showBackupWarning;
+
+- (void)setLastBackupDate;
+
 
 #if defined(SKRED) || defined(TWINME_PLUS)
 //

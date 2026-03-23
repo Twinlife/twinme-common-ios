@@ -407,7 +407,7 @@ static const int MOVE_CONTACT_SPACE_DONE = 1 << 7;
     }
     
     // If a contact/group was not found, ignore it and proceed with the next move.
-    if (operationId == MOVE_CONTACT_SPACE && errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (operationId == MOVE_CONTACT_SPACE && (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired)) {
         [self nextMoveContact];
         return;
     }

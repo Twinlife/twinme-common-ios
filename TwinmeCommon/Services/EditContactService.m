@@ -108,7 +108,7 @@ static const int UPDATE_CONTACT_DONE = 1 << 11;
 - (void)onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {
     DDLogVerbose(@"%@ onErrorWithOperationId: %d errorCode: %i errorParameter: %@", LOG_TAG, operationId, errorCode, errorParameter);
 
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound && operationId == UPDATE_CONTACT) {
+    if ((errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) && operationId == UPDATE_CONTACT) {
         self.state |= UPDATE_CONTACT_DONE;
         [self runOnDeleteContact:self.contact.uuid];
         return;

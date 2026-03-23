@@ -244,8 +244,8 @@ static const int SUBSCRIBE_FEATURE_DONE = 1 << 5;
         
         self.twincodeAvatarId = twincodeOutbound.avatarId;
         [self runOnGetTwincodeWithTwincode:twincodeOutbound avatar:nil];
-    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
-        [self runOnGetTwincodeNotFound];
+    } else if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
+        [self runOnGetTwincodeNotFound:errorCode];
     } else {
         [self onErrorWithOperationId:GET_TWINCODE errorCode:errorCode errorParameter:self.twincodeOutboundId.UUIDString];
     }

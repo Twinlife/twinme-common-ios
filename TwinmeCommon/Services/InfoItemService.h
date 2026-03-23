@@ -33,7 +33,7 @@
 
 - (void)initWithContact:(nonnull id<TLOriginator>)contact;
 
-- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSMutableDictionary<NSUUID *, TLDescriptorAnnotationPair*> * _Nonnull list))block;
+- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair*> *> * _Nonnull list))block;
 
 - (void)updateDescriptor:(nonnull TLDescriptorId *)descriptorId allowCopy:(BOOL)allowCopy;
 

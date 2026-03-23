@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -42,8 +42,8 @@ static const int CREATE_PROFILE = 1 << 8;
 static const int CREATE_PROFILE_DONE = 1 << 9;
 static const int GET_IDENTITY_AVATAR = 1 << 10;
 static const int GET_IDENTITY_AVATAR_DONE = 1 << 11;
-static const int UPDATE_CALL_RECEIVER = 1 << 13;
-static const int UPDATE_CALL_RECEIVER_DONE = 1 << 14;
+static const int UPDATE_ORGANIZER = 1 << 13;
+static const int UPDATE_ORGANIZER_DONE = 1 << 14;
 
 //
 // Interface: EditIdentityService ()
@@ -330,8 +330,8 @@ static const int UPDATE_CALL_RECEIVER_DONE = 1 << 14;
     self.avatar = identityAvatar;
     self.largeAvatar = identityLargeAvatar;
     
-    self.work |= UPDATE_CALL_RECEIVER;
-    self.state &= ~(UPDATE_CALL_RECEIVER | UPDATE_CALL_RECEIVER_DONE);
+    self.work |= UPDATE_ORGANIZER;
+    self.state &= ~(UPDATE_ORGANIZER | UPDATE_ORGANIZER_DONE);
     [self showProgressIndicator];
     [self startOperation];
 }
@@ -423,26 +423,18 @@ static const int UPDATE_CALL_RECEIVER_DONE = 1 << 14;
     }
     
     // We must update identity for call receiver.
-    if ((self.work & UPDATE_CALL_RECEIVER) != 0) {
-        if ((self.state & UPDATE_CALL_RECEIVER) == 0) {
-            self.state |= UPDATE_CALL_RECEIVER;
+    if ((self.work & UPDATE_ORGANIZER) != 0) {
+        if ((self.state & UPDATE_ORGANIZER) == 0) {
+            self.state |= UPDATE_ORGANIZER;
             
-            int64_t requestId = [self newOperation:UPDATE_CALL_RECEIVER];
+            int64_t requestId = [self newOperation:UPDATE_ORGANIZER];
             DDLogVerbose(@"%@ updateContactWithRequestId: %lld contact: %@ contactName: %@ identityName: %@ identityAvatar: %@", LOG_TAG, requestId, self.contact, self.contact.name, self.name, self.avatar);
-            
-            NSString *callReceiverName = self.callReceiver.name;
-            NSString *callReceiverDescription = self.callReceiver.objectDescription;
-            
-            if (self.callReceiver.isTransfer) {
-                callReceiverName = self.name;
-                callReceiverDescription = self.identityDescription;
-            }
-            
-            [self.twinmeContext updateCallReceiverWithRequestId:requestId callReceiver:self.callReceiver name:callReceiverName description:callReceiverDescription identityName:self.name identityDescription:self.identityDescription avatar:self.avatar largeAvatar:self.largeAvatar capabilities:nil];
+
+            [self.twinmeContext updateOrganizerWithRequestId:requestId callReceiver:self.callReceiver identityName:self.name identityDescription:self.identityDescription avatar:self.avatar largeAvatar:self.largeAvatar];
             return;
         }
         
-        if ((self.state & UPDATE_CALL_RECEIVER_DONE) == 0) {
+        if ((self.state & UPDATE_ORGANIZER_DONE) == 0) {
             return;
         }
     }
@@ -550,7 +542,7 @@ static const int UPDATE_CALL_RECEIVER_DONE = 1 << 14;
 - (void)onUpdateCallReceiver:(TLCallReceiver *)callReceiver {
     DDLogVerbose(@"%@ onUpdateCallReceiver: %@", LOG_TAG, callReceiver);
     
-    self.state |= UPDATE_CALL_RECEIVER;
+    self.state |= UPDATE_ORGANIZER;
     
     if (self.delegate) {
         [(id<EditIdentityServiceDelegate>)self.delegate onUpdateCallReceiver:callReceiver];
@@ -578,7 +570,7 @@ static const int UPDATE_CALL_RECEIVER_DONE = 1 << 14;
         return;
     }
     
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case UPDATE_PROFILE:
                 self.state |= UPDATE_PROFILE_DONE;

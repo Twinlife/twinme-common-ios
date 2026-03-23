@@ -454,7 +454,7 @@ static const int BIND_ACCOUNT_MIGRATION_DONE = 1 << 7;
     if (operationId == GET_TWINCODE) {
         [self hideProgressIndicator];
         
-        if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+        if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
             if (self.delegate) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [(id<AccountMigrationScannerServiceDelegate>)self.delegate onGetTwincodeNotFound];

@@ -924,7 +924,7 @@ static const int GET_CURRENT_SPACE_DONE = 1 << 29;
         self.restarted = YES;
         return;
     }
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case GET_GROUP:
             case UPDATE_GROUP:

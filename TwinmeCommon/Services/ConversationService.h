@@ -106,7 +106,7 @@ typedef BOOL (^TLDescriptorFilter) (TLDescriptor *_Nonnull descriptor);
 /// Note: we should avoid using this method, for now it is too complex to remove from the ConversationViewController.
 - (nonnull UIImage *)getImageWithGroupMember:(nonnull TLGroupMember *)groupMember;
 
-- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSMutableDictionary<NSUUID *, TLDescriptorAnnotationPair*> * _Nonnull list))block;
+- (void)listAnnotationsWithDescriptorId:(nonnull TLDescriptorId *)descriptorId withBlock:(nonnull void (^)(NSDictionary<NSUUID *, NSArray<TLDescriptorAnnotationPair*> *> * _Nonnull list))block;
 
 - (nullable NSUUID *)debugGetTwincodeOutboundId;
 

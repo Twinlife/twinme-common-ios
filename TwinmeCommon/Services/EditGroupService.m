@@ -380,7 +380,7 @@ static const int GET_GROUP_AVATAR_DONE = 1 << 6;
         return;
     }
     
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
         switch (operationId) {
             case UPDATE_GROUP:
                 self.state |= UPDATE_GROUP_DONE;

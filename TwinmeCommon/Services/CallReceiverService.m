@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2024 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -41,6 +41,8 @@ static const int GET_CALL_RECEIVER_THUMBNAIL_IMAGE = 1 << 12;
 static const int GET_CALL_RECEIVER_THUMBNAIL_IMAGE_DONE = 1 << 13;
 static const int GET_CALL_RECEIVER_AVATAR = 1 << 14;
 static const int GET_CALL_RECEIVER_AVATAR_DONE = 1 << 15;
+static const int GET_PROFILE_AVATAR = 1 << 16;
+static const int GET_PROFILE_AVATAR_DONE = 1 << 17;
 static const int GET_INVITATION_LINK = 1 << 18;
 static const int GET_INVITATION_LINK_DONE = 1 << 19;
 
@@ -57,10 +59,9 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
 @property(nonatomic, nullable) TLCallReceiver *callReceiver;
 @property(nonatomic, nonnull) NSString *name;
 @property(nonatomic, nullable) NSString *callReceiverDescription;
-@property(nonatomic, nullable) NSString *identityName;
-@property(nonatomic, nullable) NSString *identityDescription;
 @property(nonatomic, nullable) UIImage *avatar;
 @property(nonatomic, nullable) UIImage *largeAvatar;
+@property(nonatomic, nullable) TLImageId *profileAvatarId;
 @property(nonatomic, nullable) TLImageId *avatarId;
 @property(nonatomic, nullable) TLImageId *identityAvatarId;
 @property(nonatomic, nullable) TLCapabilities *capabilities;
@@ -128,17 +129,6 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
     [(CallReceiverService *) self.service onUpdateCallReceiver:callReceiver];
 }
 
-- (void)onChangeCallReceiverTwincodeWithRequestId:(int64_t)requestId callReceiver:(nonnull TLCallReceiver *)callReceiver {
-    DDLogVerbose(@"%@ onChangeCallReceiverTwincodeWithRequestId: %lld callReceiver: %@", LOG_TAG, requestId, callReceiver);
-
-    int operationId = [self.service getOperation:requestId];
-    if (!operationId) {
-        return;
-    }
-
-    [(CallReceiverService *) self.service onChangeCallReceiverTwincode:callReceiver];
-}
-
 @end
 
 //
@@ -175,13 +165,11 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
     [self startOperation];
 }
 
-- (void)createCallReceiver:(NSString *)name description:(NSString *)description identityName:(NSString *)identityName identityDescription:(NSString *)identityDescription avatar:(UIImage *)avatar largeAvatar:(UIImage *)largeAvatar capabilities:(TLCapabilities *)capabilities space:(TLSpace *)space {
-    DDLogVerbose(@"%@ createCallReceiver: name: %@ description: %@ identityName: %@ identityDescription: %@", LOG_TAG, name, description, identityName, identityDescription);
+- (void)createCallReceiver:(NSString *)name description:(NSString *)description avatar:(UIImage *)avatar largeAvatar:(UIImage *)largeAvatar capabilities:(TLCapabilities *)capabilities space:(TLSpace *)space {
+    DDLogVerbose(@"%@ createCallReceiver: name: %@ description: %@", LOG_TAG, name, description);
 
     self.name = name;
     self.callReceiverDescription = description;
-    self.identityName = identityName;
-    self.identityDescription = identityDescription;
     self.avatar = avatar;
     self.largeAvatar = largeAvatar;
     self.capabilities = capabilities;
@@ -214,6 +202,17 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
     [self startOperation];
 }
 
+- (void)getProfileAvatar:(nonnull TLProfile *)profile {
+    DDLogVerbose(@"%@ getProfileAvatar: %@", LOG_TAG, profile);
+    
+    self.profileAvatarId = profile.avatarId;
+
+    self.work |= GET_PROFILE_AVATAR;
+    self.state &= ~(GET_PROFILE_AVATAR | GET_PROFILE_AVATAR_DONE);
+
+    [self startOperation];
+}
+
 - (void)deleteCallReceiverWithCallReceiver:(TLCallReceiver *)callReceiver {
     DDLogVerbose(@"%@ deleteCallReceiverWithCallReceiverId", LOG_TAG);
 
@@ -225,15 +224,13 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
     [self startOperation];
 }
 
-- (void)updateCallReceiverWithCallReceiver:(TLCallReceiver *)callReceiver name:(NSString *)name description:(NSString *)description identityName:(NSString *)identityName identityDescription:(NSString *)identityDescription avatar:(UIImage *)avatar largeAvatar:(UIImage *)largeAvatar capabilities:(TLCapabilities *)capabilities {
-    DDLogVerbose(@"%@ updateCallReceiverWithCallReceiver: name: %@ description: %@ identityName: %@ identityDescription: %@", LOG_TAG, name, description, identityName, identityDescription);
+- (void)updateCallReceiverWithCallReceiver:(TLCallReceiver *)callReceiver name:(NSString *)name description:(NSString *)description avatar:(UIImage *)avatar largeAvatar:(UIImage *)largeAvatar capabilities:(TLCapabilities *)capabilities {
+    DDLogVerbose(@"%@ updateCallReceiverWithCallReceiver: name: %@ description: %@", LOG_TAG, name, description);
 
     self.callReceiver = callReceiver;
     
     self.name = name;
     self.callReceiverDescription = description;
-    self.identityName = identityName;
-    self.identityDescription = identityDescription;
     self.avatar = avatar;
     self.largeAvatar = largeAvatar;
     self.capabilities = capabilities;
@@ -321,6 +318,34 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
             return;
         }
     }
+    
+    //
+    // Work step: get profile avatar if user choose TemplateExternalCallTypeProfile
+    //
+    
+    if (self.profileAvatarId && (self.work & GET_PROFILE_AVATAR) != 0) {
+        if ((self.state & GET_PROFILE_AVATAR) == 0) {
+            self.state |= GET_PROFILE_AVATAR;
+            
+            TLImageService *imageService = [self.twinmeContext getImageService];
+            [imageService getImageWithImageId:self.profileAvatarId kind:TLImageServiceKindLarge withBlock:^(TLBaseServiceErrorCode status, UIImage *image) {
+                self.state |= GET_PROFILE_AVATAR_DONE;
+                if (status == TLBaseServiceErrorCodeSuccess && image) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (self.delegate) {
+                            [(id<CallReceiverServiceDelegate>)self.delegate onGetProfileAvatar:image];
+                        }
+                    });
+                }
+                [self onOperation];
+            }];
+            return;
+        }
+        
+        if ((self.state & GET_PROFILE_AVATAR_DONE) == 0) {
+            return;
+        }
+    }
 
     //
     // Work step: create a call receiver.
@@ -331,7 +356,7 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
 
             int64_t requestId = [self newOperation:CREATE_CALL_RECEIVER];
             DDLogVerbose(@"%@ createCallReceiverWithRequestId: %lld", LOG_TAG, requestId);
-            [self.twinmeContext createCallReceiverWithRequestId:requestId name:self.name description:self.callReceiverDescription identityName:self.identityName identityDescription:self.identityDescription avatar:self.avatar largeAvatar:self.largeAvatar capabilities:self.capabilities space:self.space];
+            [self.twinmeContext createCallReceiverWithRequestId:requestId name:self.name description:self.callReceiverDescription avatar:self.avatar largeAvatar:self.largeAvatar capabilities:self.capabilities space:self.space];
             return;
         }
 
@@ -428,7 +453,7 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
             
             int64_t requestId = [self newOperation:UPDATE_CALL_RECEIVER];
             DDLogVerbose(@"%@ updateCallReceiverWithRequestId: %lld", LOG_TAG, requestId);
-            [self.twinmeContext updateCallReceiverWithRequestId:requestId callReceiver:self.callReceiver name:self.name description:self.callReceiverDescription identityName:self.identityName identityDescription:self.identityDescription avatar:self.avatar largeAvatar:self.largeAvatar capabilities:self.capabilities];
+            [self.twinmeContext updateCallReceiverWithRequestId:requestId callReceiver:self.callReceiver name:self.name description:self.callReceiverDescription avatar:self.avatar largeAvatar:self.largeAvatar capabilities:self.capabilities];
             return;
         }
         if ((self.state & UPDATE_CALL_RECEIVER_DONE) == 0) {
@@ -445,7 +470,9 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
             
             int64_t requestId = [self newOperation:CHANGE_CALL_RECEIVER_TWINCODE];
             DDLogVerbose(@"%@ updateCallReceiverWithRequestId: %lld", LOG_TAG, requestId);
-            [self.twinmeContext changeCallReceiverTwincodeWithRequestId:requestId callReceiver:self.callReceiver];
+            [self.twinmeContext changeCallReceiverTwincodeWithCallReceiver:self.callReceiver withBlock:^(TLBaseServiceErrorCode errorCode, TLCallReceiver * _Nullable callReceiver) {
+                [self onChangeCallReceiverTwincode:callReceiver];
+            }];
             return;
         }
         if ((self.state & CHANGE_CALL_RECEIVER_TWINCODE_DONE) == 0) {
@@ -477,6 +504,13 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
     if (callReceiver) {
         self.twincodeOutbound = callReceiver.twincodeOutbound;
         self.invitationKind = callReceiver.isTransfer ? TLTwincodeURIKindTransfer : TLTwincodeURIKindCall;
+        if (callReceiver.isTransfer) {
+            self.invitationKind = TLTwincodeURIKindTransfer;
+        } else if (callReceiver.isConference) {
+            self.invitationKind = TLTwincodeURIKindMeeting;
+        } else {
+            self.invitationKind = TLTwincodeURIKindCall;
+        }
         self.work |= GET_INVITATION_LINK;
         self.state &= ~(GET_INVITATION_LINK | GET_INVITATION_LINK_DONE);
         dispatch_async(dispatch_get_main_queue(), ^{

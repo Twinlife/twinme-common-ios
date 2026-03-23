@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2024 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -35,6 +35,10 @@
 
 - (void)onChangeCallReceiverTwincode:(nonnull TLCallReceiver *)callReceiver;
 
+@optional
+
+- (void)onGetProfileAvatar:(nonnull UIImage *)avatar;
+
 @end
 
 //
@@ -47,7 +51,7 @@
 
 - (void)initWithCallReceiver:(nonnull TLCallReceiver *)callReceiver;
 
-- (void)createCallReceiver:(nonnull NSString *)name description:(nullable NSString *)description identityName:(nullable NSString *)identityName identityDescription:(nullable NSString *)identityDescription avatar:(nullable UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar capabilities:(nullable TLCapabilities *)capabilities  space:(nonnull TLSpace *)space;
+- (void)createCallReceiver:(nonnull NSString *)name description:(nullable NSString *)description avatar:(nullable UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar capabilities:(nullable TLCapabilities *)capabilities space:(nonnull TLSpace *)space;
 
 - (void)getCallReceiverWithCallReceiverId:(nonnull NSUUID *)callReceiverId;
 
@@ -55,7 +59,9 @@
 
 - (void)deleteCallReceiverWithCallReceiver:(nonnull TLCallReceiver *)callReceiver;
 
-- (void)updateCallReceiverWithCallReceiver:(nonnull TLCallReceiver *)callReceiver name:(nonnull NSString *)name description:(nullable NSString *)description identityName:(nullable NSString *)identityName identityDescription:(nullable NSString *)identityDescription avatar:(nullable UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar capabilities:(nullable TLCapabilities *)capabilities;
+- (void)getProfileAvatar:(nonnull TLProfile *)profile;
+
+- (void)updateCallReceiverWithCallReceiver:(nonnull TLCallReceiver *)callReceiver name:(nonnull NSString *)name description:(nullable NSString *)description avatar:(nullable UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar capabilities:(nullable TLCapabilities *)capabilities;
 
 - (void)changeCallReceiverTwincodeWithCallReceiver:(nonnull TLCallReceiver *)callReceiver;
 

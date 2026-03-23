@@ -881,9 +881,16 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         // We can them resume our call correctly (see callObserver:callChanged:).
         [[callController callObserver] setDelegate:self queue:nil];
         self.cxCallControllerInstance = callController;
+
+        // If we perform a CallKit transaction immediately after the creation of the CallController
+        // it sometimes fails with error 7.  Looking at console logs, it seems that it is not ready
+        // immediately to accept transaction.  As a workarround, pause the current thread for 200ms
+        // to let this marvellous system to setup.  There is no way to know that the CallController
+        // is ready.  Trying to initialize the CallKitController earlier also fails miserably in
+        // other situations.
+        [NSThread sleepForTimeInterval:0.2];
     }
     return callController;
-
 }
 
 - (CXProviderConfiguration *)getCallkitConfiguration:(BOOL)video originator:(nullable id<TLOriginator>)originator {
@@ -935,15 +942,19 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     return callUpdate;
 }
 
-- (void)startCallWithOriginator:(nonnull id<TLOriginator>)originator mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController {
+- (TLBaseServiceErrorCode)startCallWithOriginator:(nonnull id<TLOriginator>)originator mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController {
     if ([originator class] == [TLContact class]){
-        [self startCallWithContact:((TLContact *)originator) mode:mode viewController:viewController];
+        return [self startCallWithContact:((TLContact *)originator) mode:mode viewController:viewController];
     } else if ([originator class] == [TLGroup class]){
-        [self startCallWithGroup:((TLGroup *)originator) mode:mode viewController:viewController];
+        return [self startCallWithGroup:((TLGroup *)originator) mode:mode viewController:viewController];
+    } else if ([originator class] == [TLCallReceiver class]) {
+        return [self startCallWithCallReceiver:(TLCallReceiver *)originator mode:mode viewController:viewController];
+    } else {
+        return TLBaseServiceErrorCodeLibraryError;
     }
 }
 
-- (void)startCallWithContact:(nonnull TLContact *)contact mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController{
+- (TLBaseServiceErrorCode)startCallWithContact:(nonnull TLContact *)contact mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController{
     DDLogInfo(@"%@ startCallWithContact: %@ mode: %ld", LOG_TAG, contact.name, (long)mode);
     
     CallConnection *connection;
@@ -954,9 +965,14 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         // A call is already in progress or is being finished, send the current state so that the UI can be updated.
         if (call && [call status] != CallStatusTerminated) {
 
-            return;
+            return TLBaseServiceErrorCodeExists;
         }
         
+        TLSchedule *schedule = contact.capabilities.schedule;
+        if (schedule && ![schedule isNowInRange]) {
+            return TLBaseServiceErrorCodeNoPermission;
+        }
+
         call = [[CallState alloc] initWithOriginator:contact callService:self peerCallService:[self.twinmeContext getPeerCallService] callKitUUID:nil];
 
         [call setAudioVideoStateWithCallStatus:mode];
@@ -965,13 +981,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
         [call addPeerWithConnection:connection];
         self.activeCall = call;
-        
-        TLSchedule *schedule = contact.capabilities.schedule;
-        
-        if (schedule && ![schedule isNowInRange]) {
-            [self terminateCallWithTerminateReason:TLPeerConnectionServiceTerminateReasonSchedule];
-            return;
-        }
 
         // Discreet relation: do not create the CallDescriptor.
         if (contact.identityCapabilities.hasDiscreet) {
@@ -1001,9 +1010,10 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     
     [self onOperationWithCallState:call];
     [self onOperationWithConnection:connection];
+    return TLBaseServiceErrorCodeSuccess;
 }
 
-- (void)startCallWithGroup:(nonnull TLGroup *)group mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController{
+- (TLBaseServiceErrorCode)startCallWithGroup:(nonnull TLGroup *)group mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController{
     DDLogInfo(@"%@ startCallWithGroup: %@ mode: %ld", LOG_TAG, group.name, (long)mode);
     
     CallState *call;
@@ -1013,7 +1023,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         // A call is already in progress or is being finished, send the current state so that the UI can be updated.
         if (call && [call status] != CallStatusTerminated) {
             
-            return;
+            return TLBaseServiceErrorCodeExists;
         }
         
         call = [[CallState alloc] initWithOriginator:group callService:self peerCallService:[self.twinmeContext getPeerCallService] callKitUUID:nil];
@@ -1059,6 +1069,50 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             [self onErrorWithCall:call operationId:START_CALL errorCode:errorCode errorParameter:nil];
         }
     }];
+    return TLBaseServiceErrorCodeSuccess;
+}
+
+- (TLBaseServiceErrorCode)startCallWithCallReceiver:(nonnull TLCallReceiver *)conference mode:(CallStatus)mode viewController:(nonnull CallViewController *)viewController{
+    DDLogInfo(@"%@ startCallWithCallReceiver: %@ mode: %ld", LOG_TAG, conference.name, (long)mode);
+    
+    CallState *call;
+    @synchronized (self) {
+        call = self.activeCall;
+
+        // A call is already in progress or is being finished, send the current state so that the UI can be updated.
+        if (call && [call status] != CallStatusTerminated) {
+            return TLBaseServiceErrorCodeExists;
+        }
+        if (![conference isConference]) {
+            return TLBaseServiceErrorCodeNoPermission;
+        }
+        TLSchedule *schedule = conference.capabilities.schedule;
+        if (schedule && ![schedule isNowInRange]) {
+            return TLBaseServiceErrorCodeNoPermission;
+        }
+
+        call = [[CallState alloc] initWithOriginator:conference callService:self peerCallService:[self.twinmeContext getPeerCallService] callKitUUID:nil];
+
+        [call setAudioVideoStateWithCallStatus:mode];
+        
+        self.activeCall = call;
+        
+        // Discreet relation: do not create the CallDescriptor.
+        if (conference.identityCapabilities.hasDiscreet) {
+            [call checkOperation:START_CALL];
+            [call checkOperation:START_CALL_DONE];
+        }
+        [call checkOperation:WAIT_CONFERENCE];
+        self.viewController = viewController;
+        self.audioMuteOn = NO;
+        self.cameraMuteOn = NO;
+        self.onHold = NO;
+        self.inBackground = NO; // This is an outgoing call, we are not in background.
+    }
+    call.identityAvatar = [[self.twinmeContext getImageService] getCachedImageWithImageId:conference.identityAvatarId kind:TLImageServiceKindThumbnail];
+    
+    [self onOperationWithCallState:call];
+    return TLBaseServiceErrorCodeSuccess;
 }
 
 - (void)startCallWithGroupMembers:(nonnull NSMutableArray<TLGroupMember *> *)members mode:(CallStatus)mode {
@@ -2227,9 +2281,25 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     if (![call isDoneOperation:START_CALL_DONE]) {
         return;
     }
-    
+
+    // For a conference call, we have to start a joinMeeting operation and then wait for
+    // participants to join, because we are owner of the conference twincode, we also give it
+    // as our member twincode.
+    if ([call isDoneOperation:WAIT_CONFERENCE]) {
+        if ([call checkOperation:JOIN_CONFERENCE]) {
+            int64_t requestId = [self newOperationWithCallState:call operationId:JOIN_CONFERENCE];
+            
+            [[self.twinmeContext getPeerCallService] joinMeetingWithRequestId:requestId meetingTwincodeId:originator.twincodeOutboundId memberTwincode:originator.twincodeOutboundId waitTime:5*60*1000];
+            return;
+        }
+        if (![call isDoneOperation:JOIN_CONFERENCE_DONE]) {
+            return;
+        }
+        return;
+    }
     
     if (CALL_IS_OUTGOING(callStatus)) {
+
         if (![call isDoneOperation:CREATE_OUTGOING_PEER_CONNECTION_DONE]) {
             // This call has no accepted peer connection, nothing to do yet.
             return;
@@ -2382,7 +2452,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
             // If the call is in a callroom, we can join it now that the incoming call is accepted.
             NSUUID *callRoomId = call.callRoomId;
-            if (callRoomId && twincodeInboundId) {
+            if (callRoomId && twincodeInboundId && ![call isDoneOperation:JOIN_CONFERENCE]) {
                 
                 int64_t requestId = [self newOperationWithCallState:call operationId:JOIN_CALL_ROOM];
                 [[self.twinmeContext getPeerCallService] joinCallRoomWithRequestId:requestId callRoomId:callRoomId twincodeInboundId:twincodeInboundId p2pSessionIds:[call getConnectionIds]];
@@ -2477,11 +2547,13 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     
     self.connected = YES;
 
+    CallState *call;
     NSMutableArray<CallConnection *> *connections = [[NSMutableArray alloc] init];
     @synchronized (self) {
         // Look at the active call because we can have a pending outgoing call.
-        if (self.activeCall) {
-            [connections addObjectsFromArray:[self.activeCall getConnections]];
+        call = self.activeCall;
+        if (call) {
+            [connections addObjectsFromArray:[call getConnections]];
         }
 
         // Look at other P2P connections.
@@ -2491,6 +2563,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
                 [connections addObject:connection];
             }
         }
+    }
+    if (call) {
+        [self onOperationWithCallState:call];
     }
 
     for (CallConnection *connection in connections) {
@@ -2609,7 +2684,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 - (void)onJoinCallRoomWithCall:(nonnull CallState *)call callRoomId:(nonnull NSUUID *)callRoomId memberId:(nonnull NSString *)memberId members:(nonnull NSArray<TLPeerCallMemberInfo *> *)members {
     DDLogVerbose(@"%@ onJoinCallRoomWithCall: %@ callRoomId: %@ memberId: %@ members: %@", LOG_TAG, call, callRoomId, memberId, members);
 
-    [call updateCallRoomWithMemberId:memberId];
+    [call checkOperation:JOIN_CONFERENCE_DONE];
+    [call updateCallRoomWithMemberId:memberId callRoomId:callRoomId];
 
     CallStatus callStatus = call.videoSourceOn ? CallStatusOutgoingVideoCall : CallStatusOutgoingCall;
     for (TLPeerCallMemberInfo *member in members) {
@@ -2626,7 +2702,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             // As a workaround, we check if we have other connections with the member and cancel them.
             
             @synchronized (self) {
-                for(NSUUID *connectionId in self.peers){
+                for (NSUUID *connectionId in self.peers) {
                     CallConnection *connection = self.peers[connectionId];
                     if ([member.memberId isEqualToString:connection.callRoomMemberId] && ![connection.peerConnectionId isEqual:callConnection.peerConnectionId]) {
                         [connection terminateWithTerminateReason:TLPeerConnectionServiceTerminateReasonCancel];
@@ -2761,16 +2837,32 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 - (void)onCreateIncomingPeerConnectionWithConnection:(nonnull CallConnection *)connection peerConnectionId:(nonnull NSUUID*)peerConnectionId {
     DDLogVerbose(@"%@ onCreateIncomingPeerConnectionWithConnection: %@", LOG_TAG, peerConnectionId);
     
+    CallState *call = connection.call;
     [connection checkOperation:CREATE_INCOMING_PEER_CONNECTION_DONE];
     [connection checkOperation:CREATED_PEER_CONNECTION];
-    [connection.call checkOperation:CREATE_INCOMING_PEER_CONNECTION_DONE];
+    [call checkOperation:CREATE_INCOMING_PEER_CONNECTION_DONE];
     
-    if (connection.call.transferDirection == TO_BROWSER && connection.isTransferConnection == TransferConnectionYes) {
-        [connection.call sendPrepareTransfer];
+    if (call.transferDirection == TO_BROWSER && connection.isTransferConnection == TransferConnectionYes) {
+        [call sendPrepareTransfer];
     }
     
+    if ([call isDoneOperation:JOIN_CONFERENCE] && [call checkOperation:CREATE_OUTGOING_PEER_CONNECTION_DONE]) {
+
+        // Start the call through CallKit so that it is aware of the outgoing call and it knows the peer connection ID.
+        // We must do this only for the first P2P connection of a group call.
+        if (self.cxCallController) {
+            [self initCallKitWithCallState:call];
+        } else {
+            long callCount;
+            @synchronized (self) {
+                callCount = self.activeCall ? 1 : 0;
+                callCount += self.holdCall ? 1 : 0;
+            }
+            [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
+        }
+    }
     [self onOperationWithConnection:connection];
-    [self onOperationWithCallState:connection.call];
+    [self onOperationWithCallState:call];
 }
 
 - (void)initCallKitWithCallState:(CallState *)call {
