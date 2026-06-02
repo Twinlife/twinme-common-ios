@@ -468,8 +468,6 @@ static const int GET_INVITATION_LINK_DONE = 1 << 19;
         if ((self.state & CHANGE_CALL_RECEIVER_TWINCODE) == 0) {
             self.state |= CHANGE_CALL_RECEIVER_TWINCODE;
             
-            int64_t requestId = [self newOperation:CHANGE_CALL_RECEIVER_TWINCODE];
-            DDLogVerbose(@"%@ updateCallReceiverWithRequestId: %lld", LOG_TAG, requestId);
             [self.twinmeContext changeCallReceiverTwincodeWithCallReceiver:self.callReceiver withBlock:^(TLBaseServiceErrorCode errorCode, TLCallReceiver * _Nullable callReceiver) {
                 [self onChangeCallReceiverTwincode:callReceiver];
             }];

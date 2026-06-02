@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -26,6 +26,7 @@
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
+#define STREAM_VERBOSE
 #else
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
@@ -430,10 +431,11 @@ static const int ddLogLevel = DDLogLevelWarning;
         playerInfo.position = iq.position;
     }
 
+#ifdef STREAM_VERBOSE
     int64_t streamerPosition = (self.localPlayer ? [self.localPlayer playerPosition] : 0);
 
     DDLogVerbose(@"%@ player %@ position=%lld streamerPos=%lld dt=%lld time=%lld", LOG_TAG, peerConnectionId, iq.position, streamerPosition, streamerPosition - iq.position, receiveTime - self.startTime);
-
+#endif
     switch (iq.mode) {
         case StreamingControlModeAskPause:
             [self pauseStreaming];
@@ -503,8 +505,10 @@ static const int ddLogLevel = DDLogLevelWarning;
         playerInfo.position = iq.playerPosition + playerInfo.latency;
     }
 
+#ifdef STREAM_VERBOSE
     int64_t streamerPosition = (self.localPlayer ? [self.localPlayer playerPosition] : 0);
     DDLogVerbose(@"%@ player %@ position=%lld streamerPosition=%lld dt=%lld time=%lld", LOG_TAG, peerConnectionId, iq.playerPosition, streamerPosition, streamerPosition - iq.playerPosition, receiveTime - self.startTime);
+#endif
 
     dispatch_async(self.readQueue, ^{
         NSData *data = [self readBlockWithOffset:iq.offset length:iq.length request:iq.requestId];

@@ -81,7 +81,7 @@ static AudioPlayerManager *sharedInstance = nil;
             self.isActive = [audioSession isActive];
             [audioSession setActive:YES error:&error];
         }
-        [audioSession setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionDuckOthers error:&error];
+        [audioSession setCategory:AVAudioSessionCategoryPlayback withOptions:AVAudioSessionCategoryOptionAllowBluetoothHFP | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionDuckOthers error:&error];
         if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
             DDLogError(@"Error overriding output port: %@", error.localizedDescription);
         }
@@ -97,6 +97,7 @@ static AudioPlayerManager *sharedInstance = nil;
     DDLogVerbose(@"%@ releaseAudioSession", LOG_TAG);
 
     if (self.usingAudioSession) {
+        [[UIApplication sharedApplication] setIdleTimerDisabled:NO];
         [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
             RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
 
@@ -179,6 +180,7 @@ static AudioPlayerManager *sharedInstance = nil;
         NSError *error = nil;
         self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:url error:&error];
         if (error == nil){
+            [[UIApplication sharedApplication] setIdleTimerDisabled:YES];
             ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
             TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
             self.audioPlayer.delegate = self;

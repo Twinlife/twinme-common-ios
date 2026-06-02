@@ -13,6 +13,10 @@
 #import <CoreImage/CIFilterBuiltins.h>
 
 #import "Utils.h"
+
+#import "ApplicationDelegate.h"
+#import "TwinmeApplication.h"
+
 #import <Twinlife/TLTwincodeURI.h>
 
 #if 0
@@ -67,52 +71,35 @@ static const int ddLogLevel = DDLogLevelWarning;
 + (nonnull UIImage *)makeQRCode:(nonnull NSString *)uri scale:(CGFloat)scale {
     DDLogVerbose(@"%@ makeQRCode: %@", LOG_TAG, uri);
     
-    if (@available(iOS 13.0, *)) {
-        CIFilter<CIQRCodeGenerator> *filter = [CIFilter QRCodeGenerator];
-        
-        filter.message = [uri dataUsingEncoding:NSUTF8StringEncoding];;
-        filter.correctionLevel = @"M";
-        
-        CIImage *outputImage = filter.outputImage;
-        
-        UIImage *preImage = [[UIImage alloc] initWithCIImage:outputImage];
-        
-        CGSize size = CGSizeMake([outputImage extent].size.width * scale, outputImage.extent.size.width * scale);
-        
-        UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
-        UIImage *resizedImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
-            [preImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
-        }];
-        
-        return resizedImage;
-    } else {
-        NSData *urlText = [uri dataUsingEncoding:NSUTF8StringEncoding];
-        CIFilter *filter = [CIFilter filterWithName:@"CIQRCodeGenerator"];
-        [filter setValue:urlText forKey:@"inputMessage"];
-        [filter setValue:@"M" forKey:@"inputCorrectionLevel"];
-
-        CIImage *outputImage = [filter outputImage];
-        CGImageRef cgImage = [[CIContext contextWithOptions:nil] createCGImage:outputImage fromRect:[outputImage extent]];
-        UIGraphicsBeginImageContext(CGSizeMake([outputImage extent].size.width * scale, outputImage.extent.size.width * scale));
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        CGContextSetInterpolationQuality(context, kCGInterpolationNone);
-        CGContextDrawImage(context, CGContextGetClipBoundingBox(context), cgImage);
-        UIImage *preImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        CGImageRelease(cgImage);
-        return [UIImage imageWithCGImage:[preImage CGImage] scale:[preImage scale] orientation:UIImageOrientationDownMirrored];
-    }
+    CIFilter<CIQRCodeGenerator> *filter = [CIFilter QRCodeGenerator];
+    
+    filter.message = [uri dataUsingEncoding:NSUTF8StringEncoding];;
+    filter.correctionLevel = @"M";
+    
+    CIImage *outputImage = filter.outputImage;
+    
+    UIImage *preImage = [[UIImage alloc] initWithCIImage:outputImage];
+    
+    CGSize size = CGSizeMake([outputImage extent].size.width * scale, outputImage.extent.size.width * scale);
+    
+    UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
+    UIImage *resizedImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+        [preImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+    }];
+    
+    return resizedImage;
 }
 
-+ (void)hapticFeedback:(UIImpactFeedbackStyle)style hapticFeedbackMode:(HapticFeedbackMode)mode  {
-    DDLogVerbose(@"%@ hapticFeedback: %ld hapticFeedbackMode: %d", LOG_TAG, (long)style, mode);
++ (void)hapticFeedback:(UIImpactFeedbackStyle)style {
+    DDLogVerbose(@"%@ hapticFeedback: %ld", LOG_TAG, (long)style);
     
-    if (mode == HapticFeedbackModeSystem) {
+    ApplicationDelegate *delegate = (ApplicationDelegate *)[[UIApplication sharedApplication] delegate];
+    TwinmeApplication *twinmeApplication = [delegate twinmeApplication];
+    
+    if ([twinmeApplication allowHapticFeedback]) {
         UIImpactFeedbackGenerator *impactFeedbackGenerator = [[UIImpactFeedbackGenerator alloc] initWithStyle:style];
         [impactFeedbackGenerator prepare];
         [impactFeedbackGenerator impactOccurred];
-    } else if (mode == HapticFeedbackModeOn) {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
     }
 }
 

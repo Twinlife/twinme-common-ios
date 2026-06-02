@@ -10,7 +10,7 @@ options:
   generateEmptyDirectories: true
   createIntermediateGroups: true
   deploymentTarget: 
-    iOS: "12.0"
+    iOS: "15.0"
 
 
 
@@ -37,6 +37,7 @@ targetTemplates:
         GCC_PREFIX_HEADER: "../Twinme/Twinme-Prefix.pch"
         PUBLIC_HEADERS_FOLDER_PATH: "include/TwinmeCommon"
         ONLY_ACTIVE_ARCH: NO
+        ENABLE_USER_SCRIPT_SANDBOXING: YES
         #update this setting if you add a new pod to the Podfile
         OTHER_LDFLAGS: '$(inherited) -ObjC -l"CocoaLumberjack" -l"FMDB" -l"KissXML" -l"SQLCipher" -l"SSZipArchive" -l"SlackTextViewController" -l"XMPPFramework" -l"iconv" -l"icucore" -l"idn" -l"resolv" -l"xml2" -l"z" -framework "CFNetwork" -framework "CoreData" -framework "CoreLocation" -framework "Security" -framework "SystemConfiguration"'
       configs:

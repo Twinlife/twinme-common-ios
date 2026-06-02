@@ -142,7 +142,6 @@ typedef void (^CallStartedAction) (BOOL success);
  *   It is critical to protect the following properties:
  *   * peers,
  *   * callsContacts,
- *   * callkitCalls,
  *   * activeCall, holdCall
  * - The `CallConnection`, `CallState` and `CallParticipant` MUST also handle and protect their own properties.
  * - An outgoing call must be made through CallKit so that we handle correctly the call if the user leaves the application.
@@ -150,25 +149,29 @@ typedef void (^CallStartedAction) (BOOL success);
  * - When a call is received, we must wait for didActivateAudioSession() to be called before enabling the WebRTC audio.
  *  If we call initSourcesWithPeerConnectionId() before that call, the WebRTC audio setup will fail and we don't get the microphone.
  * - The termination of a call must be made through CallKit so that it is aware of the call termination.
+ * - The CallKit provider observer methods are executed from the dedicated dispatch queue `providerQueue` so that we don't block
+ *   or use the main UI thread. This is also necessary because `cxProvider` will have to wait for the `providerDidBegin` callback
+ *   to be executed.
  */
 @interface CallService () <RTC_OBJC_TYPE(RTCAudioSessionDelegate), CXProviderDelegate, CXCallObserverDelegate, TLPeerConnectionDelegate, TLLocationManagerDelegate>
 
 @property (nonatomic, readonly, nonnull) TwinmeApplication *twinmeApplication;
 @property (nonatomic, nullable) CXProvider *cxProviderInstance;
 @property (nonatomic, nullable) CXCallController *cxCallControllerInstance;
-@property (nonatomic, readonly, nonnull) NSMutableDictionary<NSUUID *, CallState *> *callkitCalls;
 @property (nonatomic, readonly, nonnull) NotificationCenter *notificationCenter;
 @property (nonatomic, readonly, nonnull) CallServiceTwinmeContextDelegate *twinmeContextDelegate;
 @property (nonatomic, readonly, nonnull) CallServicePeerConnectionServiceDelegate *peerConnectionServiceDelegate;
 @property (nonatomic, readonly, nonnull) CallServicePeerCallServiceDelegate *peerCallServiceDelegate;
 @property (nonatomic, readonly, nonnull) CallServiceConversationServiceDelegate *conversationServiceDelegate;
 @property (nonatomic, readonly, nonnull) NSMutableDictionary<NSUUID *, CallConnection *> *peers;
+@property (nonatomic, readonly, nonnull) dispatch_queue_t providerQueue;
 
 @property (nonatomic) BOOL isTwinlifeReady;
 @property (nonatomic, readonly, nonnull) NSMutableDictionary<NSNumber *, ConnectionOperation *> *connectionRequestIds;
 @property (nonatomic, readonly, nonnull) NSMutableDictionary<NSNumber *, CallStateOperation *> *callStateRequestIds;
 @property (nonatomic) BOOL restarted;
 
+@property (nonatomic) atomic_bool isProviderReady;
 @property (nonatomic) BOOL connected;
 @property (nonatomic) BOOL onHold;
 @property (nonatomic) BOOL audioMuteOn;
@@ -279,6 +282,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_HOLD_ERROR, 4104);
 TL_CREATE_ASSERT_POINT(CALLKIT_RESUME_ERROR, 4105);
 TL_CREATE_ASSERT_POINT(CALLKIT_TIMEOUT, 4107);
 TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
+TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 
 @end
 
@@ -794,7 +798,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         _connectionRequestIds = [[NSMutableDictionary alloc] init];
         _callStateRequestIds = [[NSMutableDictionary alloc] init];
         _restarted = NO;
-        _callkitCalls = [[NSMutableDictionary alloc] init];
         _peers = [[NSMutableDictionary alloc] init];
         _twinmeContextDelegate = [[CallServiceTwinmeContextDelegate alloc] initWithService:self];
         _peerConnectionServiceDelegate = [[CallServicePeerConnectionServiceDelegate alloc] initWithService:self];
@@ -802,12 +805,13 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         _conversationServiceDelegate = [[CallServiceConversationServiceDelegate alloc] initWithService:self];
         _notificationCenter = twinmeApplication.notificationCenter;
         _nextParticipantId = 0;
+        _providerQueue = dispatch_queue_create("providerQueue", DISPATCH_QUEUE_SERIAL);
         [_twinmeContext addDelegate:self.twinmeContextDelegate];
 
         // Setup default WebRTC audio session configuration (category is AVAudioSessionCategoryPlayAndRecord)
         RTC_OBJC_TYPE(RTCAudioSessionConfiguration) *webRTCConfiguration = [RTC_OBJC_TYPE(RTCAudioSessionConfiguration) webRTCConfiguration];
         webRTCConfiguration.category = AVAudioSessionCategoryPlayAndRecord;
-        webRTCConfiguration.categoryOptions = AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
+        webRTCConfiguration.categoryOptions = AVAudioSessionCategoryOptionAllowBluetoothHFP | AVAudioSessionCategoryOptionAllowBluetoothA2DP;
         webRTCConfiguration.mode = AVAudioSessionModeVoiceChat;
 
         RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
@@ -816,11 +820,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         audioSession.useManualAudio = YES;
         
         if (enableCallkit) {
-            if (@available(iOS 13.0, *)) {
-                _iosCallKitObligationFascism = YES;
-            } else {
-                _iosCallKitObligationFascism = NO;
-            }
+            _iosCallKitObligationFascism = YES;
         } else {
             _iosCallKitObligationFascism = NO;
         }
@@ -838,7 +838,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     // Create the provider on the first call (cannot be done earlier).
     CXProvider *provider = self.cxProviderInstance;
     if (provider == nil) {
-        CXProviderConfiguration *configuration = [[CXProviderConfiguration alloc] initWithLocalizedName:TwinmeLocalizedString(@"application_name", nil)];
+        CXProviderConfiguration *configuration = [[CXProviderConfiguration alloc] init];
         configuration.supportsVideo = YES;
         configuration.maximumCallsPerCallGroup = 1;
 #if defined(SKRED) || defined(TWINME_PLUS)
@@ -854,9 +854,33 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         @synchronized (self) {
             provider = self.cxProviderInstance;
             if (provider == nil) {
+                TL_DECL_START_MEASURE(startTime);
+
+                atomic_store(&_isProviderReady, 0);
                 provider = [[CXProvider alloc] initWithConfiguration:configuration];
-                [provider setDelegate:self queue:nil];
+                [provider setDelegate:self queue:self.providerQueue];
+
+                // Also create the call controller now.
+                // If we perform a CallKit transaction immediately after the creation of the CallController
+                // it sometimes fails with error 7.  Looking at console logs, it seems that it is not ready
+                // immediately to accept transaction.  As a workarround, pause the current thread for 200ms
+                // to let this marvellous system to setup.  There is no way to know that the CallController
+                // is ready.  Trying to initialize the CallKitController earlier also fails miserably in
+                // other situations.
+                CXCallController *callController = [[CXCallController alloc] init];
+
+                // Set an observer to be notified when a CXCall state is changed.  This is necessary
+                // to be notified when an external call has terminated when we have been put on hold.
+                // We can them resume our call correctly (see callObserver:callChanged:).
+                [[callController callObserver] setDelegate:self queue:self.providerQueue];
+
+                // It's a shame but this API is highly unreliable, pause until the providerDidBegin is called.
+                for (int i = 0; i < 1000 && atomic_load(&_isProviderReady) == 0; i++) {
+                    [NSThread sleepForTimeInterval:0.01];
+                }
                 self.cxProviderInstance = provider;
+                self.cxCallControllerInstance = callController;
+                TL_END_MEASURE(startTime, @"cxInitProvider");
             }
         }
     }
@@ -869,34 +893,22 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     if (!self.iosCallKitObligationFascism) {
         return nil;
     }
+    TL_DECL_START_MEASURE(startTime);
 
     // Create the call controller on the first call and after the cxProvider (otherwise, controller will not work).
     CXCallController *callController = self.cxCallControllerInstance;
     if (callController == nil) {
         [self cxProvider];
-        callController = [[CXCallController alloc] init];
-
-        // Set an observer to be notified when a CXCall state is changed.  This is necessary
-        // to be notified when an external call has terminated when we have been put on hold.
-        // We can them resume our call correctly (see callObserver:callChanged:).
-        [[callController callObserver] setDelegate:self queue:nil];
-        self.cxCallControllerInstance = callController;
-
-        // If we perform a CallKit transaction immediately after the creation of the CallController
-        // it sometimes fails with error 7.  Looking at console logs, it seems that it is not ready
-        // immediately to accept transaction.  As a workarround, pause the current thread for 200ms
-        // to let this marvellous system to setup.  There is no way to know that the CallController
-        // is ready.  Trying to initialize the CallKitController earlier also fails miserably in
-        // other situations.
-        [NSThread sleepForTimeInterval:0.2];
+        callController = self.cxCallControllerInstance;
     }
+    TL_END_MEASURE(startTime, @"cxCallController");
     return callController;
 }
 
 - (CXProviderConfiguration *)getCallkitConfiguration:(BOOL)video originator:(nullable id<TLOriginator>)originator {
     DDLogVerbose(@"%@ getCallkitConfiguration: %@", LOG_TAG, video ? @"YES" : @"NO");
     
-    CXProviderConfiguration *configuration = [[CXProviderConfiguration alloc] initWithLocalizedName:TwinmeLocalizedString(@"application_name", nil)];
+    CXProviderConfiguration *configuration = [[CXProviderConfiguration alloc] init];
     configuration.maximumCallsPerCallGroup = 1;
     BOOL recentCallsHidden = NO;
     
@@ -936,7 +948,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     
     NSString *callerName = originator.name;
     if (originator.identityCapabilities.hasDiscreet || !callerName) {
-        callerName = TwinmeLocalizedString(@"history_view_controller_incoming_call", nil);
+        callerName = TwinmeLocalizedString(@"calls_view_incoming_call", nil);
     }
     callUpdate.localizedCallerName = callerName;
     return callUpdate;
@@ -1187,7 +1199,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             // It is critical that we make a call to CallKit API otherwise iOS 13 will kill us.
             // The call to reportNewIncomingCallWithUUID() could have been made before when
             // the session-initiate event was handled before the pushKit operation.
-            callIsKnown = call && self.callkitCalls[call.callKitUUID];
+            callIsKnown = call && [call isDoneOperation:CALLKIT_DONE];
             mustTerminate = call == nil;
             
         } else if (call && [call status] != CallStatusTerminated) {
@@ -1200,7 +1212,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
                     [call addPeerWithConnection:connection];
                     autoAccept = YES;
                 }
-                callIsKnown = self.callkitCalls[call.callKitUUID];
+                callIsKnown = [call isDoneOperation:CALLKIT_DONE];
 
             } else if ([call autoAcceptNewParticipantWithOriginator:originator]) {
                 // Create the call connection and proceed to honor PushKit+CallKit rules.
@@ -1351,7 +1363,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     // connection is known by the PeerConnectionService and we can proceed with the CREATE_INCOMING
     // operation may be for the second time.
     if (callIsKnown && !fromPushKit) {
-        [self onOperationWithConnection:connection];
+        if (connection) {
+            [self onOperationWithConnection:connection];
+        }
         return;
     }
 
@@ -1379,11 +1393,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
                     DDLogVerbose(@"%@ completion: reportNewIncomingCallWithUUID: %@", LOG_TAG, peerConnectionId);
                     
                     // Remember this was a successfull CallKit invocation so that we close it.
-                    long callCount;
-                    @synchronized (strongSelf) {
-                        strongSelf.callkitCalls[call.callKitUUID] = call;
-                        callCount = strongSelf.callkitCalls.count;
-                    }
+                    long callCount = 1;
+                    [call checkOperation:CALLKIT_DONE];
                     [[strongSelf.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
                 }
             }
@@ -1410,11 +1421,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
                 } else if (strongSelf) {
                     
                     // Remember this was a successfull CallKit invocation so that we close it.
-                    long callCount;
-                    @synchronized (strongSelf) {
-                        strongSelf.callkitCalls[call.callKitUUID] = call;
-                        callCount = strongSelf.callkitCalls.count;
-                    }
+                    long callCount = 1;
+                    [call checkOperation:CALLKIT_DONE];
                     [[strongSelf.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
 
                     [self.cxProvider reportCallWithUUID:call.callKitUUID updated:callUpdate];
@@ -1424,11 +1432,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         } else {
             DDLogVerbose(@"%@ calling activateAudio without CallKit", LOG_TAG);
             
-            long callCount;
-            @synchronized (self) {
-                self.callkitCalls[call.callKitUUID] = call;
-                callCount = self.callkitCalls.count;
-            }
+            long callCount = 1;
+            [call checkOperation:CALLKIT_DONE];
             [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
             
             // Play the audio call ringtone after activating the audio.
@@ -1554,36 +1559,30 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     }
     
     // Note: we are running from the main thread.
-    ApplicationDelegate *delegate = (ApplicationDelegate *)[application delegate];
-    MainViewController *mainViewController = delegate.mainViewController;
-    [mainViewController removeCallFloatingView];
-    UIViewController *topViewController = [UIViewController topViewController];
-    if (topViewController.presentingViewController) {
-        [topViewController dismissViewControllerAnimated:NO completion:^{
-        }];
-    } else if (topViewController.presentedViewController) {
-        [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
-        }];
-    }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        ApplicationDelegate *delegate = (ApplicationDelegate *)[application delegate];
+        MainViewController *mainViewController = delegate.mainViewController;
+        [mainViewController removeCallFloatingView];
+        UIViewController *topViewController = [UIViewController topViewController];
+        if (topViewController.presentingViewController) {
+            [topViewController dismissViewControllerAnimated:NO completion:^{
+            }];
+        } else if (topViewController.presentedViewController) {
+            [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
+            }];
+        }
 
-    // If there is a previous CallViewController it is terminated and it's better to drop it and get a new
-    // one with the new call, new contact and new state.
-    if ([topViewController isKindOfClass:[CallViewController class]]) {
-        [mainViewController.selectedViewController popViewControllerAnimated:NO];
-    }
-    
-    CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
-    [callViewController initCallWithOriginator:call.originator isVideoCall:CALL_IS_VIDEO(callStatus)];
-    self.viewController = callViewController;
-    [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
-}
-
-- (BOOL)isCallkitCall:(nonnull NSUUID *)callkitUUID {
-    DDLogVerbose(@"%@ isCallkitCall: %@", LOG_TAG, callkitUUID);
-    
-    @synchronized (self) {
-        return self.callkitCalls[callkitUUID] != nil;
-    }
+        // If there is a previous CallViewController it is terminated and it's better to drop it and get a new
+        // one with the new call, new contact and new state.
+        if ([topViewController isKindOfClass:[CallViewController class]]) {
+            [mainViewController.selectedViewController popViewControllerAnimated:NO];
+        }
+        
+        CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
+        [callViewController initCallWithOriginator:call.originator isVideoCall:CALL_IS_VIDEO(callStatus)];
+        self.viewController = callViewController;
+        [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
+    });
 }
 
 - (BOOL)isPeerConnection:(nonnull NSUUID *)peerConnectionId {
@@ -1748,14 +1747,18 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 }
 
 - (void)acceptCall {
-    [self acceptCallWithCall:[self currentCall]];
+    DDLogInfo(@"%@ acceptCall", LOG_TAG);
+
+    CallState *call = [self currentCall];
+    if (call) {
+        [self acceptCallWithCall:call];
+    }
 }
 
 - (void)acceptCallWithCallkitUUID:(nonnull NSUUID *)callkitUUID {
-    CallState *call;
-    @synchronized (self) {
-        call = self.callkitCalls[callkitUUID];
-    }
+    DDLogInfo(@"%@ acceptCallWithCallkitUUID: %@", LOG_TAG, callkitUUID);
+
+    CallState *call = [self getCallWithUUID:callkitUUID];
     if (call) {
         [self acceptCallWithCall:call];
     }
@@ -1874,7 +1877,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         if (call.terminateReason == TLPeerConnectionServiceTerminateReasonUnknown) {
             call.terminateReason = terminateReason;
         }
-        if (self.callkitCalls[call.callKitUUID] && self.cxCallController) {
+        if ([call isDoneOperation:CALLKIT_DONE] && self.cxCallController) {
             connections = nil;
         } else {
             connections = [call getConnections];
@@ -1914,7 +1917,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             DDLogVerbose(@"%@ completion: CXEndCallAction: %@", LOG_TAG, call.callKitUUID);
             if (error) {
                 [self finishCallkitWithCall:call];
-                TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_END_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
+                TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_END_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], [TLAssertValue initWithNumber:terminateReason], nil);
             }
         }];
     }
@@ -2205,8 +2208,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 - (void)dispose {
     DDLogVerbose(@"%@ dispose", LOG_TAG);
 
-    if (self.cxProvider) {
-        [self.cxProvider invalidate];
+    if (self.cxProviderInstance) {
+        [self.cxProviderInstance invalidate];
+        self.cxProviderInstance = nil;
     }
     
     if (self.locationManager) {
@@ -2221,6 +2225,30 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 }
 
 #pragma mark - Private methods
+
+- (nullable CallState *)getCallWithUUID:(nullable NSUUID *)callKitUUID {
+    
+    @synchronized (self) {
+        if (self.activeCall && [self.activeCall.callKitUUID isEqual:callKitUUID]) {
+            return self.activeCall;
+        }
+        if (self.holdCall && [self.holdCall.callKitUUID isEqual:callKitUUID]) {
+            return self.holdCall;
+        }
+    }
+    return nil;
+}
+
+- (int)getCallCount {
+    
+    @synchronized (self) {
+        if (self.activeCall) {
+            return self.holdCall ? 2 : 1;
+        } else {
+            return self.holdCall ? 1 : 0;
+        }
+    }
+}
 
 - (int64_t)newOperationWithCallState:(nonnull CallState *)call operationId:(int)operationId {
     DDLogVerbose(@"%@ newOperationWithCallState: %@ operationId: %d", LOG_TAG, call, operationId);
@@ -2264,11 +2292,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
     // Get the call status only once due to multi-threading it may change.
     CallStatus callStatus = [call status];
-    if (CALL_IS_INCOMING(callStatus) && [self isCallkitCall:call.callKitUUID] && [call checkOperation:SEND_DEVICE_RINGING]){
-        // Incoming call from callkit => ringtone already playing
-        [[self.twinmeContext getPeerConnectionService] sendDeviceRingingWithPeerConnectionId:call.initialConnection.peerConnectionId];
-    }
-    
+
     //
     // Step 1: create the audio/video call descriptor.
     //
@@ -2313,7 +2337,10 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     } else {
         //Incoming call
         
-        if ([call checkOperation:SEND_DEVICE_RINGING]){
+        // Send the device ringing only if the peer connection service knows this incoming peer connection.
+        // (we have to wait to received the session-initiate before doing the sendDeviceRinging call)
+        if ([self getCallWithUUID:call.callKitUUID] && ![call isDoneOperation:SEND_DEVICE_RINGING] && [[self.twinmeContext getPeerConnectionService] getPeerIdWithPeerConnectionId:call.initialConnection.peerConnectionId] && [call checkOperation:SEND_DEVICE_RINGING]) {
+            // Incoming call from callkit => ringtone already playing
             [[self.twinmeContext getPeerConnectionService] sendDeviceRingingWithPeerConnectionId:call.initialConnection.peerConnectionId];
         }
         
@@ -2853,11 +2880,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         if (self.cxCallController) {
             [self initCallKitWithCallState:call];
         } else {
-            long callCount;
-            @synchronized (self) {
-                callCount = self.activeCall ? 1 : 0;
-                callCount += self.holdCall ? 1 : 0;
-            }
+            long callCount = [self getCallCount];
             [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
         }
     }
@@ -2877,16 +2900,14 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     __weak CallService *weakSelf = self;
     [self.cxCallController requestTransaction:transaction completion:^(NSError * _Nullable error) {
         CallService *strongSelf = weakSelf;
+
         if (error && error.code != CXErrorCodeRequestTransactionErrorCallUUIDAlreadyExists) {
-            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_START_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
+            TL_ASSERTION(strongSelf.twinmeContext, [CallsAssertPoint CALLKIT_START_ERROR], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNSError:error], nil);
         } else if (strongSelf) {
             
             // Remember this was a successfull CallKit invocation so that we close it.
-            long callCount;
-            @synchronized (strongSelf) {
-                strongSelf.callkitCalls[call.callKitUUID] = call;
-                callCount = strongSelf.callkitCalls.count;
-            }
+            long callCount = [strongSelf getCallCount];
+            [call checkOperation:CALLKIT_DONE];
             [[strongSelf.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
         }
     }];
@@ -2901,22 +2922,16 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     BOOL firstOutgoing = [call checkOperation:CREATE_OUTGOING_PEER_CONNECTION_DONE];
 
     if (errorCode == TLBaseServiceErrorCodeSuccess && peerConnectionId) {
-        BOOL isCallkitCall;
         @synchronized (self) {
             self.peers[peerConnectionId] = connection;
-            isCallkitCall = self.callkitCalls[call.callKitUUID] != nil;
         }
         
         // Start the call through CallKit so that it is aware of the outgoing call and it knows the peer connection ID.
         // We must do this only for the first P2P connection of a group call.
-        if (self.cxCallController && !isCallkitCall && firstOutgoing) {
+        if (firstOutgoing && self.cxCallController && [call checkOperation:CALLKIT_DONE]) {
             [self initCallKitWithCallState:call];
         } else {
-            long callCount;
-            @synchronized (self) {
-                callCount = self.activeCall ? 1 : 0;
-                callCount += self.holdCall ? 1 : 0;
-            }
+            long callCount = [self getCallCount];
             [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
         }
         [connection onCreateOutgoingPeerConnectionWithPeerConnectionId:peerConnectionId];
@@ -2989,7 +3004,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
     // Report to CallKit that the outgoing call is now connected.
     CallStatus callStatus = [connection status];
-    if (updateState == CallConnectionUpdateStateFirstConnection && CALL_IS_OUTGOING(callStatus) && self.cxProvider && [self isCallkitCall:call.callKitUUID]) {
+    if (updateState == CallConnectionUpdateStateFirstConnection && CALL_IS_OUTGOING(callStatus) && self.cxProvider && [call isDoneOperation:CALLKIT_DONE]) {
 
         self.cxProvider.configuration = [self getCallkitConfiguration:CALL_IS_VIDEO(callStatus) originator:call.originator];
         [self.cxProvider reportOutgoingCallWithUUID:call.callKitUUID connectedAtDate:nil];
@@ -3057,6 +3072,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
     if (CALL_IS_INCOMING(callStatus) && !CALL_IS_ACTIVE(callStatus) && terminateReason != TLPeerConnectionServiceTerminateReasonDecline && terminateReason != TLPeerConnectionServiceTerminateReasonTransferDone) {
         [self.notificationCenter missedCallNotificationWithOriginator:call.originator video:CALL_IS_VIDEO(callStatus)];
+        // Ask an immediate refresh of the notification badge because we are going to be suspended by iOS after this call.
+        [self.twinmeContext immediateRefreshNotifications];
     }
     
     IncomingCallNotification *notification;
@@ -3470,14 +3487,14 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         int status = call.status;
 
         // Check activeCall is active.
-        TL_ASSERT_TRUE(self.twinmeContext, CALL_IS_ACTIVE(status) || CALL_IS_TERMINATED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status]);
+        TL_ASSERT_TRUE(self.twinmeContext, CALL_IS_ACTIVE(status) || CALL_IS_TERMINATED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status], [TLAssertValue initWithPeerConnectionId:call.uuid]);
 
         // Check holdCall is accepted.
         status = hold.status;
-        TL_ASSERT_TRUE(self.twinmeContext, CALL_IS_ACCEPTED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status]);
+        TL_ASSERT_TRUE(self.twinmeContext, CALL_IS_ACCEPTED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status], [TLAssertValue initWithPeerConnectionId:hold.uuid]);
 
         // Check holdCall is not terminated.
-        TL_ASSERT_TRUE(self.twinmeContext, !CALL_IS_TERMINATED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status]);
+        TL_ASSERT_TRUE(self.twinmeContext, !CALL_IS_TERMINATED(status), [CallsAssertPoint CALL_STATUS], [TLAssertValue initWithNumber:status], [TLAssertValue initWithPeerConnectionId:hold.uuid]);
         
         [self putCallOnHoldWithCall:call];
     }
@@ -3631,20 +3648,16 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
     BOOL isCallKitCall;
     TLPeerConnectionServiceTerminateReason terminateReason;
-    BOOL inBackground;
     BOOL stopRingtone = NO;
     BOOL disableAudio;
     long callCount;
     @synchronized (self) {
-        inBackground = self.inBackground;
         terminateReason = call.terminateReason;
         if (call) {
-            isCallKitCall = self.callkitCalls[call.callKitUUID];
-            [self.callkitCalls removeObjectForKey:call.callKitUUID];
+            isCallKitCall = [call isDoneOperation:CALLKIT_DONE];
         } else {
             isCallKitCall = NO;
         }
-        callCount = self.callkitCalls.count;
         if (call == self.activeCall) {
             self.activeCall = nil;
             if (!self.holdCall) {
@@ -3655,6 +3668,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             self.holdCall = nil;
         }
         disableAudio = !self.activeCall && !self.holdCall;
+        callCount = disableAudio ? 0 : 1;
     }
 
     // Stop the ringtone if we terminated the current call (otherwise, leave unchange in case of new incoming call).
@@ -3665,13 +3679,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     if (disableAudio) {
         RTC_OBJC_TYPE(RTCAudioSession) *session = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
         session.isAudioEnabled = NO;
-
-        // If the callCount is not 0, we have some inconsistency between activeCall, holdCall and the callkitCalls dictionary.
-        if (callCount != 0) {
-            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_INCONSISTENCY], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNumber:(int)callCount], nil);
-        }
-
-        callCount = 0;
     }
 
     // This is a CallKit call, we have to terminated it through the reportCallWithUUID().
@@ -3739,7 +3746,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     if (self.cxProvider) {
         NSUUID *unknownPeerConnectionId = [[NSUUID alloc] init];
         CXCallUpdate *callUpdate = [[CXCallUpdate alloc] init];
-        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:TwinmeLocalizedString(@"history_view_controller_incoming_call", nil)];
+        callUpdate.remoteHandle = [[CXHandle alloc] initWithType:CXHandleTypeGeneric value:TwinmeLocalizedString(@"calls_view_incoming_call", nil)];
         callUpdate.hasVideo = NO;
         
         [self.cxProvider reportNewIncomingCallWithUUID:unknownPeerConnectionId update:callUpdate completion:^(NSError * _Nullable error) {
@@ -3815,12 +3822,36 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
 
 #pragma mark - CXProviderDelegate
 
+// Note: the CXProviderDelegate and CXCallObserverDelegate are executed from our dedicated dispatch queue.
+
 - (void)providerDidReset:(CXProvider *)provider {
     DDLogInfo(@"%@ providerDidReset: %@", LOG_TAG, provider);
+
+    self.cxProviderInstance = nil;
+    atomic_store(&_isProviderReady, 0);
+
+    // If there is an active call, terminate it.
+    CallState *call = [self activeCall];
+    if (call) {
+        int callStatus = [call status];
+        TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_RESET], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNumber:callStatus], nil);
+
+        TLPeerConnectionServiceTerminateReason terminateReason;
+        if (CALL_IS_ACTIVE(callStatus)) {
+            terminateReason = TLPeerConnectionServiceTerminateReasonDisconnected;
+        } else if (CALL_IS_INCOMING(callStatus) && !CALL_IS_ACCEPTED(callStatus)) {
+            terminateReason = TLPeerConnectionServiceTerminateReasonDecline;
+        } else {
+            terminateReason = TLPeerConnectionServiceTerminateReasonGeneralError;
+        }
+        [self terminateCallWithCall:call terminateReason:terminateReason];
+    }
 }
 
 - (void)providerDidBegin:(CXProvider *)provider {
     DDLogInfo(@"%@ providerDidBegin: %@", LOG_TAG, provider);
+
+    atomic_store(&_isProviderReady, 1);
 }
 
 - (void)provider:(CXProvider *)provider performStartCallAction:(CXStartCallAction *)action {
@@ -3830,27 +3861,23 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     // Audio session configuration can only be made after performAnswerCallAction() or performStartCallAction().
     // Always configure the Audio session because we have lost it.
     // The didActivateAudioSession is not systematically called.
-    [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
-        RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-        RTC_OBJC_TYPE(RTCAudioSessionConfiguration) *webRTCConfiguration = [RTC_OBJC_TYPE(RTCAudioSessionConfiguration) webRTCConfiguration];
-        
-        NSError *error = nil;
-        rtcAudioSession.ignoresPreferredAttributeConfigurationErrors = YES;
-        [rtcAudioSession lockForConfiguration];
-        [rtcAudioSession setConfiguration:webRTCConfiguration error:&error];
-        [rtcAudioSession unlockForConfiguration];
-        if (error) {
-            // Note, we sometimes get the following error which can be ignored by setting the
-            // ignoresPreferredAttributeConfigurationErrors property:
-            // - Failed to set preferred input number of channels: (OSStatus -50 = AVAudioSessionErrorCodeBadParam)
-            NSLog(@"RTCAudioSession setConfiguration: %@ error: %@", webRTCConfiguration, error);
-        }
-    }];
+    // Do the audio session configuration synchronously (we are running from our dedicated dispatch queue).
+    RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+    RTC_OBJC_TYPE(RTCAudioSessionConfiguration) *webRTCConfiguration = [RTC_OBJC_TYPE(RTCAudioSessionConfiguration) webRTCConfiguration];
     
-    CallState *call;
-    @synchronized (self) {
-        call = self.callkitCalls[action.callUUID];
+    NSError *error = nil;
+    rtcAudioSession.ignoresPreferredAttributeConfigurationErrors = YES;
+    [rtcAudioSession lockForConfiguration];
+    [rtcAudioSession setConfiguration:webRTCConfiguration error:&error];
+    [rtcAudioSession unlockForConfiguration];
+    if (error) {
+        // Note, we sometimes get the following error which can be ignored by setting the
+        // ignoresPreferredAttributeConfigurationErrors property:
+        // - Failed to set preferred input number of channels: (OSStatus -50 = AVAudioSessionErrorCodeBadParam)
+        NSLog(@"RTCAudioSession setConfiguration: %@ error: %@", webRTCConfiguration, error);
     }
+    
+    CallState *call = [self getCallWithUUID:action.callUUID];
     if (call) {
         CXCallUpdate *callUpdate = [self createCXCallUpdate:call.originator video:action.video];
 
@@ -3870,26 +3897,23 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     // Audio session configuration can only be made after performAnswerCallAction() or performStartCallAction().
     // Always configure the Audio session because we have lost it.
     // The didActivateAudioSession is not systematically called.
-    [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
-        RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-        RTC_OBJC_TYPE(RTCAudioSessionConfiguration) *webRTCConfiguration = [RTC_OBJC_TYPE(RTCAudioSessionConfiguration) webRTCConfiguration];
+    // Do the audio session configuration synchronously (we are running from our dedicated dispatch queue).
+    RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+    RTC_OBJC_TYPE(RTCAudioSessionConfiguration) *webRTCConfiguration = [RTC_OBJC_TYPE(RTCAudioSessionConfiguration) webRTCConfiguration];
         
-        NSError *error = nil;
-        rtcAudioSession.ignoresPreferredAttributeConfigurationErrors = YES;
-        [rtcAudioSession lockForConfiguration];
-        [rtcAudioSession setConfiguration:webRTCConfiguration error:&error];
-        [rtcAudioSession unlockForConfiguration];
-        if (error) {
-            // Note, we sometimes get the following error which can be ignored by setting the
-            // ignoresPreferredAttributeConfigurationErrors property:
-            // - Failed to set preferred input number of channels: (OSStatus -50 = AVAudioSessionErrorCodeBadParam)
-            NSLog(@"RTCAudioSession setConfiguration: %@ error: %@", webRTCConfiguration, error);
-        }
-    }];
-    CallState *call;
-    @synchronized (self) {
-        call = self.callkitCalls[action.callUUID];
+    NSError *error = nil;
+    rtcAudioSession.ignoresPreferredAttributeConfigurationErrors = YES;
+    [rtcAudioSession lockForConfiguration];
+    [rtcAudioSession setConfiguration:webRTCConfiguration error:&error];
+    [rtcAudioSession unlockForConfiguration];
+    if (error) {
+        // Note, we sometimes get the following error which can be ignored by setting the
+        // ignoresPreferredAttributeConfigurationErrors property:
+        // - Failed to set preferred input number of channels: (OSStatus -50 = AVAudioSessionErrorCodeBadParam)
+        NSLog(@"RTCAudioSession setConfiguration: %@ error: %@", webRTCConfiguration, error);
     }
+
+    CallState *call = [self getCallWithUUID:action.callUUID];
     if (call) {
         [self acceptCallWithCall:call];
         [action fulfill];
@@ -3912,11 +3936,11 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     CallStatus callStatus;
     BOOL disableAudio;
     TLPeerConnectionServiceTerminateReason terminateReason;
+    NSUUID *callkitId;
     @synchronized (self) {
-        call = self.callkitCalls[action.callUUID];
+        call = [self getCallWithUUID:action.callUUID];
         if (call) {
-            [self.callkitCalls removeObjectForKey:action.callUUID];
-            
+            callkitId = call.callKitUUID;
             callStatus = [call status];
             terminateReason = call.terminateReason;
             if (terminateReason == TLPeerConnectionServiceTerminateReasonUnknown) {
@@ -3939,7 +3963,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
             terminateReason = TLPeerConnectionServiceTerminateReasonGeneralError;
         }
         
-        callCount = self.callkitCalls.count;
         if (self.activeCall == call) {
             self.activeCall = nil;
             if (!self.holdCall) {
@@ -3950,6 +3973,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
         }
         
         disableAudio = !self.activeCall && !self.holdCall;
+        callCount = disableAudio ? 0 : 1;
     }
 
     if (call) {
@@ -3980,13 +4004,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     if (disableAudio) {
         RTC_OBJC_TYPE(RTCAudioSession) *session = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
         session.isAudioEnabled = NO;
-
-        // If the callCount is not 0, we have some inconsistency between activeCall, holdCall and the callkitCalls dictionary.
-        if (callCount != 0) {
-            TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_INCONSISTENCY], [TLAssertValue initWithPeerConnectionId:call.callKitUUID], [TLAssertValue initWithNumber:(int)callCount], nil);
-        }
-
-        callCount = 0;
     }
     
     [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:^(TLBaseServiceErrorCode errorCode) {
@@ -4000,23 +4017,11 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     DDLogVerbose(@"%@ provider: %@ performSetHeldCallAction: %@", LOG_TAG, provider, action);
     DDLogInfo(@"%@ CallKit hold call %@ onHold: %d", LOG_TAG, action.callUUID, action.onHold);
     
-    BOOL isValid;
-    CallState *call;
-    CallStatus callStatus;
-    @synchronized (self) {
-        call = self.callkitCalls[action.callUUID];
-        if (!call) {
-            isValid = NO;
-            callStatus = 0;
-        } else {
-            isValid = YES;
-            callStatus = [call status];
-        }
-    }
-    
-    if (!isValid) {
+    CallState *call = [self getCallWithUUID:action.callUUID];
+    if (!call) {
         [action fail];
     } else {
+        CallStatus callStatus = [call status];
         if (action.onHold && !CALL_IS_PAUSED(callStatus)) {
             [call putOnHold];
             [self sendMessageWithCall:call message:CallEventMessageCallOnHold];
@@ -4059,23 +4064,16 @@ TL_CREATE_ASSERT_POINT(CALLKIT_INCONSISTENCY, 4108);
     CXCallAction *callAction = (CXCallAction *)action;
 
     // Remove connection from callUUIDs: we must not call CallKit again.
-    long callCount;
-    CallState *call;
-    @synchronized (self) {
-        call = self.callkitCalls[callAction.callUUID];
-        if (!call) {
-            return;
-        }
-
-        [self.callkitCalls removeObjectForKey:callAction.callUUID];
-        callCount = self.callkitCalls.count;
+    CallState *call = [self getCallWithUUID:callAction.callUUID];
+    if (!call) {
+        return;
     }
 
-    TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_TIMEOUT], [TLAssertValue initWithPeerConnectionId:callAction.callUUID], [TLAssertValue initWithNumber:(int)callCount], nil);
+    TL_ASSERTION(self.twinmeContext, [CallsAssertPoint CALLKIT_TIMEOUT], [TLAssertValue initWithPeerConnectionId:callAction.callUUID], [TLAssertValue initWithNumber:[self getCallCount]], nil);
 
     // Terminate the call because something was wrong from CallKit side.
     [self terminateCallWithCall:call terminateReason:TLPeerConnectionServiceTerminateReasonTimeout];
-    [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
+    [[self.twinmeContext getJobService] reportActiveVoIPWithCallCount:[self getCallCount] fetchCompletionHandler:nil];
 }
 
 - (void)provider:(CXProvider *)provider didActivateAudioSession:(AVAudioSession *)audioSession {

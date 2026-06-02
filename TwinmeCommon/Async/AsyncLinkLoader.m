@@ -11,6 +11,7 @@
 #import <LinkPresentation/LinkPresentation.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <MobileCoreServices/UTType.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTwinmeContext.h>
@@ -106,43 +107,41 @@ static const int ddLogLevel = DDLogLevelWarning;
     
     NSTextCheckingResult *firstMatch = [dataDetector firstMatchInString:content options:0 range:NSMakeRange(0, [content length])];
     if (firstMatch) {
-        if (@available(iOS 13.0, *)) {
-            LPMetadataProvider *metaDataProvider = [[LPMetadataProvider alloc]init];
-            NSURL *url = firstMatch.URL;
-            self.url = url;
-            // Fetch the metadata from the main UI thread to avoid a crash.
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [metaDataProvider startFetchingMetadataForURL:url completionHandler:^(LPLinkMetadata *fetchedLinkMetadata, NSError * error) {
-                
-                    self.title = fetchedLinkMetadata.title;
-                
-                    if (self.title) {
-                        [self.cache setTitleWithObjectDescriptor:self.objectDescriptor title:self.title];
-                    }
-                
-                    if (fetchedLinkMetadata.imageProvider) {
-                        [fetchedLinkMetadata.imageProvider loadItemForTypeIdentifier:(NSString *)kUTTypeImage
-                                                                             options:nil
-                                                                   completionHandler:^(UIImage *image, NSError *error) {
-                        
-                            self.image = image;
-                            if (self.image) {
-                                [self.cache setImageWithObjectDescriptor:self.objectDescriptor image:self.image];
-                            }
-                            self.loaderIsFinished = YES;
-                            completionHandler(self.item);
-                            return;
-                        }];
-                    } else {
-                        self.image = nil;
+        LPMetadataProvider *metaDataProvider = [[LPMetadataProvider alloc]init];
+        NSURL *url = firstMatch.URL;
+        self.url = url;
+        // Fetch the metadata from the main UI thread to avoid a crash.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [metaDataProvider startFetchingMetadataForURL:url completionHandler:^(LPLinkMetadata *fetchedLinkMetadata, NSError * error) {
+            
+                self.title = fetchedLinkMetadata.title;
+            
+                if (self.title) {
+                    [self.cache setTitleWithObjectDescriptor:self.objectDescriptor title:self.title];
+                }
+            
+                if (fetchedLinkMetadata.imageProvider) {
+                    [fetchedLinkMetadata.imageProvider loadItemForTypeIdentifier:UTTypeImage.identifier
+                                                                         options:nil
+                                                               completionHandler:^(UIImage *image, NSError *error) {
+                    
+                        self.image = image;
+                        if (self.image) {
+                            [self.cache setImageWithObjectDescriptor:self.objectDescriptor image:self.image];
+                        }
                         self.loaderIsFinished = YES;
                         completionHandler(self.item);
                         return;
-                    }
-                
-                }];
-            });
-        }
+                    }];
+                } else {
+                    self.image = nil;
+                    self.loaderIsFinished = YES;
+                    completionHandler(self.item);
+                    return;
+                }
+            
+            }];
+        });
     } else {
         self.loaderIsFinished = YES;
         completionHandler(self.item);

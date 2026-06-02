@@ -70,7 +70,7 @@ static const int ddLogLevel = DDLogLevelWarning;
         }
     }
 
-    CLAuthorizationStatus locationPermission = [CLLocationManager authorizationStatus];
+    CLAuthorizationStatus locationPermission = self.locationManager.authorizationStatus;
     switch (locationPermission) {
         case kCLAuthorizationStatusNotDetermined:
             [self.locationManager requestAlwaysAuthorization];
@@ -122,18 +122,14 @@ static const int ddLogLevel = DDLogLevelWarning;
         return NO;
     }
     
-    if (@available(iOS 14.0, *)) {
-        switch ([self.locationManager accuracyAuthorization]) {
-            case CLAccuracyAuthorizationReducedAccuracy:
-                return NO;
-                
-            case CLAccuracyAuthorizationFullAccuracy:
-            default:
-                return YES;
-                
-        }
-    } else {
-        return YES;
+    switch ([self.locationManager accuracyAuthorization]) {
+        case CLAccuracyAuthorizationReducedAccuracy:
+            return NO;
+            
+        case CLAccuracyAuthorizationFullAccuracy:
+        default:
+            return YES;
+            
     }
 }
 
@@ -160,12 +156,12 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
-    DDLogVerbose(@"%@ locationManager: %@ didChangeAuthorizationStatus: %d", LOG_TAG, manager, status);
+- (void)locationManagerDidChangeAuthorization:(CLLocationManager *)manager {
+    DDLogVerbose(@"%@ locationManagerDidChangeAuthorization: %@", LOG_TAG, manager);
     
-    if (status == kCLAuthorizationStatusAuthorizedWhenInUse || status == kCLAuthorizationStatusAuthorizedAlways) {
+    if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse || manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) {
         self.canShareLocation = YES;
-        if (status == kCLAuthorizationStatusAuthorizedAlways) {
+        if (manager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways) {
             self.canShareBackgroundLocation = YES;
         }
         [self.locationManager startUpdatingLocation];

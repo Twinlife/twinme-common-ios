@@ -32,7 +32,7 @@
 + (nonnull UIImage *)makeQRCode:(nonnull NSString *)uri scale:(CGFloat)scale;
 
 /// Play haptic feedback with given style and hapticFeedbackMode
-+ (void)hapticFeedback:(UIImpactFeedbackStyle)style hapticFeedbackMode:(HapticFeedbackMode)mode;
++ (void)hapticFeedback:(UIImpactFeedbackStyle)style;
 
 @end
 

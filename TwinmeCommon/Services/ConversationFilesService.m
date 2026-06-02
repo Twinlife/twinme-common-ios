@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023-2024 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -329,7 +329,7 @@ static const int MARK_DESCRIPTOR_DELETED = 1 << 7;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationFilesConversationServiceDelegate];
-    [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
+    [super dispose];
 }
 
 #pragma mark - Private methods

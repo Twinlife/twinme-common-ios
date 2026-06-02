@@ -287,7 +287,7 @@ static const int FIND_CONVERSATIONS_DONE = 1 << 12;
 - (void)onUpdateDescriptorWithRequestId:(int64_t)requestId conversation:(id<TLConversation>)conversation descriptor:(TLDescriptor *)descriptor updateType:(TLConversationServiceUpdateType)updateType {
     DDLogVerbose(@"%@ onUpdateDescriptorWithRequestId: %lld conversation: %@ descriptor: %@ updateType: %u", LOG_TAG, requestId, conversation, descriptor, updateType);
     
-    if (updateType == TLConversationServiceUpdateTypeContent && descriptor.getType != TLDescriptorTypeObjectDescriptor) {
+    if (updateType == TLConversationServiceUpdateTypeContent && descriptor.getType != TLDescriptorTypeObjectDescriptor && descriptor.getType != TLDescriptorTypeCallDescriptor) {
         return;
     }
     

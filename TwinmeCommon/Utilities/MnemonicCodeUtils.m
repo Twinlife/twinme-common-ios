@@ -198,7 +198,9 @@ static const int ddLogLevel = DDLogLevelWarning;
     bool *concatBits = malloc(totalLengthBits * sizeof(bool));
     if (!concatBits) {
         DDLogError(@"%@ couldn't allocate memory for concatBits", LOG_TAG);
+        free(hashBits);
         free(concatBits);
+        free(entropyBits);
         return [NSArray array];
     }
     
@@ -231,7 +233,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (nonnull NSData *) xorBytesWithData:(nonnull NSData *)data {
     char *dataBytes = (char *)data.bytes;
     
-    char *result = malloc(8);
+    char *result = calloc(8, 1);
     
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 8; j++) {

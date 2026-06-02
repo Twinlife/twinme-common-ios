@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -176,7 +176,6 @@ static const int GET_SUBSCRIPTION_IMAGE_DONE = 1 << 7;
         self.timer = nil;
     }
     
-    self.delegate = nil;
     [super dispose];
 }
 

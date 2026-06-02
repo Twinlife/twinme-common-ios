@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2023 twinlife SA.
+ *  Copyright (c) 2023-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -21,6 +21,7 @@
 
 #if 0
 static const int ddLogLevel = DDLogLevelVerbose;
+#define STREAM_VERBOSE
 #else
 static const int ddLogLevel = DDLogLevelWarning;
 #endif
@@ -211,9 +212,13 @@ static void audioQueueInputCallback(void *inClientData, AudioQueueRef inAQ, Audi
     DDLogVerbose(@"%@ start", LOG_TAG);
 
     AudioFileStreamID audioFileStream = 0;
-    OSStatus result = AudioFileStreamOpen((__bridge void *)self, audioPropertyValueCallback, audioStreamDataCallback, 0, &audioFileStream);
-
+#ifdef STREAM_VERBOSE
+    OSStatus result =
+#endif
+    AudioFileStreamOpen((__bridge void *)self, audioPropertyValueCallback, audioStreamDataCallback, 0, &audioFileStream);
+#ifdef STREAM_VERBOSE
     DDLogVerbose(@"%@ opened audio file stream: %d", LOG_TAG, result);
+#endif
     self.audioFileStream = audioFileStream;
     self.streamReadOffset = 0;
     self.streamReadAckOffset = 0;
@@ -237,6 +242,7 @@ static void audioQueueInputCallback(void *inClientData, AudioQueueRef inAQ, Audi
         int64_t now = [[NSDate date] timeIntervalSince1970] * 1000;
         int64_t playerPosition = [self playerPosition];
 
+#ifdef STREAM_VERBOSE
         int64_t deltaPosition;
         int64_t dt = now - self.lastStreamerPositionTime;
         if (self.lastStreamerPositionTime > 0) {
@@ -245,6 +251,7 @@ static void audioQueueInputCallback(void *inClientData, AudioQueueRef inAQ, Audi
             deltaPosition = 0;
         }
         DDLogVerbose(@"%@ sendStreamRequest: offset: %lld pos: %lld streamer: %lld delta: %lldd", LOG_TAG, offset, playerPosition, self.lastStreamerPosition, deltaPosition);
+#endif
 
         StreamingRequestIQ *requestIQ = [[StreamingRequestIQ alloc] initWithSerializer:[CallConnection STREAMING_REQUEST_SERIALIZER] requestId:[self.call allocateRequestId] ident:self.ident offset:offset length:length playerPosition:playerPosition timestamp:now lastRTT:self.lastRTT];
         
@@ -695,8 +702,7 @@ static void audioQueueInputCallback(void *inClientData, AudioQueueRef inAQ, Audi
             UInt32 cookieSize = 0;
             Boolean writable;
 
-            OSStatus err = AudioFileStreamGetPropertyInfo(self.audioFileStream, kAudioFileStreamProperty_MagicCookieData, &cookieSize, &writable);
-            DDLogVerbose(@"%@ got MagicCookieData size: %u err: %d", LOG_TAG, cookieSize, err);
+            AudioFileStreamGetPropertyInfo(self.audioFileStream, kAudioFileStreamProperty_MagicCookieData, &cookieSize, &writable);
             break;
         }
 

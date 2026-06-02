@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2025 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -317,8 +317,6 @@ static const int SET_CURRENT_SPACE_DONE = 1 << 19;
     }
 
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationServiceDelegate];
-    
-    self.delegate = nil;
     [super dispose];
 }
 

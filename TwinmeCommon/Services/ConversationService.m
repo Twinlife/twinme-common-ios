@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2025 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -50,6 +50,7 @@ static const int TOGGLE_ANNOTATION = 1 << 14;
 static const int PUSH_GEOLOCATION = 1 << 15;
 static const int SAVE_GEOLOCATION_MAP = 1 << 16;
 static const int UPDATE_DESCRIPTOR = 1 << 17;
+static const int PUSH_POLL = 1 << 18;
 //
 // Interface: ConversationService ()
 //
@@ -266,8 +267,8 @@ static const int UPDATE_DESCRIPTOR = 1 << 17;
     [self.service onUpdateDescriptor:descriptor updateType:updateType];
 }
 
-- (void)onUpdateAnnotationWithConversation:(id<TLConversation>)conversation descriptor:(TLDescriptor *)descriptor annotatingUser:(TLTwincodeOutbound *)annotatingUser {
-    DDLogVerbose(@"%@ onUpdateAnnotationWithConversation: %@ descriptor: %@ annotatingUser: %@", LOG_TAG, conversation, descriptor, annotatingUser);
+- (void)onUpdateAnnotationWithConversation:(id<TLConversation>)conversation descriptor:(TLDescriptor *)descriptor annotatingUser:(TLTwincodeOutbound *)annotatingUser annotations:(nonnull NSSet<TLDescriptorAnnotation *> *)annotations {
+    DDLogVerbose(@"%@ onUpdateAnnotationWithConversation: %@ descriptor: %@ annotatingUser: %@ annotations: %@", LOG_TAG, conversation, descriptor, annotatingUser, annotations);
     
     if (![conversation isConversationWithUUID:self.service.conversationId]) {
         return;
@@ -435,6 +436,15 @@ static const int UPDATE_DESCRIPTOR = 1 << 17;
     
     TL_ASSERT_NOT_NULL(self.twinmeContext, contact, [ServicesAssertPoint PARAMETER], nil);
 
+    // Detect a possible error where we try to change the subject for the same service.
+    // If we keep the same conversation, we can receive descriptors on the wrong conversation view controller.
+    if (self.contact && self.contact != contact) {
+        TL_ASSERTION(self.twinmeContext, [ServicesAssertPoint CONTACT_CHANGED], [TLAssertValue initWithSubject:contact], [TLAssertValue initWithSubject:self.contact], nil);
+
+        self.conversation = nil;
+        self.groupConversation = nil;
+        self.conversationId = nil;
+    }
     self.state = 0;
     self.beforeTimestamp = INT64_MAX;
     self.getDescriptorsDone = NO;
@@ -568,11 +578,26 @@ static const int UPDATE_DESCRIPTOR = 1 << 17;
     [self.twinmeContext pushFileWithRequestId:requestId conversation:self.conversation sendTo:sendTo replyTo:replyTo path:path type:type toBeDeleted:toBeDeleted copyAllowed:copyAllowed expireTimeout:expiredTimeout * 1000L];
 }
 
-- (void)pushGeolocationWithLatitude:(double)latitude longitude:(double)longitude altitude:(double)altitude  latitudeDelta:(double)latitudeDelta longitudeDelta:(double)longitudeDelta expiredTimeout:(int64_t)expiredTimeout sendTo:(NSUUID *)sendTo replyTo:(TLDescriptorId *)replyTo {
-    DDLogVerbose(@"%@ pushGeolocationWithLatitude: %f longitude: %f altitude: %f latitudeDelta: %f longitudeDelta: %f expiredTimeout: %lld sendTo: %@ replyTo: %@", LOG_TAG, latitude, longitude, altitude, latitudeDelta, longitudeDelta, expiredTimeout, sendTo, replyTo);
+- (void)pushGeolocationWithLatitude:(double)latitude longitude:(double)longitude altitude:(double)altitude  latitudeDelta:(double)latitudeDelta longitudeDelta:(double)longitudeDelta expiredTimeout:(int64_t)expiredTimeout sendTo:(NSUUID *)sendTo replyTo:(TLDescriptorId *)replyTo copyAllowed:(BOOL)copyAllowed {
+    DDLogVerbose(@"%@ pushGeolocationWithLatitude: %f longitude: %f altitude: %f latitudeDelta: %f longitudeDelta: %f expiredTimeout: %lld sendTo: %@ replyTo: %@ copyAllowed: %@", LOG_TAG, latitude, longitude, altitude, latitudeDelta, longitudeDelta, expiredTimeout, sendTo, replyTo, copyAllowed ? @"YES":@"NO");
     
     int64_t requestId = [self newOperation:PUSH_GEOLOCATION];
-    [self.twinmeContext pushGeolocationWithRequestId:requestId conversation:self.conversation sendTo:nil replyTo:replyTo longitude:longitude latitude:latitude altitude:altitude mapLongitudeDelta:longitudeDelta mapLatitudeDelta:latitudeDelta localMapPath:NULL expireTimeout:expiredTimeout * 1000L];
+    [self.twinmeContext pushGeolocationWithRequestId:requestId conversation:self.conversation sendTo:nil replyTo:replyTo longitude:longitude latitude:latitude altitude:altitude mapLongitudeDelta:longitudeDelta mapLatitudeDelta:latitudeDelta localMapPath:NULL expireTimeout:expiredTimeout * 1000L copyAllowed:copyAllowed];
+}
+
+- (void)pushPollWithMultipleAnswersAllowed:(BOOL)multipleAnswersAllowed question:(nonnull NSString *)question choices:(nonnull NSArray<TLChoice *> *)choices copyAllowed:(BOOL)copyAllowed expiration:(int64_t)expiration{
+    DDLogVerbose(@"%@ pushPollWithMultipleAnswersAllowed:%@ question:%@ choices:%@", LOG_TAG, multipleAnswersAllowed ? @"YES":@"NO", question, choices);
+    
+    int64_t requestId = [self newOperation:PUSH_POLL];
+
+    [self.twinmeContext pushPollWithRequestId:requestId conversation:self.conversation multipleChoicesAllowed:multipleAnswersAllowed question:question choices:choices copyAllowed:copyAllowed expiration:expiration];
+}
+
+- (void)submitPollVotes:(nonnull TLDescriptorId *)descriptorId choices:(nonnull NSArray<TLChoice *> *)choices {
+    DDLogVerbose(@"%@ submitPollVotes:%@ choices:%@", LOG_TAG, descriptorId, choices);
+    
+    int64_t value = [TLChoice toAnnotationValueWithChoices:choices];
+    [self.twinmeContext toggleAnnotationWithDescriptorId:descriptorId type:TLDescriptorAnnotationTypePoll value:(int)value];
 }
 
 - (void)saveGeolocationMapWithPath:(NSString *)path descriptorId:(TLDescriptorId *)descriptorId {
@@ -637,7 +662,7 @@ static const int UPDATE_DESCRIPTOR = 1 << 17;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationServiceDelegate];
-    [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
+    [super dispose];
 }
 
 #pragma mark - Private methods
@@ -973,7 +998,13 @@ static const int UPDATE_DESCRIPTOR = 1 << 17;
 - (void)onErrorWithErrorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {
     DDLogVerbose(@"%@ onErrorWithErrorCode: %u errorParameter: %@", LOG_TAG, errorCode, errorParameter);
     
-    [super onErrorWithOperationId:0 errorCode:errorCode errorParameter:errorParameter];
+    if (errorCode == TLBaseServiceErrorCodeFeatureNotSupportedByPeer) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [(id<ConversationServiceDelegate>)self.delegate onErrorFeatureNotSupportedByPeer];
+        });
+    } else {
+        [super onErrorWithOperationId:0 errorCode:errorCode errorParameter:errorParameter];
+    }
 }
 
 - (void)onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -296,7 +296,6 @@ static const int ROOM_SET_CONFIG_DONE = 1 << 11;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationServiceDelegate];
-    
     [super dispose];
 }
 

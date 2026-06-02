@@ -95,7 +95,7 @@
             }
 
             // Play the sound on the headset and mix with existing audio streams.
-            [audioSession setCategory:category withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionMixWithOthers error:nil];
+            [audioSession setCategory:category withOptions:AVAudioSessionCategoryOptionAllowBluetoothHFP | AVAudioSessionCategoryOptionAllowBluetoothA2DP | AVAudioSessionCategoryOptionMixWithOthers error:nil];
             NSError *error = nil;
             if (speaker) {
                 if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {

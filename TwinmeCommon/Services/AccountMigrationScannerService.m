@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -232,7 +232,6 @@ static const int BIND_ACCOUNT_MIGRATION_DONE = 1 << 7;
         [[self.twinmeContext getAccountMigrationService] removeDelegate:self.accountMigrationServiceDelegate];
     }
     
-    self.delegate = nil;
     [super dispose];
 }
 

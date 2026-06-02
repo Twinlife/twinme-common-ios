@@ -3,12 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		000E2C621B9DE174B5F4A337 /* ResetConversationService.m in Sources */ = {isa = PBXBuildFile; fileRef = D2FEEE9C1B91862A85883A4B /* ResetConversationService.m */; };
 		00147425F8E7515D561EA64C /* ParticipantInfoIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E596F4081884C0D33F3CE892 /* ParticipantInfoIQ.h */; };
+		00327E21A864CD3985F6AB74 /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 902878C829569F23F00D33FC /* ProxyService.m */; };
 		010AC37043F566116AC69806 /* TerminateKeyCheckIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = C35328E151F53393F5E8F006 /* TerminateKeyCheckIQ.m */; };
 		0134C96466DEFC6789C01F0B /* CallState.m in Sources */ = {isa = PBXBuildFile; fileRef = 75F5ECF7A2FA0B03B4699D18 /* CallState.m */; };
 		029954F8FDE7F6A4D1A4EF62 /* CreateProfileService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7342F7955565717E251FE6AA /* CreateProfileService.m */; };
@@ -21,6 +22,7 @@
 		05206E8222D562749617E3D0 /* CameraControlIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C97852ED1F63DE936E34334D /* CameraControlIQ.h */; };
 		0555B05A33A19458A2D8431B /* CoachMark.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3AFA7ECEACF59594691BDA7D /* CoachMark.h */; };
 		056DAA585CC694ACDD1663FB /* KeyCheckSessionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 636C7B6E37CE56EEB19ECC15 /* KeyCheckSessionHandler.m */; };
+		0610C9954644157E2C01C19A /* UIFAQArticle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250ED05B534420CC2C838D23 /* UIFAQArticle.h */; };
 		0623CE12FEA72BB80BEDF7D5 /* TLLocationManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C183FCECB1DB51A811B38B1 /* TLLocationManager.h */; };
 		063009F13739080467FB6E2D /* AccountMigrationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CF0120586E69A480B9E6DDC /* AccountMigrationService.h */; };
 		0640D4FFD892F0C365D867A7 /* TwincodeUriIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE8398F66D96FFA88C5A714B /* TwincodeUriIQ.h */; };
@@ -36,6 +38,7 @@
 		0A7A9665B1907441A2AB73ED /* StreamingInfoIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = F778B851EEF186DC1D39E388 /* StreamingInfoIQ.m */; };
 		0AD32EF4930C0ADF73A611BF /* SpaceSettingsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3615FF8AE2F101385EF790 /* SpaceSettingsService.m */; };
 		0B001B8E13BE40011FBBF317 /* BackupService.m in Sources */ = {isa = PBXBuildFile; fileRef = FD9349AB742C30E16FAC1D5E /* BackupService.m */; };
+		0B40CF8FB8FD854D72B4E63D /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3A1E460A0CAFE2851510271 /* ProxyService.h */; };
 		0BEC4D8C9C9D9349B870E1BD /* ShowGroupService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DC0482E930740A731E25655 /* ShowGroupService.m */; };
 		0C4499E49BD87DFEE916B5B7 /* CallService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8224F410973FF15B8FBE3CE7 /* CallService.m */; };
 		0C6F0214552B03084570A893 /* CameraControlIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C97852ED1F63DE936E34334D /* CameraControlIQ.h */; };
@@ -78,6 +81,7 @@
 		1AB81930149CB3A3594D806F /* CallParticipant.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 419902C71138EF69D53E3285 /* CallParticipant.h */; };
 		1AEAAB14007732B43EF27FC5 /* Streamer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B50E4DF4458B786053FEA09B /* Streamer.h */; };
 		1B383F22EC24CA0335692B43 /* CreateSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B767CD7916021F0EEC23BF0C /* CreateSpaceService.h */; };
+		1B4831095CBFAF05B41333FA /* UIFAQArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */; };
 		1BB0EBCEBDA2507CA0ABAE0D /* EditRoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 12EE6EE3CA9E7CC2C36CE2BC /* EditRoomService.h */; };
 		1C239B72EF935E57BABA25BA /* CallParticipant.m in Sources */ = {isa = PBXBuildFile; fileRef = 269BA9F87A17AA8721CC918B /* CallParticipant.m */; };
 		1CC91A713701EEF6D1799965 /* NotificationCenter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = CFC8722E0FE288F3AEBB81B7 /* NotificationCenter.h */; };
@@ -167,6 +171,9 @@
 		339D39DBF2B89070118C6928 /* AsyncVideoLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D47659D4A9DD485E3F616025 /* AsyncVideoLoader.h */; };
 		33CB9E55594AE1614114C28E /* CleanUpService.m in Sources */ = {isa = PBXBuildFile; fileRef = 16762EC3FA7E77AD0A00BF43 /* CleanUpService.m */; };
 		33EFE57B57B6AF2444BA570F /* ShowRoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = 91A9CE4832C27CA4EE5A3A14 /* ShowRoomService.m */; };
+		33FAC20E9A7409F4F7297D48 /* FAQManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FD5A36AF172809E1EBCE0E48 /* FAQManager.m */; };
+		355368388D091025CC8886D1 /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 902878C829569F23F00D33FC /* ProxyService.m */; };
+		35AAA795C1FA573879413E73 /* UIFAQCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */; };
 		35CC5AB4FB17AF5B36920E4A /* SplashService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D1396D6C3EF0D79FA2B2E9FB /* SplashService.h */; };
 		363416C3A0F56506CE1697B1 /* CallConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5EDD24E0B5ED4192A3622831 /* CallConnection.h */; };
 		363AB185CA2DA3CA4AFA8EC3 /* CleanUpService.m in Sources */ = {isa = PBXBuildFile; fileRef = 16762EC3FA7E77AD0A00BF43 /* CleanUpService.m */; };
@@ -176,6 +183,7 @@
 		36AF436857D46E2C8665D331 /* AbstractTwinmeViewController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2959AFDEB60E7E88870EF630 /* AbstractTwinmeViewController.h */; };
 		36C89C99D4EFC5DF0C68DF41 /* OnKeyCheckInitiateIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 81AF2325EC70DBA48A7B18CC /* OnKeyCheckInitiateIQ.m */; };
 		38201E4A1F61CA53BD81E77C /* ParticipantInfoIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E596F4081884C0D33F3CE892 /* ParticipantInfoIQ.h */; };
+		38224AB723641BF3DD4682D7 /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3A1E460A0CAFE2851510271 /* ProxyService.h */; };
 		38253DBB278FB9F24A6350C5 /* AudioPlayerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EC2D96C80DC8037D22A1B884 /* AudioPlayerManager.h */; };
 		38B0DF800DB593F3A5164F2D /* ConversationFilesService.m in Sources */ = {isa = PBXBuildFile; fileRef = 604467DC70C80E1CA333FF61 /* ConversationFilesService.m */; };
 		396B9411F6802ED67B4D4086 /* CallParticipant.m in Sources */ = {isa = PBXBuildFile; fileRef = 269BA9F87A17AA8721CC918B /* CallParticipant.m */; };
@@ -185,6 +193,7 @@
 		3A0744207738A14773F83B14 /* WordCheckIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3B36A3612B976B7074932CA5 /* WordCheckIQ.h */; };
 		3ABB0234B054EFE8F1BAEA34 /* SpaceAppearanceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C8331CFE1B5649C845A00EFE /* SpaceAppearanceService.h */; };
 		3BC59E2DA6E94C5FF73A1322 /* ChatService.m in Sources */ = {isa = PBXBuildFile; fileRef = CCE2C31114B0E0D4983B7F4F /* ChatService.m */; };
+		3BD58EDDEAB10DEAD50BB318 /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3A1E460A0CAFE2851510271 /* ProxyService.h */; };
 		3C3749133C17FA654F0E12BF /* NotificationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B1D5E0D5FC8ED84A1CE296CB /* NotificationService.h */; };
 		3C531823067AA75C4E249F11 /* ConversationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D55170308C467092602EC52 /* ConversationService.m */; };
 		3C7E8EC5D92EB59A3FB9DDAA /* AsyncAudioTrackLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB0540A95243DE48AAEDD8D /* AsyncAudioTrackLoader.m */; };
@@ -205,6 +214,7 @@
 		3FD1233BC48151273E5D0CF8 /* ParticipantInfoIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 516CA8B6F637CBCFC6DFAF85 /* ParticipantInfoIQ.m */; };
 		3FF07039E6452E6392B9C5D6 /* AccountMigrationScannerService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B2ABF6201923ABE2CCCAE1D4 /* AccountMigrationScannerService.h */; };
 		40B4587B3784E6C1DBD56E32 /* SplashService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D1396D6C3EF0D79FA2B2E9FB /* SplashService.h */; };
+		41303A29F31481C44A32BF36 /* UIFAQCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */; };
 		41B613AD1384D86567DB9B30 /* ResetConversationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D72E41881906B039AE031B6D /* ResetConversationService.h */; };
 		4228F67DA3FFB2E5EAFB6444 /* ExportService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C492F3048038501A408AE2C8 /* ExportService.h */; };
 		426E674F492D2166EC227950 /* StreamingRequestIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 1FA2CFA37B7D51D2296A1A56 /* StreamingRequestIQ.m */; };
@@ -212,6 +222,7 @@
 		434F872B4319D04C0B92B783 /* ShowContactService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B19C0A28FB17CF1FFC582844 /* ShowContactService.h */; };
 		44A9BF5B33A2DCEC888238ED /* EditGroupService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1CB1A87F1A55A8F5786DE293 /* EditGroupService.h */; };
 		44D8FA27E725ADC9CB867FBA /* ExportService.m in Sources */ = {isa = PBXBuildFile; fileRef = 483DBAAB8878D91A3E608B39 /* ExportService.m */; };
+		44F554D2B8A2AC5C4B469ADC /* FAQManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4984CE5818D35D1BCD89BFE /* FAQManager.h */; };
 		450D2F9A4685AC6F036DE069 /* EditRoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = 1957CCA7BFFE0928116D19AE /* EditRoomService.m */; };
 		451048F26862B80C78BBB898 /* ShowRoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 780398E984861B0CB743463B /* ShowRoomService.h */; };
 		452B50AEF122B8CDD6AA981A /* Streamer.m in Sources */ = {isa = PBXBuildFile; fileRef = A2BB41A5E32BBE41B8C663BD /* Streamer.m */; };
@@ -225,9 +236,11 @@
 		481A0F1A31F4B653CA2B68E2 /* OnKeyCheckInitiateIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0D5522087CF75049148231D2 /* OnKeyCheckInitiateIQ.h */; };
 		481E68B463039F5D358570F6 /* ParticipantInfoIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 516CA8B6F637CBCFC6DFAF85 /* ParticipantInfoIQ.m */; };
 		483FBE751FFD7D101A51FB4A /* SpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DAD8F8F73C16F4A21952C950 /* SpaceService.h */; };
+		4849E4E7D14E67A13F1111AA /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 902878C829569F23F00D33FC /* ProxyService.m */; };
 		48D0285CE20020300D08F0C8 /* EditContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = D3C4ABC7E38C6FE59208E647 /* EditContactService.m */; };
 		491B2309305D11C17F08402C /* CameraControlIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = A86D5C911452516167663D67 /* CameraControlIQ.m */; };
 		494A49A1FC8E442036949B9F /* ShowSpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2771BA47EE53F6AFDE2B7BA9 /* ShowSpaceService.m */; };
+		49D0D94EFBC6015A25674C4D /* FAQManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FD5A36AF172809E1EBCE0E48 /* FAQManager.m */; };
 		4A093C77BCB556C6A2DB6565 /* NotificationSound.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 45109FDC62B712A486D7380C /* NotificationSound.h */; };
 		4A0DFE49831AAB73A04DBE78 /* EditContactCapabilitiesService.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D290BA4331389E771946B0 /* EditContactCapabilitiesService.m */; };
 		4A29AB9F725F0A4B454D34C7 /* CallService.m in Sources */ = {isa = PBXBuildFile; fileRef = 8224F410973FF15B8FBE3CE7 /* CallService.m */; };
@@ -259,6 +272,7 @@
 		517FFDBD3F4F021B79DF468A /* AsyncLinkLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = F640E342921189C62A076959 /* AsyncLinkLoader.m */; };
 		51C8F9B734B06BDB526779BA /* Cache.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D6A2D6B11D817B2C3F5F0EC8 /* Cache.h */; };
 		51F4D6F60C929BF2126C8B6A /* WordCheckChallenge.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C71F9E15FA59D215A3143BE /* WordCheckChallenge.h */; };
+		523B2DD6529A41E1920DA4E4 /* UIFAQArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */; };
 		526881511D5B38D595A5D851 /* CameraResponseIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C367D62C26B5FBF8873995D1 /* CameraResponseIQ.h */; };
 		527DAE5885FBC697D0C5B1E0 /* AdminService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5AC6AB496D333D66DE607330 /* AdminService.h */; };
 		52836CE3AF96B3123A765D40 /* CallConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5EDD24E0B5ED4192A3622831 /* CallConnection.h */; };
@@ -276,16 +290,6 @@
 		56A1F71A2C9672773409B704 /* SecretSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7DCF341AA84A06DE573CA72 /* SecretSpaceService.h */; };
 		56AEFBBDDF1A8FD0CE001BB9 /* InfoItemService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = AB97A19D6647935FAB2BD767 /* InfoItemService.h */; };
 		57258D1F9FEB8F994907CF10 /* AsyncVideoLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D47659D4A9DD485E3F616025 /* AsyncVideoLoader.h */; };
-		5781FC382EB49DFB0057324F /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC372EB49DFB0057324F /* ProxyService.m */; };
-		5781FC392EB49DFB0057324F /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC372EB49DFB0057324F /* ProxyService.m */; };
-		5781FC3A2EB49DFB0057324F /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC372EB49DFB0057324F /* ProxyService.m */; };
-		5781FC3B2EB49DFB0057324F /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC372EB49DFB0057324F /* ProxyService.m */; };
-		5781FC3C2EB49DFB0057324F /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5781FC372EB49DFB0057324F /* ProxyService.m */; };
-		5781FC752EB4B7030057324F /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5781FC362EB49DFB0057324F /* ProxyService.h */; };
-		5781FCF22EB4D5670057324F /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5781FC362EB49DFB0057324F /* ProxyService.h */; };
-		5781FD232EB4D7C70057324F /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5781FC362EB49DFB0057324F /* ProxyService.h */; };
-		5781FE202EB5191F0057324F /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5781FC362EB49DFB0057324F /* ProxyService.h */; };
-		5781FE3A2EB519A00057324F /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5781FC362EB49DFB0057324F /* ProxyService.h */; };
 		57B370397D7D3443976D594B /* GroupService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13A3D9EF3497FA697FF2E36C /* GroupService.h */; };
 		57D4D83896BF12201D0FAE67 /* ConversationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D55170308C467092602EC52 /* ConversationService.m */; };
 		581C4E13F561E5D61AEE7136 /* DeleteAccountService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 349EB96CC588DF039A86B1FB /* DeleteAccountService.h */; };
@@ -359,6 +363,7 @@
 		6C830050F905C825FE45E9D8 /* GroupService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13A3D9EF3497FA697FF2E36C /* GroupService.h */; };
 		6C90E7E49759C78703B73B9F /* ParticipantTransferIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = EF461D0C7A1D719F9953A7AC /* ParticipantTransferIQ.m */; };
 		6C931BF8935145D7E8334746 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6A7D3E0A0C144F711A55FC0B /* NotificationService.m */; };
+		6CB2F5D584E59915DD0AE444 /* UIFAQArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */; };
 		6CEBB86A53CB68D95D371AAA /* DeleteAccountService.m in Sources */ = {isa = PBXBuildFile; fileRef = EAB6E8DB9863A42664B8520C /* DeleteAccountService.m */; };
 		6CF7BC58B0A92B650C379D18 /* ConversationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 675DC9086E89CB23FCC711DE /* ConversationService.h */; };
 		6D04833FB8C0FFD42D015A4B /* ContactsService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = FBE9269494537B46A426C507 /* ContactsService.h */; };
@@ -373,6 +378,7 @@
 		6FB36EE104DAFD142E1DCDDF /* CallParticipant.m in Sources */ = {isa = PBXBuildFile; fileRef = 269BA9F87A17AA8721CC918B /* CallParticipant.m */; };
 		703E851405F515375EFDB140 /* AsyncImageLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 14070034AC5D0BB8296C0415 /* AsyncImageLoader.h */; };
 		70F747A50501456B102EB5F7 /* StreamingInfoIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = F778B851EEF186DC1D39E388 /* StreamingInfoIQ.m */; };
+		7104AA893A66280ED0CF9376 /* FAQManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4984CE5818D35D1BCD89BFE /* FAQManager.h */; };
 		71255643F35504C1090DD94C /* InvitationRoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7988834ADE237762569805C9 /* InvitationRoomService.h */; };
 		712F540870A04DABC9B715D8 /* InvitationRoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = 62A800268BA262270E1D3983 /* InvitationRoomService.m */; };
 		717012C0404C39CF7558917A /* KeyCheckInitiateIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B9E9DC73B8256F9DAAFC062 /* KeyCheckInitiateIQ.m */; };
@@ -409,9 +415,11 @@
 		78A03F89CABEF281379FED3A /* CallsService.m in Sources */ = {isa = PBXBuildFile; fileRef = FEE20FFB9BEE8C645EF928F1 /* CallsService.m */; };
 		790599B8A2D75EBD475651A6 /* NotificationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B1D5E0D5FC8ED84A1CE296CB /* NotificationService.h */; };
 		7A04BDDF3914E765B95A86F9 /* StreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 64328964F187C2112B59B8E9 /* StreamPlayer.m */; };
+		7A284722396BDE241117AC04 /* UIFAQCategory.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */; };
 		7AE2089A0476E3FFEC0704D2 /* AsyncImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6CF83694348CEA1BAE759 /* AsyncImageLoader.m */; };
 		7B3C236F052BE0C4EAF23FBA /* ParticipantTransferIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = EF461D0C7A1D719F9953A7AC /* ParticipantTransferIQ.m */; };
 		7B83E6511881DB1BE05A2231 /* Utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDC3D9D60923B371772F5C4B /* Utils.h */; };
+		7BDEB6E5459E0F00FB191E6D /* FAQManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FD5A36AF172809E1EBCE0E48 /* FAQManager.m */; };
 		7BE9DFD729A72EC4B50EE7E6 /* ShareProfileService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6E9A20A93331DAC89272FB61 /* ShareProfileService.h */; };
 		7CC24DEE491DDFFCE8A49954 /* ConversationFilesService.m in Sources */ = {isa = PBXBuildFile; fileRef = 604467DC70C80E1CA333FF61 /* ConversationFilesService.m */; };
 		7E1897A45031B06C4A1E24FC /* MnemonicCodeUtils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BE16DC8F7DBB56E7E0F20A65 /* MnemonicCodeUtils.h */; };
@@ -424,6 +432,7 @@
 		804F875F30F43939474DCBAF /* CallParticipantService.m in Sources */ = {isa = PBXBuildFile; fileRef = B0583B8335BF9A46AD0822FC /* CallParticipantService.m */; };
 		80802B77F92E59DB3B917494 /* BackupService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A16E8A5437DE6644F00EAFF4 /* BackupService.h */; };
 		80BF3BC2C391BC73D8A8785C /* AsyncAudioTrackLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B75DA18C712811D410A4861B /* AsyncAudioTrackLoader.h */; };
+		80D8340048C602F85D0353E2 /* UIFAQCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */; };
 		810CEBB491492809BCC3E1BB /* Cache.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D6A2D6B11D817B2C3F5F0EC8 /* Cache.h */; };
 		8121ED756535134DC5B35D59 /* EditContactCapabilitiesService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 84269391CE01A9212978ECE2 /* EditContactCapabilitiesService.h */; };
 		815ED10DA0C556F59C829218 /* InfoItemService.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE004C540B84DBB4F6C249B /* InfoItemService.m */; };
@@ -432,6 +441,7 @@
 		81FC8642EF4470152C96B117 /* ChatService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A30D940AE72510557BD5473 /* ChatService.h */; };
 		820C784F01D4FC19B9C0170C /* StreamingDataIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 71948178F3B8AA51FF62A0D3 /* StreamingDataIQ.h */; };
 		8308843C2F5D3560F0193459 /* CallParticipantService.m in Sources */ = {isa = PBXBuildFile; fileRef = B0583B8335BF9A46AD0822FC /* CallParticipantService.m */; };
+		83524A5AA21A9E1E9B92FB5D /* UIFAQArticle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250ED05B534420CC2C838D23 /* UIFAQArticle.h */; };
 		839C022C93AF5C3BD2C134F4 /* OnKeyCheckInitiateIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0D5522087CF75049148231D2 /* OnKeyCheckInitiateIQ.h */; };
 		83C985FF8C4D6D1AE939A5F6 /* ShowContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A86667017BC8AB62CE80F54 /* ShowContactService.m */; };
 		83E4F779A921E3075D06746B /* AccountMigrationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CF0120586E69A480B9E6DDC /* AccountMigrationService.h */; };
@@ -450,6 +460,7 @@
 		86075DA3B277A4E3CC8B2D10 /* ChatService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6A30D940AE72510557BD5473 /* ChatService.h */; };
 		8609E506846D41C78A1D99A8 /* CallStatus.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDF77BA83418FB574FF9E3D2 /* CallStatus.h */; };
 		863A1DB8FC27E14D108F0E5C /* AccountMigrationScannerService.m in Sources */ = {isa = PBXBuildFile; fileRef = F992825A0B9A00350AF26B2A /* AccountMigrationScannerService.m */; };
+		86431BA27FDC0AF394C3D471 /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 902878C829569F23F00D33FC /* ProxyService.m */; };
 		868621FABC7CC20E51ECAABB /* EditSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 59225BD3480C4F0B6D33033F /* EditSpaceService.h */; };
 		8737DC4D540D9DA911BD7177 /* ResetConversationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D72E41881906B039AE031B6D /* ResetConversationService.h */; };
 		8770BF83D5247C31ECAE7CA4 /* ConversationFilesService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD05834266AE0081FB02F769 /* ConversationFilesService.h */; };
@@ -486,6 +497,7 @@
 		8E1037DBC9B7EDFF6DBB57CC /* EditRoomService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 12EE6EE3CA9E7CC2C36CE2BC /* EditRoomService.h */; };
 		8E5376142AF0E82169246E8C /* AccountMigrationScannerService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B2ABF6201923ABE2CCCAE1D4 /* AccountMigrationScannerService.h */; };
 		8E73D09310570E8BC0A1B7DC /* EditContactCapabilitiesService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 84269391CE01A9212978ECE2 /* EditContactCapabilitiesService.h */; };
+		8EB030E346017A1053898326 /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3A1E460A0CAFE2851510271 /* ProxyService.h */; };
 		8EEEB42AE8B44AC14A05FA80 /* AsyncAudioTrackLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B75DA18C712811D410A4861B /* AsyncAudioTrackLoader.h */; };
 		8F21263DF998628AC31BD4A1 /* AbstractTwinmeService+Protected.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9B09D400503E660F896092 /* AbstractTwinmeService+Protected.h */; };
 		8F23EAB963BBBEC863010FDF /* AudioPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD140AB69B6291803F2601E /* AudioPlayerManager.m */; };
@@ -503,8 +515,10 @@
 		9146632E2F704BE1AEA30773 /* SpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = DAD8F8F73C16F4A21952C950 /* SpaceService.h */; };
 		914AF466BA2FCF82C41D45A9 /* NotificationErrorView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B998B79F769968293DF8DC40 /* NotificationErrorView.h */; };
 		916595DBBC9C71177C7E1ED6 /* AudioPlayerManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EC2D96C80DC8037D22A1B884 /* AudioPlayerManager.h */; };
+		916CACCFC9BD3F824D3E21C9 /* FAQManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FD5A36AF172809E1EBCE0E48 /* FAQManager.m */; };
 		91AF656C94015566D89EBEF1 /* Cache.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D6A2D6B11D817B2C3F5F0EC8 /* Cache.h */; };
 		91C7FB59B46C24674906BF95 /* SpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = E6DB1D596572ECCB3D2B9360 /* SpaceService.m */; };
+		9216741F107A449CFEF68788 /* ProxyService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3A1E460A0CAFE2851510271 /* ProxyService.h */; };
 		922E742A197C0F861E19B162 /* ShowSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D3A72226B8417DA58A563365 /* ShowSpaceService.h */; };
 		9303EBB9185ED625FA1E9DB4 /* InAppSubscriptionService.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FB699A7D8F571B9BA71CA88 /* InAppSubscriptionService.m */; };
 		93823E92215C161CA15EE010 /* CallConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5EDD24E0B5ED4192A3622831 /* CallConnection.h */; };
@@ -550,6 +564,7 @@
 		9FF8F464ACC89D7D45B996CF /* UIViewController+Utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E763E86F29178DFBC6DF1B /* UIViewController+Utils.h */; };
 		A07CA8D48B20EA7F63E990C2 /* EditIdentityService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4545D95994CA7C3E38A53B1E /* EditIdentityService.m */; };
 		A084666CF04D073073E97EE3 /* AcceptInvitationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7D60B719D54302D7EBCA1250 /* AcceptInvitationService.h */; };
+		A08552C3537375B40A1F3366 /* UIFAQArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */; };
 		A0C10789C82EE3BD2E3229A2 /* NotificationCenter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = CFC8722E0FE288F3AEBB81B7 /* NotificationCenter.h */; };
 		A0CA1659F56A01573DEA1EF2 /* InvitationCodeService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7114B1C7B538A2DFE3444389 /* InvitationCodeService.h */; };
 		A125275E577E0E70F674F34A /* WordCheckResult.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7364F149C2B2825E54493C72 /* WordCheckResult.h */; };
@@ -670,6 +685,7 @@
 		C28D53B9E105A025E8FCBABB /* KeyCheckInitiateIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E0D58BFE7B089DA0901C9C4D /* KeyCheckInitiateIQ.h */; };
 		C29C262EC4552BC5A3DDBEF9 /* GroupService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E4C8287D246CB37C270D05B /* GroupService.m */; };
 		C2A1264B6EEE48612284FE0B /* CallStatus.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDF77BA83418FB574FF9E3D2 /* CallStatus.h */; };
+		C2D46889F0C26DB4C9C25583 /* UIFAQArticle.m in Sources */ = {isa = PBXBuildFile; fileRef = 9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */; };
 		C322892AF84FD219EABAB335 /* TwinmeApplication.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = EF15B8DBBD3FD2E62DF47ECB /* TwinmeApplication.h */; };
 		C36D29C3A1B3C4F546E5453B /* ShowContactService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B19C0A28FB17CF1FFC582844 /* ShowContactService.h */; };
 		C37112801FB7D5CFF097421E /* AsyncManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 050240CBA9D31B60DC7822D4 /* AsyncManager.m */; };
@@ -704,6 +720,7 @@
 		CD411C14A4A15C44BD5C655A /* TwincodeUriIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = 7869255905ACEB668B750D6E /* TwincodeUriIQ.m */; };
 		CD79597CBF7F2FDC31DF2968 /* ParticipantInfoIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E596F4081884C0D33F3CE892 /* ParticipantInfoIQ.h */; };
 		CD9DDA05FF9343EB4466EFA8 /* CreateProfileService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7342F7955565717E251FE6AA /* CreateProfileService.m */; };
+		CD9FC1FB6FE04DD7EDDA1F5B /* UIFAQArticle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250ED05B534420CC2C838D23 /* UIFAQArticle.h */; };
 		CDD6C6F100DBD9143F285B80 /* MnemonicCodeUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = BB276955E8615417F7F02F66 /* MnemonicCodeUtils.m */; };
 		CE2D7AF4F9A54D02EF0C102D /* CallViewController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A89004CA3300F8A0E124E9B7 /* CallViewController.h */; };
 		CE889E960CDE6B22A3468083 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 7480A8139BE456BDC8B8E66A /* Utils.m */; };
@@ -717,6 +734,7 @@
 		D0F92B7C038833DBD2F3E865 /* UIViewController+Utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E763E86F29178DFBC6DF1B /* UIViewController+Utils.h */; };
 		D11435CB96E89AA59FE5D398 /* GroupService.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E4C8287D246CB37C270D05B /* GroupService.m */; };
 		D11E139B646F4006F4764A4D /* ShowSpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = 2771BA47EE53F6AFDE2B7BA9 /* ShowSpaceService.m */; };
+		D1B696E390CB911400DC913E /* ProxyService.m in Sources */ = {isa = PBXBuildFile; fileRef = 902878C829569F23F00D33FC /* ProxyService.m */; };
 		D1B93DA6CAC4686D975E6A6C /* CleanUpService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 107B01568A9A4F80665C52E3 /* CleanUpService.h */; };
 		D2638EE1209CA9FFB6875813 /* CleanUpService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 107B01568A9A4F80665C52E3 /* CleanUpService.h */; };
 		D291E13E2450D18B217E6848 /* AsyncManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A128A77EE2AFDDE46953F9B /* AsyncManager.h */; };
@@ -734,6 +752,7 @@
 		D6354ADAA17583D0DDE2B7B6 /* TerminateKeyCheckIQ.m in Sources */ = {isa = PBXBuildFile; fileRef = C35328E151F53393F5E8F006 /* TerminateKeyCheckIQ.m */; };
 		D6684191F0221421462F7A4C /* ShowSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D3A72226B8417DA58A563365 /* ShowSpaceService.h */; };
 		D706762D3E072A03111FC919 /* Utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BDC3D9D60923B371772F5C4B /* Utils.h */; };
+		D73C8670FC2D532B2F254E24 /* UIFAQCategory.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */; };
 		D75143491059A37DD32A24FC /* AsyncImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6CF83694348CEA1BAE759 /* AsyncImageLoader.m */; };
 		D77158F6B97E1E73BDC9F27E /* BackupService.m in Sources */ = {isa = PBXBuildFile; fileRef = FD9349AB742C30E16FAC1D5E /* BackupService.m */; };
 		D7D33F6AAECB6002C5CBD178 /* SecretSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E7DCF341AA84A06DE573CA72 /* SecretSpaceService.h */; };
@@ -746,6 +765,7 @@
 		DAC66FA29D45185E11A569BC /* AsyncImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 32D6CF83694348CEA1BAE759 /* AsyncImageLoader.m */; };
 		DB224516C418835B95F3D744 /* AudioTrack.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D35B8700741B84358B2BCD59 /* AudioTrack.h */; };
 		DB6382F6FDAB03ACD7C71DFA /* StreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 64328964F187C2112B59B8E9 /* StreamPlayer.m */; };
+		DBCF9AE951AB54936DF211FE /* UIFAQCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */; };
 		DBD919C3B2F29F8A0BC2C608 /* StreamPlayer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 14486B3BCE6A33A5FE4ED6A9 /* StreamPlayer.h */; };
 		DBE2F332DB5F73091566E958 /* CallsService.m in Sources */ = {isa = PBXBuildFile; fileRef = FEE20FFB9BEE8C645EF928F1 /* CallsService.m */; };
 		DBE9BEF9DD8E29ABCA582656 /* ShowRoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = 91A9CE4832C27CA4EE5A3A14 /* ShowRoomService.m */; };
@@ -761,7 +781,9 @@
 		E2D2BCC302B16C18FA6D5ED0 /* AbstractTwinmeService+Protected.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9B09D400503E660F896092 /* AbstractTwinmeService+Protected.h */; };
 		E2E5F79CD85BFF5265E70FFD /* AccountMigrationScannerService.m in Sources */ = {isa = PBXBuildFile; fileRef = F992825A0B9A00350AF26B2A /* AccountMigrationScannerService.m */; };
 		E32A7E00EDA10FD858B30B0C /* CleanUpService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 107B01568A9A4F80665C52E3 /* CleanUpService.h */; };
+		E34B295D2CBE2EEE092CD4DF /* UIFAQArticle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250ED05B534420CC2C838D23 /* UIFAQArticle.h */; };
 		E35B95FA5E500DFC574EE69D /* CallParticipantService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D1E030D6655A66AA29CACBC5 /* CallParticipantService.h */; };
+		E39B334237723865B1605B07 /* UIFAQArticle.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 250ED05B534420CC2C838D23 /* UIFAQArticle.h */; };
 		E3E097DF7BF73090F3F934C5 /* InfoItemService.m in Sources */ = {isa = PBXBuildFile; fileRef = BAE004C540B84DBB4F6C249B /* InfoItemService.m */; };
 		E40A2787E4FB82284631AFB5 /* ShowSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D3A72226B8417DA58A563365 /* ShowSpaceService.h */; };
 		E43D967FDB7A8E2DA525C40A /* AdminService.m in Sources */ = {isa = PBXBuildFile; fileRef = C141619983FB76EC9E15DB00 /* AdminService.m */; };
@@ -776,6 +798,7 @@
 		E63C518466DDD8F628C654E4 /* AsyncVideoLoader.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D47659D4A9DD485E3F616025 /* AsyncVideoLoader.h */; };
 		E646657CB568B01B492594A8 /* ConversationFilesService.m in Sources */ = {isa = PBXBuildFile; fileRef = 604467DC70C80E1CA333FF61 /* ConversationFilesService.m */; };
 		E6642858B94DD177F6F34C56 /* EditSpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = 3F64E1B4137C3753071C98A4 /* EditSpaceService.m */; };
+		E693580A2B16DB3AF881350D /* UIFAQCategory.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */; };
 		E6988747DCBE1348A0F48782 /* CallViewController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A89004CA3300F8A0E124E9B7 /* CallViewController.h */; };
 		E6AE93B68784982B006010FF /* NotificationSound.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 45109FDC62B712A486D7380C /* NotificationSound.h */; };
 		E6DE546F7E04329450D3B9BE /* CallConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 601492F516D4452F872D1F51 /* CallConnection.m */; };
@@ -799,11 +822,13 @@
 		EC192CDE0C345DBDAEB94E6A /* CallState.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = E98588DB9C645937155BBCA4 /* CallState.h */; };
 		EC5A267F7630E43FAF3381A6 /* RoomMemberService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B90381D462D6BBCC46EE6BA3 /* RoomMemberService.h */; };
 		EC5AD1F039B70938E0451506 /* EditContactService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6D3F2B72CA839D1729947CD2 /* EditContactService.h */; };
+		EC776E1942271F500AECE4BF /* FAQManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4984CE5818D35D1BCD89BFE /* FAQManager.h */; };
 		EDBEA98098C584AA14DF0340 /* StreamingRequestIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5EF9DC51AD21A66E32FD8266 /* StreamingRequestIQ.h */; };
 		EDC67D3720540692F2B1DF35 /* ShowContactService.m in Sources */ = {isa = PBXBuildFile; fileRef = 0A86667017BC8AB62CE80F54 /* ShowContactService.m */; };
 		EDFC40B5394D65EB311517E7 /* SplashService.m in Sources */ = {isa = PBXBuildFile; fileRef = E16C69951F2696C154475427 /* SplashService.m */; };
 		EE23F82CB1AB8E8CF2F6FAFE /* SpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = E6DB1D596572ECCB3D2B9360 /* SpaceService.m */; };
 		EEC101F8CFC18FE30556821A /* ShowSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = D3A72226B8417DA58A563365 /* ShowSpaceService.h */; };
+		EF3799AD6117FBFB65D46A37 /* UIFAQCategory.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */; };
 		EF485133617823F23A1DB631 /* Streamer.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B50E4DF4458B786053FEA09B /* Streamer.h */; };
 		EF97DC7398A55AC5B5DA30EC /* EditContactCapabilitiesService.m in Sources */ = {isa = PBXBuildFile; fileRef = 14D290BA4331389E771946B0 /* EditContactCapabilitiesService.m */; };
 		EFBBD3B3CB7B5BEE0C5C7FB1 /* CreateSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B767CD7916021F0EEC23BF0C /* CreateSpaceService.h */; };
@@ -829,6 +854,7 @@
 		F47E8DBE35E2C4AB98062652 /* EditRoomService.m in Sources */ = {isa = PBXBuildFile; fileRef = 1957CCA7BFFE0928116D19AE /* EditRoomService.m */; };
 		F4BC68A04AE3852BF1F7C78A /* WordCheckIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3B36A3612B976B7074932CA5 /* WordCheckIQ.h */; };
 		F4C1DD563F2CF39A66CE6C9E /* ParticipantTransferIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2918DC9C84244DF14E7EF9E4 /* ParticipantTransferIQ.h */; };
+		F4D9749F3094B33B3A5312F5 /* FAQManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FD5A36AF172809E1EBCE0E48 /* FAQManager.m */; };
 		F4EC1CF32AF274CA28B62775 /* CreateSpaceService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B767CD7916021F0EEC23BF0C /* CreateSpaceService.h */; };
 		F5490096B28A266B9B384829 /* SpaceSettingsService.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A3615FF8AE2F101385EF790 /* SpaceSettingsService.m */; };
 		F553F1B187D94901999B5600 /* UIViewController+Utils.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 01E763E86F29178DFBC6DF1B /* UIViewController+Utils.h */; };
@@ -853,18 +879,43 @@
 		FA32CC3EA74AE65F812FD5D9 /* AdminService.m in Sources */ = {isa = PBXBuildFile; fileRef = C141619983FB76EC9E15DB00 /* AdminService.m */; };
 		FA8DB3A4A2B55DC795F8D4DA /* Design.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = C15E012D87D5D75CC2527369 /* Design.h */; };
 		FBD6AFB406FB3A2899F75C1A /* TwinmeNavigationController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = A5E90879EC7687D1C06B6EB7 /* TwinmeNavigationController.h */; };
+		FC088798685765AAAA4D90D3 /* FAQManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4984CE5818D35D1BCD89BFE /* FAQManager.h */; };
 		FC0E2F121488D657C1FB75E5 /* AbstractTwinmeService+Protected.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5C9B09D400503E660F896092 /* AbstractTwinmeService+Protected.h */; };
 		FC9AC0BE81414AC0B1F8474F /* NotificationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B1D5E0D5FC8ED84A1CE296CB /* NotificationService.h */; };
 		FCC8D31DBA870F53B52D1D44 /* EditIdentityService.m in Sources */ = {isa = PBXBuildFile; fileRef = 4545D95994CA7C3E38A53B1E /* EditIdentityService.m */; };
 		FCE5025C7E033EB0E526CAE1 /* ConversationFilesService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = BD05834266AE0081FB02F769 /* ConversationFilesService.h */; };
+		FCF08061A6E9BAFA62091DC9 /* UIFAQCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */; };
 		FD5B0BFB81A16DAEE43DE7A1 /* AcceptInvitationService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7D60B719D54302D7EBCA1250 /* AcceptInvitationService.h */; };
 		FD5DE640E690E6F0D284BA56 /* ParticipantTransferIQ.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2918DC9C84244DF14E7EF9E4 /* ParticipantTransferIQ.h */; };
+		FDC9A497CE137C751DD6E64F /* FAQManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B4984CE5818D35D1BCD89BFE /* FAQManager.h */; };
 		FE7E8D6EC5C0CD23197F3561 /* CleanUpService.m in Sources */ = {isa = PBXBuildFile; fileRef = 16762EC3FA7E77AD0A00BF43 /* CleanUpService.m */; };
 		FE94E56AEB69A6E9114D299B /* CreateSpaceService.m in Sources */ = {isa = PBXBuildFile; fileRef = 75A24F71BD2C5D84FC6E471E /* CreateSpaceService.m */; };
+		FF03D25FC4461961B312C563 /* UIFAQCategory.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */; };
 		FF28BC681F0B5B277B8B9920 /* InAppSubscriptionService.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 022DEF05FC95655B12FB4379 /* InAppSubscriptionService.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		1933B280AEC81F2A26CCA398 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 2;
+			remoteGlobalIDString = 471A5C9B2E9D4D34008F4406;
+			remoteInfo = NotificationSkred;
+		};
+		1CD57776B88C0896F1F7C89A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 1;
+			remoteGlobalIDString = 471A5C9E2E9D4D52008F4406;
+			remoteInfo = NotificationMytwinlifePlus;
+		};
+		1CDA7C4B7D4A4CC5BE99BCAC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
+			proxyType = 2;
+			remoteGlobalIDString = 8F4BFC646F4C43DA1E3C7CDA;
+			remoteInfo = TwinmeMytwinlifePlus;
+		};
 		3892069E30D1CCBD2308278B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
@@ -879,12 +930,61 @@
 			remoteGlobalIDString = 783AAE3D57510347B49C28AF;
 			remoteInfo = TwinmeTwinmePlus;
 		};
+		90F92030C3B3BE2775AA9F04 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 1;
+			remoteGlobalIDString = 471A5C8D2E9D4D34008F4406;
+			remoteInfo = NotificationSkred;
+		};
+		991D5519221243D99B8EFF8E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
+			proxyType = 2;
+			remoteGlobalIDString = 5F38024B65599A735E8F05B0;
+			remoteInfo = TwinmeTwinme;
+		};
+		9970CBA21CB8AD048BE3528E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
+			proxyType = 2;
+			remoteGlobalIDString = 28D69E020F2D6A410D9B085C;
+			remoteInfo = TwinmeTwinmePlus;
+		};
+		9D8059EDF895D3B25D9B2E53 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
+			proxyType = 2;
+			remoteGlobalIDString = CCDA125ADBE5043FA59E176C;
+			remoteInfo = TwinmeSkred;
+		};
 		9E3294108A8120510A9CB12F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
 			proxyType = 1;
 			remoteGlobalIDString = B857C6CF61F28A184432EEBF;
 			remoteInfo = TwinmeTwinme;
+		};
+		A397FE62EBEEA6C680FE0869 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 2;
+			remoteGlobalIDString = 471A5C6E2E9D4CF4008F4406;
+			remoteInfo = NotificationTwinme;
+		};
+		A5E5C807F71F2B95353EE356 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 1;
+			remoteGlobalIDString = 4770BA812E9D04E90042F374;
+			remoteInfo = NotificationMytwinlife;
+		};
+		A789F8FDAEF3D5EDAF919191 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 2;
+			remoteGlobalIDString = 471A5CAC2E9D4D52008F4406;
+			remoteInfo = NotificationMytwinlifePlus;
 		};
 		B40BC16A485774B442241996 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -893,11 +993,46 @@
 			remoteGlobalIDString = 36B7BADCD8A6BD6B361FF890;
 			remoteInfo = TwinmeSkred;
 		};
+		B615963A77C2DB944BCD9E41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 2;
+			remoteGlobalIDString = 471A5C8A2E9D4D13008F4406;
+			remoteInfo = NotificationTwinmePlus;
+		};
 		BEC9D18B36A4153CAFCEBB14 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
 			proxyType = 1;
 			remoteGlobalIDString = 8024D2448A8D56B71C6C9C5D;
+			remoteInfo = TwinmeMytwinlife;
+		};
+		C64A584CB2AA2EFF79036D4D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 1;
+			remoteGlobalIDString = 471A5C7C2E9D4D13008F4406;
+			remoteInfo = NotificationTwinmePlus;
+		};
+		E7356F24BF8DE9733DD62C54 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 1;
+			remoteGlobalIDString = 471A5C602E9D4CF4008F4406;
+			remoteInfo = NotificationTwinme;
+		};
+		F2EA2DED5AA9E524737DBED1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 34990D69BF0484E9B13D8E18 /* Notification */;
+			proxyType = 2;
+			remoteGlobalIDString = 4770BA8F2E9D04E90042F374;
+			remoteInfo = NotificationMytwinlife;
+		};
+		F45BFFFFE3CDD67A814E06E4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7B51DB869FA635EE15BE4BB3 /* TwinmeFramework */;
+			proxyType = 2;
+			remoteGlobalIDString = 5F9A4648C67CEAFA6BD91FEE;
 			remoteInfo = TwinmeMytwinlife;
 		};
 /* End PBXContainerItemProxy section */
@@ -909,7 +1044,6 @@
 			dstPath = include/TwinmeCommon;
 			dstSubfolderSpec = 16;
 			files = (
-				5781FD232EB4D7C70057324F /* ProxyService.h in CopyFiles */,
 				E2D2BCC302B16C18FA6D5ED0 /* AbstractTwinmeService+Protected.h in CopyFiles */,
 				DE3F1A144554D24A9F39230B /* AbstractTwinmeService.h in CopyFiles */,
 				36AF436857D46E2C8665D331 /* AbstractTwinmeViewController.h in CopyFiles */,
@@ -955,6 +1089,7 @@
 				1BB0EBCEBDA2507CA0ABAE0D /* EditRoomService.h in CopyFiles */,
 				B0D59AE49D1381A1986C9AFE /* EditSpaceService.h in CopyFiles */,
 				4228F67DA3FFB2E5EAFB6444 /* ExportService.h in CopyFiles */,
+				44F554D2B8A2AC5C4B469ADC /* FAQManager.h in CopyFiles */,
 				E0B80ACD4E315F81E165AB4A /* GroupInvitationService.h in CopyFiles */,
 				6C830050F905C825FE45E9D8 /* GroupService.h in CopyFiles */,
 				89B923FAA259C8C96805B9C2 /* InAppSubscriptionService.h in CopyFiles */,
@@ -973,6 +1108,7 @@
 				BF86BE3283177AD2593A88B2 /* OnKeyCheckInitiateIQ.h in CopyFiles */,
 				07A2D458FD7B450B3997A8D9 /* ParticipantInfoIQ.h in CopyFiles */,
 				F4C1DD563F2CF39A66CE6C9E /* ParticipantTransferIQ.h in CopyFiles */,
+				8EB030E346017A1053898326 /* ProxyService.h in CopyFiles */,
 				A56E818E2FC1430847EA1865 /* ResetConversationService.h in CopyFiles */,
 				7F314B4330C6A712D40DFE96 /* RoomMemberService.h in CopyFiles */,
 				CC328A023453A1AF2F6EB04B /* SecretSpaceService.h in CopyFiles */,
@@ -997,6 +1133,8 @@
 				8FC9591A351A779801F828AD /* TwincodeUriIQ.h in CopyFiles */,
 				CC063170524E945F8A0C7EDB /* TwinmeApplication.h in CopyFiles */,
 				9E56F49099CAE8AA85A4F72B /* TwinmeNavigationController.h in CopyFiles */,
+				83524A5AA21A9E1E9B92FB5D /* UIFAQArticle.h in CopyFiles */,
+				EF3799AD6117FBFB65D46A37 /* UIFAQCategory.h in CopyFiles */,
 				A60A2DB1F2188B2B1D765A49 /* UIViewController+Utils.h in CopyFiles */,
 				F9211D65EB76D6BF9E6FD003 /* Untitled.h in CopyFiles */,
 				7B83E6511881DB1BE05A2231 /* Utils.h in CopyFiles */,
@@ -1012,7 +1150,6 @@
 			dstPath = include/TwinmeCommon;
 			dstSubfolderSpec = 16;
 			files = (
-				5781FCF22EB4D5670057324F /* ProxyService.h in CopyFiles */,
 				8F21263DF998628AC31BD4A1 /* AbstractTwinmeService+Protected.h in CopyFiles */,
 				E48B112E39F0BC068F3DDBB5 /* AbstractTwinmeService.h in CopyFiles */,
 				F6045338DE45A06564978F81 /* AbstractTwinmeViewController.h in CopyFiles */,
@@ -1058,6 +1195,7 @@
 				BDC535CF3537DA3AA86FF1A7 /* EditRoomService.h in CopyFiles */,
 				BA1DB5C345B1B325326A9120 /* EditSpaceService.h in CopyFiles */,
 				1023FE3BE736758035B34A72 /* ExportService.h in CopyFiles */,
+				FC088798685765AAAA4D90D3 /* FAQManager.h in CopyFiles */,
 				A3E1D872FF9628D1F8F2FA93 /* GroupInvitationService.h in CopyFiles */,
 				985ED6FFA0343628177FEDC6 /* GroupService.h in CopyFiles */,
 				73219CAC0BA323DC6E218FE8 /* InAppSubscriptionService.h in CopyFiles */,
@@ -1076,6 +1214,7 @@
 				698BBE90E5803434DCE67414 /* OnKeyCheckInitiateIQ.h in CopyFiles */,
 				38201E4A1F61CA53BD81E77C /* ParticipantInfoIQ.h in CopyFiles */,
 				3F7F81A6E6314F132BEC514B /* ParticipantTransferIQ.h in CopyFiles */,
+				38224AB723641BF3DD4682D7 /* ProxyService.h in CopyFiles */,
 				F31E7527B804FEB1B8585608 /* ResetConversationService.h in CopyFiles */,
 				EC5A267F7630E43FAF3381A6 /* RoomMemberService.h in CopyFiles */,
 				56A1F71A2C9672773409B704 /* SecretSpaceService.h in CopyFiles */,
@@ -1100,6 +1239,8 @@
 				58ABDE77B865D18587391F29 /* TwincodeUriIQ.h in CopyFiles */,
 				8DEB825909EE1A5EA7F225E5 /* TwinmeApplication.h in CopyFiles */,
 				AD923B838BF00D72DBB5EDB9 /* TwinmeNavigationController.h in CopyFiles */,
+				CD9FC1FB6FE04DD7EDDA1F5B /* UIFAQArticle.h in CopyFiles */,
+				FF03D25FC4461961B312C563 /* UIFAQCategory.h in CopyFiles */,
 				D0F92B7C038833DBD2F3E865 /* UIViewController+Utils.h in CopyFiles */,
 				A879720DB553DC1BADE5C661 /* Untitled.h in CopyFiles */,
 				D706762D3E072A03111FC919 /* Utils.h in CopyFiles */,
@@ -1115,7 +1256,6 @@
 			dstPath = include/TwinmeCommon;
 			dstSubfolderSpec = 16;
 			files = (
-				5781FE3A2EB519A00057324F /* ProxyService.h in CopyFiles */,
 				737B765A2710A7EBA3E83DF4 /* AbstractTwinmeService+Protected.h in CopyFiles */,
 				6529CE0F465B22E0E73EB01B /* AbstractTwinmeService.h in CopyFiles */,
 				305D0DE16C41D05A1CF1CDCE /* AbstractTwinmeViewController.h in CopyFiles */,
@@ -1161,6 +1301,7 @@
 				A5F058C6805144271BF4CA2B /* EditRoomService.h in CopyFiles */,
 				D7F685D5E3A63580D4632AAE /* EditSpaceService.h in CopyFiles */,
 				268D835A8A25E448D288CD83 /* ExportService.h in CopyFiles */,
+				7104AA893A66280ED0CF9376 /* FAQManager.h in CopyFiles */,
 				B72E4C48E74EDE0F984FA5AA /* GroupInvitationService.h in CopyFiles */,
 				57B370397D7D3443976D594B /* GroupService.h in CopyFiles */,
 				FF28BC681F0B5B277B8B9920 /* InAppSubscriptionService.h in CopyFiles */,
@@ -1179,6 +1320,7 @@
 				72948CC9C8C9ABF5604D0D1A /* OnKeyCheckInitiateIQ.h in CopyFiles */,
 				CD79597CBF7F2FDC31DF2968 /* ParticipantInfoIQ.h in CopyFiles */,
 				CAD1D03CB7FEDB1FED9C5C78 /* ParticipantTransferIQ.h in CopyFiles */,
+				9216741F107A449CFEF68788 /* ProxyService.h in CopyFiles */,
 				754DD07FC2DA472343A34DA5 /* ResetConversationService.h in CopyFiles */,
 				2E5870E1190E4297BCAB35F7 /* RoomMemberService.h in CopyFiles */,
 				E24D263C6C1FDFBFC589138D /* SecretSpaceService.h in CopyFiles */,
@@ -1203,6 +1345,8 @@
 				F4728B03A6FD0E6B07D30A62 /* TwincodeUriIQ.h in CopyFiles */,
 				C322892AF84FD219EABAB335 /* TwinmeApplication.h in CopyFiles */,
 				FBD6AFB406FB3A2899F75C1A /* TwinmeNavigationController.h in CopyFiles */,
+				E39B334237723865B1605B07 /* UIFAQArticle.h in CopyFiles */,
+				E693580A2B16DB3AF881350D /* UIFAQCategory.h in CopyFiles */,
 				9FF8F464ACC89D7D45B996CF /* UIViewController+Utils.h in CopyFiles */,
 				755D619503391D509E42616E /* Untitled.h in CopyFiles */,
 				2ED52B0CE5568D7C50DB7162 /* Utils.h in CopyFiles */,
@@ -1218,7 +1362,6 @@
 			dstPath = include/TwinmeCommon;
 			dstSubfolderSpec = 16;
 			files = (
-				5781FC752EB4B7030057324F /* ProxyService.h in CopyFiles */,
 				FC0E2F121488D657C1FB75E5 /* AbstractTwinmeService+Protected.h in CopyFiles */,
 				6A2C1C8EFE5E56B95A7A8170 /* AbstractTwinmeService.h in CopyFiles */,
 				6EB536C4A5BB32644871E99B /* AbstractTwinmeViewController.h in CopyFiles */,
@@ -1264,6 +1407,7 @@
 				3D3A50E302BBC988FD6891A4 /* EditRoomService.h in CopyFiles */,
 				8D74004C7A52D86B83224CE9 /* EditSpaceService.h in CopyFiles */,
 				5C78F0FB823CA4F94045EBCC /* ExportService.h in CopyFiles */,
+				FDC9A497CE137C751DD6E64F /* FAQManager.h in CopyFiles */,
 				8B44C82577DD8D941E5E0459 /* GroupInvitationService.h in CopyFiles */,
 				81E1ADA2230F283C00B3DDC0 /* GroupService.h in CopyFiles */,
 				A814B4587F581A2B34E7DDA1 /* InAppSubscriptionService.h in CopyFiles */,
@@ -1282,6 +1426,7 @@
 				481A0F1A31F4B653CA2B68E2 /* OnKeyCheckInitiateIQ.h in CopyFiles */,
 				00147425F8E7515D561EA64C /* ParticipantInfoIQ.h in CopyFiles */,
 				9C1C08040EA87376BAF4E998 /* ParticipantTransferIQ.h in CopyFiles */,
+				0B40CF8FB8FD854D72B4E63D /* ProxyService.h in CopyFiles */,
 				41B613AD1384D86567DB9B30 /* ResetConversationService.h in CopyFiles */,
 				1FC78FBFDA1489FC64D55DB4 /* RoomMemberService.h in CopyFiles */,
 				EAABD7E2FA601C36A352B7C3 /* SecretSpaceService.h in CopyFiles */,
@@ -1306,6 +1451,8 @@
 				0640D4FFD892F0C365D867A7 /* TwincodeUriIQ.h in CopyFiles */,
 				C1E6F3176C7A75A052828801 /* TwinmeApplication.h in CopyFiles */,
 				75FB3DB526A94A6A104864D2 /* TwinmeNavigationController.h in CopyFiles */,
+				0610C9954644157E2C01C19A /* UIFAQArticle.h in CopyFiles */,
+				D73C8670FC2D532B2F254E24 /* UIFAQCategory.h in CopyFiles */,
 				84E46EC8F1C1B87DF9CED043 /* UIViewController+Utils.h in CopyFiles */,
 				8F76E58BAAB8E64B5EA10C45 /* Untitled.h in CopyFiles */,
 				BAF458EEB78EF0510B82FBB4 /* Utils.h in CopyFiles */,
@@ -1321,7 +1468,6 @@
 			dstPath = include/TwinmeCommon;
 			dstSubfolderSpec = 16;
 			files = (
-				5781FE202EB5191F0057324F /* ProxyService.h in CopyFiles */,
 				533CACBFEBDB1478678AC8EB /* AbstractTwinmeService+Protected.h in CopyFiles */,
 				F1841A2FF92E39E80DE51D91 /* AbstractTwinmeService.h in CopyFiles */,
 				B908F08DE3FEFD3C65E9388B /* AbstractTwinmeViewController.h in CopyFiles */,
@@ -1367,6 +1513,7 @@
 				8E1037DBC9B7EDFF6DBB57CC /* EditRoomService.h in CopyFiles */,
 				868621FABC7CC20E51ECAABB /* EditSpaceService.h in CopyFiles */,
 				1A622E2C519CC7C34BD966C1 /* ExportService.h in CopyFiles */,
+				EC776E1942271F500AECE4BF /* FAQManager.h in CopyFiles */,
 				2F312382AFB27BFE4D407619 /* GroupInvitationService.h in CopyFiles */,
 				AA4180CAA1D9780017C88EA5 /* GroupService.h in CopyFiles */,
 				0809A95E6CECAD2AB24139E1 /* InAppSubscriptionService.h in CopyFiles */,
@@ -1385,6 +1532,7 @@
 				839C022C93AF5C3BD2C134F4 /* OnKeyCheckInitiateIQ.h in CopyFiles */,
 				DA45A07578B5FDC546E90703 /* ParticipantInfoIQ.h in CopyFiles */,
 				FD5DE640E690E6F0D284BA56 /* ParticipantTransferIQ.h in CopyFiles */,
+				3BD58EDDEAB10DEAD50BB318 /* ProxyService.h in CopyFiles */,
 				8737DC4D540D9DA911BD7177 /* ResetConversationService.h in CopyFiles */,
 				B7039DED82B854156C266041 /* RoomMemberService.h in CopyFiles */,
 				D7D33F6AAECB6002C5CBD178 /* SecretSpaceService.h in CopyFiles */,
@@ -1409,6 +1557,8 @@
 				71E916C233E4AAD59E86D37A /* TwincodeUriIQ.h in CopyFiles */,
 				65F19AAE166894C458ED8F4D /* TwinmeApplication.h in CopyFiles */,
 				A20609D6B6D182468204C0BE /* TwinmeNavigationController.h in CopyFiles */,
+				E34B295D2CBE2EEE092CD4DF /* UIFAQArticle.h in CopyFiles */,
+				7A284722396BDE241117AC04 /* UIFAQCategory.h in CopyFiles */,
 				F553F1B187D94901999B5600 /* UIViewController+Utils.h in CopyFiles */,
 				69FF61FEE486664545C42CD4 /* Untitled.h in CopyFiles */,
 				5A409DC57688317893100808 /* Utils.h in CopyFiles */,
@@ -1445,6 +1595,7 @@
 		1F765F317FEEDCE065B72965 /* Untitled.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Untitled.h; sourceTree = "<group>"; };
 		1FA2CFA37B7D51D2296A1A56 /* StreamingRequestIQ.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StreamingRequestIQ.m; sourceTree = "<group>"; };
 		22EF948CF68BEE0E282CBD1A /* ShareService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareService.m; sourceTree = "<group>"; };
+		250ED05B534420CC2C838D23 /* UIFAQArticle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIFAQArticle.h; sourceTree = "<group>"; };
 		269BA9F87A17AA8721CC918B /* CallParticipant.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallParticipant.m; sourceTree = "<group>"; };
 		2771BA47EE53F6AFDE2B7BA9 /* ShowSpaceService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShowSpaceService.m; sourceTree = "<group>"; };
 		2918DC9C84244DF14E7EF9E4 /* ParticipantTransferIQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParticipantTransferIQ.h; sourceTree = "<group>"; };
@@ -1466,8 +1617,6 @@
 		4A128A77EE2AFDDE46953F9B /* AsyncManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsyncManager.h; sourceTree = "<group>"; };
 		4A988B2E72E33377C81B8468 /* StreamingInfoIQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StreamingInfoIQ.h; sourceTree = "<group>"; };
 		516CA8B6F637CBCFC6DFAF85 /* ParticipantInfoIQ.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ParticipantInfoIQ.m; sourceTree = "<group>"; };
-		5781FC362EB49DFB0057324F /* ProxyService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyService.h; sourceTree = "<group>"; };
-		5781FC372EB49DFB0057324F /* ProxyService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProxyService.m; sourceTree = "<group>"; };
 		59225BD3480C4F0B6D33033F /* EditSpaceService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditSpaceService.h; sourceTree = "<group>"; };
 		5A5EAED6CFDBEE2E347EC1D2 /* libTwinmeCommonTwinme.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTwinmeCommonTwinme.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AC6AB496D333D66DE607330 /* AdminService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AdminService.h; sourceTree = "<group>"; };
@@ -1481,6 +1630,7 @@
 		62A800268BA262270E1D3983 /* InvitationRoomService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InvitationRoomService.m; sourceTree = "<group>"; };
 		636C7B6E37CE56EEB19ECC15 /* KeyCheckSessionHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyCheckSessionHandler.m; sourceTree = "<group>"; };
 		64328964F187C2112B59B8E9 /* StreamPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StreamPlayer.m; sourceTree = "<group>"; };
+		6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIFAQCategory.h; sourceTree = "<group>"; };
 		66ABC6A54A1F03B028EF9F23 /* CallReceiverService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallReceiverService.m; sourceTree = "<group>"; };
 		675DC9086E89CB23FCC711DE /* ConversationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ConversationService.h; sourceTree = "<group>"; };
 		695809D03087EDEC1961A266 /* StreamingDataIQ.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StreamingDataIQ.m; sourceTree = "<group>"; };
@@ -1517,9 +1667,11 @@
 		871DA4344F65BDF022B91201 /* InvitationSubscriptionService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InvitationSubscriptionService.h; sourceTree = "<group>"; };
 		8BED77BCDBF88F84E91109B4 /* CallReceiverService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallReceiverService.h; sourceTree = "<group>"; };
 		8C132B681A31FF195589BEB4 /* AsyncVideoLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AsyncVideoLoader.m; sourceTree = "<group>"; };
+		902878C829569F23F00D33FC /* ProxyService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProxyService.m; sourceTree = "<group>"; };
 		91A9CE4832C27CA4EE5A3A14 /* ShowRoomService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShowRoomService.m; sourceTree = "<group>"; };
 		927B61EF46C32EBA95D6BDEA /* TerminateKeyCheckIQ.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TerminateKeyCheckIQ.h; sourceTree = "<group>"; };
 		944A8E28A597C741F9BEA485 /* CallService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallService.h; sourceTree = "<group>"; };
+		9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIFAQArticle.m; sourceTree = "<group>"; };
 		98C8D3DADD3081E38FF0A0AB /* libTwinmeCommonMytwinlife.a */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = archive.ar; path = libTwinmeCommonMytwinlife.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FB699A7D8F571B9BA71CA88 /* InAppSubscriptionService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = InAppSubscriptionService.m; sourceTree = "<group>"; };
 		A16E8A5437DE6644F00EAFF4 /* BackupService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BackupService.h; sourceTree = "<group>"; };
@@ -1537,6 +1689,8 @@
 		B1BBB10F1B5BB5C68782960B /* ShowGroupService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShowGroupService.h; sourceTree = "<group>"; };
 		B1D5E0D5FC8ED84A1CE296CB /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		B2ABF6201923ABE2CCCAE1D4 /* AccountMigrationScannerService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccountMigrationScannerService.h; sourceTree = "<group>"; };
+		B3A1E460A0CAFE2851510271 /* ProxyService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProxyService.h; sourceTree = "<group>"; };
+		B4984CE5818D35D1BCD89BFE /* FAQManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FAQManager.h; sourceTree = "<group>"; };
 		B50E4DF4458B786053FEA09B /* Streamer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Streamer.h; sourceTree = "<group>"; };
 		B75DA18C712811D410A4861B /* AsyncAudioTrackLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AsyncAudioTrackLoader.h; sourceTree = "<group>"; };
 		B767CD7916021F0EEC23BF0C /* CreateSpaceService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CreateSpaceService.h; sourceTree = "<group>"; };
@@ -1587,6 +1741,7 @@
 		EC0AE48F9B1FE361637DBB58 /* GroupInvitationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GroupInvitationService.h; sourceTree = "<group>"; };
 		EC2D96C80DC8037D22A1B884 /* AudioPlayerManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioPlayerManager.h; sourceTree = "<group>"; };
 		EC6BB1A505198AABF21229E0 /* CallsService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CallsService.h; sourceTree = "<group>"; };
+		ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIFAQCategory.m; sourceTree = "<group>"; };
 		EEA9888C935A14D282672671 /* TLLocationManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TLLocationManager.m; sourceTree = "<group>"; };
 		EF15B8DBBD3FD2E62DF47ECB /* TwinmeApplication.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TwinmeApplication.h; sourceTree = "<group>"; };
 		EF461D0C7A1D719F9953A7AC /* ParticipantTransferIQ.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ParticipantTransferIQ.m; sourceTree = "<group>"; };
@@ -1597,6 +1752,7 @@
 		FBE9269494537B46A426C507 /* ContactsService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ContactsService.h; sourceTree = "<group>"; };
 		FCB0540A95243DE48AAEDD8D /* AsyncAudioTrackLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AsyncAudioTrackLoader.m; sourceTree = "<group>"; };
 		FCF92A325FEEA2C743954205 /* ContactsService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ContactsService.m; sourceTree = "<group>"; };
+		FD5A36AF172809E1EBCE0E48 /* FAQManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FAQManager.m; sourceTree = "<group>"; };
 		FD9349AB742C30E16FAC1D5E /* BackupService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BackupService.m; sourceTree = "<group>"; };
 		FE66D8683F917F0D2CD75EAD /* SpaceAppearanceService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SpaceAppearanceService.m; sourceTree = "<group>"; };
 		FEE20FFB9BEE8C645EF928F1 /* CallsService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CallsService.m; sourceTree = "<group>"; };
@@ -1685,6 +1841,7 @@
 			isa = PBXGroup;
 			children = (
 				28923388B4CAAED260B588A1 /* CoachMark */,
+				7A8E10000E260271D82FA0FD /* FAQ */,
 				D35B8700741B84358B2BCD59 /* AudioTrack.h */,
 				D6A2D6B11D817B2C3F5F0EC8 /* Cache.h */,
 				C344556EDD1623B71997C98E /* Cache.m */,
@@ -1697,6 +1854,19 @@
 				7480A8139BE456BDC8B8E66A /* Utils.m */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		7A8E10000E260271D82FA0FD /* FAQ */ = {
+			isa = PBXGroup;
+			children = (
+				B4984CE5818D35D1BCD89BFE /* FAQManager.h */,
+				FD5A36AF172809E1EBCE0E48 /* FAQManager.m */,
+				250ED05B534420CC2C838D23 /* UIFAQArticle.h */,
+				9482FF69B4B88D80BEBBA463 /* UIFAQArticle.m */,
+				6662A4BA7BD5C38AE827FF69 /* UIFAQCategory.h */,
+				ED16E25F61FA7B25880547F7 /* UIFAQCategory.m */,
+			);
+			path = FAQ;
 			sourceTree = "<group>";
 		};
 		85AA5BB1581C755929319BA4 = {
@@ -1797,8 +1967,8 @@
 				A82B9ECCD45444D7DC0A3215 /* InvitationSubscriptionService.m */,
 				B1D5E0D5FC8ED84A1CE296CB /* NotificationService.h */,
 				6A7D3E0A0C144F711A55FC0B /* NotificationService.m */,
-				5781FC362EB49DFB0057324F /* ProxyService.h */,
-				5781FC372EB49DFB0057324F /* ProxyService.m */,
+				B3A1E460A0CAFE2851510271 /* ProxyService.h */,
+				902878C829569F23F00D33FC /* ProxyService.m */,
 				D72E41881906B039AE031B6D /* ResetConversationService.h */,
 				D2FEEE9C1B91862A85883A4B /* ResetConversationService.m */,
 				B90381D462D6BBCC46EE6BA3 /* RoomMemberService.h */,
@@ -1896,6 +2066,11 @@
 		D640D211139D2025E73D14A3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				B0337D87F96D528B3BD5C3C0 /* libNotification.a */,
+				AA0A2B1A6C144D2F658FF71F /* libNotification.a */,
+				48ECCB4A6B28F18C921CF1F5 /* libNotification.a */,
+				3F82E9B897052E9BA666C05D /* libNotification.a */,
+				E03D75D8434FDD12559FADB7 /* libNotification.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1923,6 +2098,11 @@
 		FBFCEFACEAB98A6C6AE6DEE6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				43FB9D13AE457F06A51FE9B1 /* libTwinmeMytwinlife.a */,
+				3FD7AD541FE833780AFF580C /* libTwinmeMytwinlifePlus.a */,
+				B36335BEFBAC0D976B705BBF /* libTwinmeSkred.a */,
+				ADD5B4C19160211CDC2E11FB /* libTwinmeTwinme.a */,
+				25E14FBA315A0D4C3A009061 /* libTwinmeTwinmePlus.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1952,6 +2132,7 @@
 			);
 			dependencies = (
 				712EB86A2BAA031BAF3D5DA1 /* PBXTargetDependency */,
+				B3F3D214E4F748886436D62A /* PBXTargetDependency */,
 			);
 			name = TwinmeCommonMytwinlife;
 			packageProductDependencies = (
@@ -1971,6 +2152,7 @@
 			);
 			dependencies = (
 				496965EED31DBC8C41FD0185 /* PBXTargetDependency */,
+				90595894234E78D9B067CF3E /* PBXTargetDependency */,
 			);
 			name = TwinmeCommonTwinme;
 			packageProductDependencies = (
@@ -1990,6 +2172,7 @@
 			);
 			dependencies = (
 				605DB9089E9CE015784DDA64 /* PBXTargetDependency */,
+				799D03B4B2DF3D42FBD471E8 /* PBXTargetDependency */,
 			);
 			name = TwinmeCommonTwinmePlus;
 			packageProductDependencies = (
@@ -2009,6 +2192,7 @@
 			);
 			dependencies = (
 				D73903DAEB11CA22CE11631C /* PBXTargetDependency */,
+				AFFDBB12FCCB8A9971706637 /* PBXTargetDependency */,
 			);
 			name = TwinmeCommonMytwinlifePlus;
 			packageProductDependencies = (
@@ -2028,6 +2212,7 @@
 			);
 			dependencies = (
 				3484E329420D59C4DBB17EE4 /* PBXTargetDependency */,
+				F73CDDCE6011070569411758 /* PBXTargetDependency */,
 			);
 			name = TwinmeCommonSkred;
 			packageProductDependencies = (
@@ -2044,9 +2229,10 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 6AB613743B0E8E5A009211F0 /* Build configuration list for PBXProject "TwinmeCommonFramework" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -2055,6 +2241,8 @@
 			);
 			mainGroup = 85AA5BB1581C755929319BA4;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F5681750A2E512BD9F799DC6 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
 				{
@@ -2076,6 +2264,79 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		25E14FBA315A0D4C3A009061 /* libTwinmeTwinmePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinmePlus.a;
+			remoteRef = 9970CBA21CB8AD048BE3528E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3F82E9B897052E9BA666C05D /* libNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNotification.a;
+			remoteRef = A397FE62EBEEA6C680FE0869 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		3FD7AD541FE833780AFF580C /* libTwinmeMytwinlifePlus.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlifePlus.a;
+			remoteRef = 1CDA7C4B7D4A4CC5BE99BCAC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		43FB9D13AE457F06A51FE9B1 /* libTwinmeMytwinlife.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeMytwinlife.a;
+			remoteRef = F45BFFFFE3CDD67A814E06E4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		48ECCB4A6B28F18C921CF1F5 /* libNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNotification.a;
+			remoteRef = 1933B280AEC81F2A26CCA398 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		AA0A2B1A6C144D2F658FF71F /* libNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNotification.a;
+			remoteRef = A789F8FDAEF3D5EDAF919191 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		ADD5B4C19160211CDC2E11FB /* libTwinmeTwinme.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeTwinme.a;
+			remoteRef = 991D5519221243D99B8EFF8E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B0337D87F96D528B3BD5C3C0 /* libNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNotification.a;
+			remoteRef = F2EA2DED5AA9E524737DBED1 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B36335BEFBAC0D976B705BBF /* libTwinmeSkred.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libTwinmeSkred.a;
+			remoteRef = 9D8059EDF895D3B25D9B2E53 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E03D75D8434FDD12559FADB7 /* libNotification.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNotification.a;
+			remoteRef = B615963A77C2DB944BCD9E41 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		047D8AEA672C1171D8AEDB28 /* Sources */ = {
@@ -2119,6 +2380,7 @@
 				F47E8DBE35E2C4AB98062652 /* EditRoomService.m in Sources */,
 				6638887B5D236A41628EC1C6 /* EditSpaceService.m in Sources */,
 				5D2FB35F30C3FF853C2F6B53 /* ExportService.m in Sources */,
+				7BDEB6E5459E0F00FB191E6D /* FAQManager.m in Sources */,
 				2A5CD3B0323CF7B507D8936F /* GroupInvitationService.m in Sources */,
 				C29C262EC4552BC5A3DDBEF9 /* GroupService.m in Sources */,
 				9303EBB9185ED625FA1E9DB4 /* InAppSubscriptionService.m in Sources */,
@@ -2131,11 +2393,11 @@
 				76DD8040973EB14F492C5AF4 /* MnemonicCodeUtils.m in Sources */,
 				9CBC552C5831CDC46F20132D /* NoopLocationManager.m in Sources */,
 				61B89BB83C94B93982CB149A /* NotificationService.m in Sources */,
-				5781FC3A2EB49DFB0057324F /* ProxyService.m in Sources */,
 				B454F308147B42A36F0C3D95 /* NotificationSound.m in Sources */,
 				755EE44A8F71813072CB7AD6 /* OnKeyCheckInitiateIQ.m in Sources */,
 				FA1ABA5C676028DAEADC5F5C /* ParticipantInfoIQ.m in Sources */,
 				7B3C236F052BE0C4EAF23FBA /* ParticipantTransferIQ.m in Sources */,
+				D1B696E390CB911400DC913E /* ProxyService.m in Sources */,
 				000E2C621B9DE174B5F4A337 /* ResetConversationService.m in Sources */,
 				DE3CC2D03AB61E38B8F1227F /* RoomMemberService.m in Sources */,
 				7280F1EE88E865AD3EE3E42D /* SecretSpaceService.m in Sources */,
@@ -2157,6 +2419,8 @@
 				049C9180A787439E878E972D /* StreamingRequestIQ.m in Sources */,
 				F65D54628C0CE09FD28B69D0 /* TerminateKeyCheckIQ.m in Sources */,
 				EB0C178AB0C32147EEF320AD /* TwincodeUriIQ.m in Sources */,
+				1B4831095CBFAF05B41333FA /* UIFAQArticle.m in Sources */,
+				35AAA795C1FA573879413E73 /* UIFAQCategory.m in Sources */,
 				4AAB3AD6F03A0BFEF9A0010F /* Utils.m in Sources */,
 				C6FF5B8CE90C72F8C1E6ADED /* WordCheckIQ.m in Sources */,
 			);
@@ -2203,6 +2467,7 @@
 				A893FDE9F48B26B1F9B495FC /* EditRoomService.m in Sources */,
 				45DCBECE1AC1F8C5ADBD9C70 /* EditSpaceService.m in Sources */,
 				44D8FA27E725ADC9CB867FBA /* ExportService.m in Sources */,
+				49D0D94EFBC6015A25674C4D /* FAQManager.m in Sources */,
 				CF8DA3215BD798578C3309F7 /* GroupInvitationService.m in Sources */,
 				3EDCBF6947FB6E21ED3970E1 /* GroupService.m in Sources */,
 				D3830926F313BE1A9B7237F2 /* InAppSubscriptionService.m in Sources */,
@@ -2215,11 +2480,11 @@
 				CDD6C6F100DBD9143F285B80 /* MnemonicCodeUtils.m in Sources */,
 				59D35F5F4FE62B0D1158A907 /* NoopLocationManager.m in Sources */,
 				D56E4603C8D4E256B176D558 /* NotificationService.m in Sources */,
-				5781FC3C2EB49DFB0057324F /* ProxyService.m in Sources */,
 				735650651C23EF6AEE3CB75E /* NotificationSound.m in Sources */,
 				77A47B497C0B328F41B6F770 /* OnKeyCheckInitiateIQ.m in Sources */,
 				4BA0A6E7B495065F2FC49664 /* ParticipantInfoIQ.m in Sources */,
 				891338D7D63F62C5339ABE43 /* ParticipantTransferIQ.m in Sources */,
+				86431BA27FDC0AF394C3D471 /* ProxyService.m in Sources */,
 				274823DB783966A37ADA91E7 /* ResetConversationService.m in Sources */,
 				E6FC8699A7508CCCE14F16BF /* RoomMemberService.m in Sources */,
 				68A10B4F4EE2D31E20261C5C /* SecretSpaceService.m in Sources */,
@@ -2241,6 +2506,8 @@
 				426E674F492D2166EC227950 /* StreamingRequestIQ.m in Sources */,
 				96C77793CF6C9962CD544336 /* TerminateKeyCheckIQ.m in Sources */,
 				14D0CC38FD4B3A418C729063 /* TwincodeUriIQ.m in Sources */,
+				523B2DD6529A41E1920DA4E4 /* UIFAQArticle.m in Sources */,
+				41303A29F31481C44A32BF36 /* UIFAQCategory.m in Sources */,
 				23435CC23EB6AEAAB0C8FC88 /* Utils.m in Sources */,
 				2F27EA44A0C61C565612CAEC /* WordCheckIQ.m in Sources */,
 			);
@@ -2287,6 +2554,7 @@
 				F6E073B26DE2835CDD8E0DC7 /* EditRoomService.m in Sources */,
 				E6642858B94DD177F6F34C56 /* EditSpaceService.m in Sources */,
 				9CF376248A9442D01DEC110C /* ExportService.m in Sources */,
+				916CACCFC9BD3F824D3E21C9 /* FAQManager.m in Sources */,
 				6BCFA3B513D8806208B7D3F6 /* GroupInvitationService.m in Sources */,
 				6403588B58B2E6CB61CCFA28 /* GroupService.m in Sources */,
 				A4DF785FC7AA0302D05A5BDF /* InAppSubscriptionService.m in Sources */,
@@ -2299,10 +2567,10 @@
 				C394D97C00929E61907903C0 /* MnemonicCodeUtils.m in Sources */,
 				D0CEF0FB08EC72E3866EA0FE /* NotificationService.m in Sources */,
 				245883E62F78855259F8C8ED /* NotificationSound.m in Sources */,
-				5781FC382EB49DFB0057324F /* ProxyService.m in Sources */,
 				A7C2919BE5F8DA22BD6D72D5 /* OnKeyCheckInitiateIQ.m in Sources */,
 				3FD1233BC48151273E5D0CF8 /* ParticipantInfoIQ.m in Sources */,
 				72274A09EDB8B22B59FD93F2 /* ParticipantTransferIQ.m in Sources */,
+				00327E21A864CD3985F6AB74 /* ProxyService.m in Sources */,
 				2097EF25A0FE6E5E9B826068 /* ResetConversationService.m in Sources */,
 				819E16C0DDC4588283641259 /* RoomMemberService.m in Sources */,
 				90C30E58B9BAC2BEC4A63150 /* SecretSpaceService.m in Sources */,
@@ -2325,6 +2593,8 @@
 				B6D6BE4C52FCD7931B9CF75E /* TLLocationManager.m in Sources */,
 				D6354ADAA17583D0DDE2B7B6 /* TerminateKeyCheckIQ.m in Sources */,
 				1F5B6DD854C4A718646CEA48 /* TwincodeUriIQ.m in Sources */,
+				A08552C3537375B40A1F3366 /* UIFAQArticle.m in Sources */,
+				80D8340048C602F85D0353E2 /* UIFAQCategory.m in Sources */,
 				97C7397EBBF561C36788969E /* Utils.m in Sources */,
 				2952F18B4D7376552F57A226 /* WordCheckIQ.m in Sources */,
 			);
@@ -2371,6 +2641,7 @@
 				450D2F9A4685AC6F036DE069 /* EditRoomService.m in Sources */,
 				F2C868CCEF77A0CB12A11275 /* EditSpaceService.m in Sources */,
 				94C27AE6D66418876FDDC9C4 /* ExportService.m in Sources */,
+				F4D9749F3094B33B3A5312F5 /* FAQManager.m in Sources */,
 				3C9A043B01607EC8556C3239 /* GroupInvitationService.m in Sources */,
 				D11435CB96E89AA59FE5D398 /* GroupService.m in Sources */,
 				A8CDF9230368B1C51488E218 /* InAppSubscriptionService.m in Sources */,
@@ -2383,11 +2654,11 @@
 				E4768ABF20FABD35C604BD89 /* MnemonicCodeUtils.m in Sources */,
 				8418582D41CAA4EFAD81D674 /* NoopLocationManager.m in Sources */,
 				A976D8B044DFD4647EAF13D2 /* NotificationService.m in Sources */,
-				5781FC392EB49DFB0057324F /* ProxyService.m in Sources */,
 				1E13AF0260066C40E4AAF1FF /* NotificationSound.m in Sources */,
 				36C89C99D4EFC5DF0C68DF41 /* OnKeyCheckInitiateIQ.m in Sources */,
 				26E6DB62AA822F8EFC902EB3 /* ParticipantInfoIQ.m in Sources */,
 				5F67E2E7D23AEC99CEFC246F /* ParticipantTransferIQ.m in Sources */,
+				4849E4E7D14E67A13F1111AA /* ProxyService.m in Sources */,
 				9075B57EC93C78A70CAA0230 /* ResetConversationService.m in Sources */,
 				5C47E755A5185CE6454D2F96 /* RoomMemberService.m in Sources */,
 				16CA5276E39C4A42ACAA94F7 /* SecretSpaceService.m in Sources */,
@@ -2409,6 +2680,8 @@
 				5B067C62861B75970434604F /* StreamingRequestIQ.m in Sources */,
 				010AC37043F566116AC69806 /* TerminateKeyCheckIQ.m in Sources */,
 				0436571BBCEBDAFCAD3D4243 /* TwincodeUriIQ.m in Sources */,
+				6CB2F5D584E59915DD0AE444 /* UIFAQArticle.m in Sources */,
+				DBCF9AE951AB54936DF211FE /* UIFAQCategory.m in Sources */,
 				CE889E960CDE6B22A3468083 /* Utils.m in Sources */,
 				6ABFDA23C1E17EA7C973BEFC /* WordCheckIQ.m in Sources */,
 			);
@@ -2455,6 +2728,7 @@
 				3685652FD8632A1473F675C1 /* EditRoomService.m in Sources */,
 				CA6C96B85E6E0ADF960FBC00 /* EditSpaceService.m in Sources */,
 				657093E3AC7A5AAA1C2C4B37 /* ExportService.m in Sources */,
+				33FAC20E9A7409F4F7297D48 /* FAQManager.m in Sources */,
 				5B9C6EAC13E61FC3C5107F47 /* GroupInvitationService.m in Sources */,
 				F6599727DCBDB56C229F1EED /* GroupService.m in Sources */,
 				779123262EDDCB7F77BB8E83 /* InAppSubscriptionService.m in Sources */,
@@ -2467,11 +2741,11 @@
 				BF676813FC54FFF19ECCAAE5 /* MnemonicCodeUtils.m in Sources */,
 				72ED32E1925F65A95113E418 /* NoopLocationManager.m in Sources */,
 				6C931BF8935145D7E8334746 /* NotificationService.m in Sources */,
-				5781FC3B2EB49DFB0057324F /* ProxyService.m in Sources */,
 				973BA4E6087873EC38FEA9E4 /* NotificationSound.m in Sources */,
 				998446353664EBCD1DD76AAC /* OnKeyCheckInitiateIQ.m in Sources */,
 				481E68B463039F5D358570F6 /* ParticipantInfoIQ.m in Sources */,
 				6C90E7E49759C78703B73B9F /* ParticipantTransferIQ.m in Sources */,
+				355368388D091025CC8886D1 /* ProxyService.m in Sources */,
 				CBBF46E5F61B0242820CFA29 /* ResetConversationService.m in Sources */,
 				C3A62D922D4039E633CE7ABC /* RoomMemberService.m in Sources */,
 				300064B0C9F3B211B2E10C2B /* SecretSpaceService.m in Sources */,
@@ -2493,6 +2767,8 @@
 				4E5CC5151CDEB972E6A3A72C /* StreamingRequestIQ.m in Sources */,
 				E47226959BE1AA3DEF96B805 /* TerminateKeyCheckIQ.m in Sources */,
 				CD411C14A4A15C44BD5C655A /* TwincodeUriIQ.m in Sources */,
+				C2D46889F0C26DB4C9C25583 /* UIFAQArticle.m in Sources */,
+				FCF08061A6E9BAFA62091DC9 /* UIFAQCategory.m in Sources */,
 				399D2F72B550FD2C3E9EB293 /* Utils.m in Sources */,
 				BB65CD8781C29B5AC3FD58ED /* WordCheckIQ.m in Sources */,
 			);
@@ -2521,10 +2797,35 @@
 			name = TwinmeMytwinlife;
 			targetProxy = BEC9D18B36A4153CAFCEBB14 /* PBXContainerItemProxy */;
 		};
+		799D03B4B2DF3D42FBD471E8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotificationTwinmePlus;
+			targetProxy = C64A584CB2AA2EFF79036D4D /* PBXContainerItemProxy */;
+		};
+		90595894234E78D9B067CF3E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotificationTwinme;
+			targetProxy = E7356F24BF8DE9733DD62C54 /* PBXContainerItemProxy */;
+		};
+		AFFDBB12FCCB8A9971706637 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotificationMytwinlifePlus;
+			targetProxy = 1CD57776B88C0896F1F7C89A /* PBXContainerItemProxy */;
+		};
+		B3F3D214E4F748886436D62A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotificationMytwinlife;
+			targetProxy = A5E5C807F71F2B95353EE356 /* PBXContainerItemProxy */;
+		};
 		D73903DAEB11CA22CE11631C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = TwinmeMytwinlifePlus;
 			targetProxy = 3892069E30D1CCBD2308278B /* PBXContainerItemProxy */;
+		};
+		F73CDDCE6011070569411758 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NotificationSkred;
+			targetProxy = 90F92030C3B3BE2775AA9F04 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2580,7 +2881,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -2595,11 +2896,9 @@
 		243810FD60E3757F27A322A0 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					MYTWINLIFE_PLUS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) MYTWINLIFE_PLUS";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack",
 					"${SRCROOT}/../Pods/Headers/Public/SSZipArchive",
@@ -2612,33 +2911,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2649,11 +2922,9 @@
 		26DC856792B2043C0C7D18B8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					TWINME,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) TWINME";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/**",
 					"${TARGET_BUILD_DIR}/include",
@@ -2663,33 +2934,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2700,11 +2945,9 @@
 		2BE09A42A651762862E54ED9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					TWINME_PLUS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) TWINME_PLUS";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack",
 					"${SRCROOT}/../Pods/Headers/Public/SSZipArchive",
@@ -2717,33 +2960,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2796,7 +3013,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2810,11 +3027,9 @@
 		56EFE47D6AF0B5FAA9B5CF42 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					TWINME,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) TWINME";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack",
 					"${SRCROOT}/../Pods/Headers/Public/SSZipArchive",
@@ -2827,33 +3042,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2864,11 +3053,9 @@
 		798BC8DF4B5DA8EB305C8518 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					TWINME_PLUS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) TWINME_PLUS";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/**",
 					"${TARGET_BUILD_DIR}/include",
@@ -2878,33 +3065,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2915,11 +3076,9 @@
 		BE861A896239E73A160142C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					SKRED,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) SKRED";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/**",
 					"${TARGET_BUILD_DIR}/include",
@@ -2929,33 +3088,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2966,11 +3099,9 @@
 		D8B6B036E30A35A7BC2FDB8E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					MYTWINLIFE_PLUS,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) MYTWINLIFE_PLUS";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/**",
 					"${TARGET_BUILD_DIR}/include",
@@ -2980,33 +3111,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3017,11 +3122,9 @@
 		DBF410450C01757A3EEA1FB6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					MYTWINLIFE,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) MYTWINLIFE";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/**",
 					"${TARGET_BUILD_DIR}/include",
@@ -3031,33 +3134,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3068,11 +3145,9 @@
 		DC878165F7AAECE4AED54C29 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					MYTWINLIFE,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) MYTWINLIFE";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack",
 					"${SRCROOT}/../Pods/Headers/Public/SSZipArchive",
@@ -3085,33 +3160,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -3122,11 +3171,9 @@
 		FB7ECE857CFC2F06108D6CB2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_PREFIX_HEADER = "../Twinme/Twinme-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"$(inherited)",
-					SKRED,
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited) SKRED";
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}/../Pods/Headers/Public/CocoaLumberjack",
 					"${SRCROOT}/../Pods/Headers/Public/SSZipArchive",
@@ -3139,33 +3186,7 @@
 					"@executable_path/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-ObjC",
-					"-l\"CocoaLumberjack\"",
-					"-l\"FMDB\"",
-					"-l\"KissXML\"",
-					"-l\"SQLCipher\"",
-					"-l\"SSZipArchive\"",
-					"-l\"SlackTextViewController\"",
-					"-l\"XMPPFramework\"",
-					"-l\"iconv\"",
-					"-l\"icucore\"",
-					"-l\"idn\"",
-					"-l\"resolv\"",
-					"-l\"xml2\"",
-					"-l\"z\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"CoreData\"",
-					"-framework",
-					"\"CoreLocation\"",
-					"-framework",
-					"\"Security\"",
-					"-framework",
-					"\"SystemConfiguration\"",
-				);
+				OTHER_LDFLAGS = "$(inherited) -ObjC -l\"CocoaLumberjack\" -l\"FMDB\" -l\"KissXML\" -l\"SQLCipher\" -l\"SSZipArchive\" -l\"SlackTextViewController\" -l\"XMPPFramework\" -l\"iconv\" -l\"icucore\" -l\"idn\" -l\"resolv\" -l\"xml2\" -l\"z\" -framework \"CFNetwork\" -framework \"CoreData\" -framework \"CoreLocation\" -framework \"Security\" -framework \"SystemConfiguration\"";
 				PUBLIC_HEADERS_FOLDER_PATH = include/TwinmeCommon;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;

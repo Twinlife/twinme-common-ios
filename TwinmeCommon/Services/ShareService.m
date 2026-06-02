@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2024 twinlife SA.
+ *  Copyright (c) 2019-20246twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -293,7 +293,6 @@ static const int FIND_CONTACTS_AND_GROUPS_DONE = 1 << 10;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationServiceDelegate];
-    
     [super dispose];
 }
 

@@ -710,8 +710,9 @@ static const int ddLogLevel = DDLogLevelWarning;
             }
         }
     }
-    
-    [self performTransferWithParticipant:transferTarget];
+    if (transferTarget) {
+        [self performTransferWithParticipant:transferTarget];
+    }
 }
 
 - (void)onTransferDone {

@@ -23,7 +23,6 @@
 ///enum order has an impact to save and retrieve settings in NSUserDefault
 #ifdef TWINME
 typedef enum {
-    DefaultTabProfiles,
     DefaultTabCalls,
     DefaultTabContacts,
     DefaultTabConversations,
@@ -210,6 +209,14 @@ typedef enum {
 
 - (void)setVisualizationLinkWithState:(BOOL)state;
 
+#if defined(SKRED)
+
+- (BOOL)visualizationMap;
+
+- (void)setVisualizationMapWithState:(BOOL)state;
+
+#endif
+
 //
 // Haptic Feedback
 //
@@ -217,6 +224,10 @@ typedef enum {
 - (HapticFeedbackMode)hapticFeedbackMode;
 
 - (void)setHapticFeedbackModeWithMode:(HapticFeedbackMode)hapticFeedbackMode;
+
+- (BOOL)allowHapticFeedback;
+
+- (void)setHapticFeedbackEnableWithState:(BOOL)state;
 
 //
 // Call
@@ -238,6 +249,12 @@ typedef enum {
 - (BOOL)showBackupWarning;
 
 - (void)setLastBackupDate;
+
+- (void)setLastAlertBackup;
+
+- (void)clearLastBackupDate;
+
+- (int64_t)lastBackupDate;
 
 
 #if defined(SKRED) || defined(TWINME_PLUS)

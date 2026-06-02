@@ -118,7 +118,7 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 
 - (BOOL)isRestoreUpToDate {
-    return self.contacts.isStatsUpToDate && self.profiles.isStatsUpToDate && self.clickToCall.isStatsUpToDate;
+    return self.contacts.isStatsUpToDate && self.profiles.isStatsUpToDate && self.clickToCall.isStatsUpToDate && self.groups.isStatsUpToDate;
 }
 
 @end
@@ -299,6 +299,7 @@ static const int ddLogLevel = DDLogLevelWarning;
             TLProfile.SCHEMA_ID,
             TLContact.SCHEMA_ID,
             TLCallReceiver.SCHEMA_ID,
+            TLGroup.SCHEMA_ID,
         ];
         
         self.twinmeContextDelegate = [[BackupServiceTwinmeContextDelegate alloc] initWithService:self];
@@ -321,12 +322,7 @@ static const int ddLogLevel = DDLogLevelWarning;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
 
     [self.backupService removeDelegate:self.backupServiceDelegate];
-
-    if (self.twinmeContextDelegate) {
-        [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
-        self.twinmeContextDelegate = nil;
-    }
-    
+    [super dispose];
 }
 
 - (void)generateWords {

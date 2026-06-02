@@ -43,6 +43,7 @@ TL_CREATE_ASSERT_POINT(UNKNOWN_ERROR, 4000)
 TL_CREATE_ASSERT_POINT(PARAMETER, 4001)
 TL_CREATE_ASSERT_POINT(INVALID_TWINCODE, 4002)
 TL_CREATE_ASSERT_POINT(INVALID_CONVERSATION_ID, 4003)
+TL_CREATE_ASSERT_POINT(CONTACT_CHANGED, 4004)
 
 @end
 
@@ -136,8 +137,6 @@ TL_CREATE_ASSERT_POINT(INVALID_CONVERSATION_ID, 4003)
 
 - (void)dispose {
     DDLogVerbose(@"%@ dispose", LOG_TAG);
-    
-    TWINLIFE_CHECK_MAIN_THREAD("Service must be called from main UI thread!");
 
     if (self.twinmeContextDelegate) {
         [self.twinmeContext removeDelegate:self.twinmeContextDelegate];

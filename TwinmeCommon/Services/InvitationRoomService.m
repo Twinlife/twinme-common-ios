@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2021-2024 twinlife SA.
+ *  Copyright (c) 2021-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -198,7 +198,6 @@ static const int PUSH_TWINCODE = 1 << 8;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.conversationServiceDelegate];
-    
     [super dispose];
 }
 

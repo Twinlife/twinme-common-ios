@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -189,7 +189,7 @@ static const int GET_OR_CREATE_CONVERSATION_DONE = 1 << 1;
     DDLogVerbose(@"%@ dispose", LOG_TAG);
     
     [[self.twinmeContext getConversationService] removeDelegate:self.resetConversationServiceDelegate];
-    [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
+    [super dispose];
 }
 
 #pragma mark - Private methods

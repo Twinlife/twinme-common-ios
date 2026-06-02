@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2024 twinlife SA.
+ *  Copyright (c) 2024-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -383,16 +383,13 @@ static const int STOP_SERVICE = 1 << 20;
     if (self.isTwinlifeReady) {
         [self.accountMigrationService removeDelegate:self.accountMigrationServiceDelegate];
     }
-    if (self.twinmeContextDelegate) {
-        [self.twinmeContext removeDelegate:self.twinmeContextDelegate];
-        self.twinmeContextDelegate = nil;
-    }
     if (self.networkLock) {
         [self.networkLock releaseLock];
         self.networkLock = nil;
     }
     
     [self.accountMigrationService cleanup];
+    [super dispose];
 }
 
 #pragma mark - Private methods

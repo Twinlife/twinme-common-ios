@@ -39,7 +39,8 @@ typedef enum {
 #define TERMINATE_CALL_DONE                (1 << 9)
 #define CREATE_CALL_ROOM                   (1 << 10)
 #define CREATE_CALL_ROOM_DONE              (1 << 11)
-#define FINISH_CALLKIT                     (1 << 12)
+#define CALLKIT_DONE                       (1 << 12)
+#define FINISH_CALLKIT                     (1 << 13)
 
 @protocol RTC_OBJC_TYPE(RTCVideoRenderer);
 @class TLPeerConnectionService;

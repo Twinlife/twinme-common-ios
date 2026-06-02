@@ -226,7 +226,6 @@ typedef enum {
 
 + (NSMutableArray *)SPACES_COLOR;
 
-+ (UIColor *)TEXTFIELD_POPUP_BACKGROUND_COLOR;
 
 #else
 + (NSMutableArray *)COLORS;
@@ -355,10 +354,6 @@ typedef enum {
 
 + (UIFont *)FONT_BOLD88;
 
-+ (void)scaleEdgeInsetVertically:(UIButton *)button;
-
-+ (void)scaleEdgeInsetHorizontally:(UIButton *)button;
-
 + (void)setupFont;
 
 + (CGSize)switchSize;
@@ -380,6 +375,8 @@ typedef enum {
 + (CGFloat)AVATAR_HEIGHT;
 
 + (CGFloat)AVATAR_LEADING;
+
++ (CGFloat)AVATAR_CONVERSATION_LEADING;
 
 + (CGFloat)NAME_TRAILING;
 

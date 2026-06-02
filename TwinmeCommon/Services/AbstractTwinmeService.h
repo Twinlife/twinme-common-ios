@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2025 twinlife SA.
+ *  Copyright (c) 2018-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -38,10 +38,11 @@
 
 @interface ServicesAssertPoint : TLAssertPoint
 
-+(nonnull TLAssertPoint *)UNKNOWN_ERROR;
-+(nonnull TLAssertPoint *)PARAMETER;
-+(nonnull TLAssertPoint *)INVALID_TWINCODE;
-+(nonnull TLAssertPoint *)INVALID_CONVERSATION_ID;
++ (nonnull TLAssertPoint *)UNKNOWN_ERROR;
++ (nonnull TLAssertPoint *)PARAMETER;
++ (nonnull TLAssertPoint *)INVALID_TWINCODE;
++ (nonnull TLAssertPoint *)INVALID_CONVERSATION_ID;
++ (nonnull TLAssertPoint *)CONTACT_CHANGED;
 
 @end
 
@@ -138,9 +139,10 @@
 
 @interface AbstractTwinmeService : NSObject
 
-- (nullable instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext tag:(nonnull NSString *)tag delegate:(nonnull id<AbstractTwinmeDelegate>)delegate;
+- (nullable instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext tag:(nonnull NSString *)tag delegate:(nullable id<AbstractTwinmeDelegate>)delegate;
 
-- (void)dispose;
+/// Important note: you MUST call [super dispose] if this method is overriden.
+- (void)dispose __attribute__((objc_requires_super));
 
 - (void)getImageWithImageId:(nonnull TLImageId *)imageId withBlock:(nonnull void (^)(UIImage *_Nonnull image))block;
 

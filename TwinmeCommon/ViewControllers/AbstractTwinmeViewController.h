@@ -71,4 +71,6 @@
 
 - (void)showGroupWithGroup:(nonnull TLGroup *)group;
 
+- (nullable UIWindow *)currentWindow;
+
 @end

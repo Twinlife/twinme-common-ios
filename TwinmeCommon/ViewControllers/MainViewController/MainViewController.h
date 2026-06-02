@@ -55,6 +55,8 @@
 
 - (void)startCallFromRecents;
 
+- (void)handleShareContentURL;
+
 #if defined(TWINME)
 - (void)activeProfile:(nonnull TLProfile *)profile;
 #endif

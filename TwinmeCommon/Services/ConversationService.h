@@ -91,7 +91,11 @@ typedef BOOL (^TLDescriptorFilter) (TLDescriptor *_Nonnull descriptor);
 
 - (void)pushFileWithPath:(nonnull NSString *)path type:(TLDescriptorType)type toBeDeleted:(BOOL)toBeDeleted copyAllowed:(BOOL)copyAllowed expiredTimeout:(int64_t)expiredTimeout sendTo:(nullable NSUUID *)sendTo replyTo:(nullable TLDescriptorId *)replyTo;
 
-- (void)pushGeolocationWithLatitude:(double)latitude longitude:(double)longitude altitude:(double)altitude  latitudeDelta:(double)latitudeDelta longitudeDelta:(double)longitudeDelta expiredTimeout:(int64_t)expiredTimeout sendTo:(nullable NSUUID *)sendTo replyTo:(nullable TLDescriptorId *)replyTo;
+- (void)pushGeolocationWithLatitude:(double)latitude longitude:(double)longitude altitude:(double)altitude  latitudeDelta:(double)latitudeDelta longitudeDelta:(double)longitudeDelta expiredTimeout:(int64_t)expiredTimeout sendTo:(nullable NSUUID *)sendTo replyTo:(nullable TLDescriptorId *)replyTo copyAllowed:(BOOL)copyAllowed;
+
+- (void)pushPollWithMultipleAnswersAllowed:(BOOL)multipleAnswersAllowed question:(nonnull NSString *)question choices:(nonnull NSArray<TLChoice *> *)choices copyAllowed:(BOOL)copyAllowed expiration:(int64_t)expiration;
+
+- (void)submitPollVotes:(nonnull TLDescriptorId *)descriptorId choices:(nonnull NSArray<TLChoice *> *)choices;
 
 - (void)saveGeolocationMapWithPath:(nonnull NSString *)path descriptorId:(nonnull TLDescriptorId *)descriptorId;
 
