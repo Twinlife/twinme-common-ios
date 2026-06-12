@@ -56,7 +56,7 @@
 
 - (void)onTerminateVerifyWithReport:(nonnull RestoreReport *)report;
 
-- (void)onCheckFileSignatureWithResult:(BOOL)result;
+- (void)onCheckFileCompatibilityWithResult:(TLBackupServiceErrorCode)result;
 @end
 
 //
@@ -87,5 +87,6 @@
 
 - (void)deleteBackups;
 
-- (void)checkFileSignatureWithBackupPath:(nonnull NSString *)backupPath;
+- (void)checkFileCompatibilityWithBackupPath:(nonnull NSString *)backupPath;
+
 @end

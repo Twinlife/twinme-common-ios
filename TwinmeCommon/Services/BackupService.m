@@ -413,15 +413,15 @@ static const int ddLogLevel = DDLogLevelWarning;
     });
 }
 
-- (void)checkFileSignatureWithBackupPath:(nonnull NSString *)backupPath {
-    DDLogVerbose(@"%@ checkFileSignatureWithBackupPath:%@", LOG_TAG, backupPath);
+- (void)checkFileCompatibilityWithBackupPath:(nonnull NSString *)backupPath {
+    DDLogVerbose(@"%@ checkFileCompatibilityWithBackupPath:%@", LOG_TAG, backupPath);
     
     dispatch_async([self.twinmeContext.twinlife twinlifeQueue], ^{
-        BOOL result = [self.backupService checkFileSignatureWithBackupPath:backupPath];
+        TLBackupServiceErrorCode result = [self.backupService checkFileCompatibilityWithBackupPath:backupPath];
         
-        if ([(id)self.delegate respondsToSelector:@selector(onCheckFileSignatureWithResult:)]) {
+        if ([(id)self.delegate respondsToSelector:@selector(onCheckFileCompatibilityWithResult:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                [(id<BackupServiceDelegate>)self.delegate onCheckFileSignatureWithResult:result];
+                [(id<BackupServiceDelegate>)self.delegate onCheckFileCompatibilityWithResult:result];
             });
         }
     });

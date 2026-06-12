@@ -1456,7 +1456,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                     [topViewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
                     }];
                 }
-                
                 CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
                 self.viewController = callViewController;
                 [callViewController initCallWithOriginator:call.originator isVideoCall:CALL_IS_VIDEO(mode)];
@@ -1559,7 +1558,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     }
     
     // Note: we are running from the main thread.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_block_t startCallViewController = ^{
         ApplicationDelegate *delegate = (ApplicationDelegate *)[application delegate];
         MainViewController *mainViewController = delegate.mainViewController;
         [mainViewController removeCallFloatingView];
@@ -1577,12 +1576,18 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         if ([topViewController isKindOfClass:[CallViewController class]]) {
             [mainViewController.selectedViewController popViewControllerAnimated:NO];
         }
-        
+
         CallViewController *callViewController = (CallViewController *)[[UIStoryboard storyboardWithName:@"Call" bundle:nil] instantiateViewControllerWithIdentifier:@"CallViewController"];
         [callViewController initCallWithOriginator:call.originator isVideoCall:CALL_IS_VIDEO(callStatus)];
         self.viewController = callViewController;
         [mainViewController.selectedViewController pushViewController:callViewController animated:NO];
-    });
+    };
+    
+    if ([NSThread isMainThread]) {
+        startCallViewController();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), startCallViewController);
+    }
 }
 
 - (BOOL)isPeerConnection:(nonnull NSUUID *)peerConnectionId {
