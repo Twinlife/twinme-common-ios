@@ -36,4 +36,6 @@
 
 - (BOOL)isGetContactsDone;
 
+- (void)updateSpace:(nonnull TLSpace *)space;
+
 @end

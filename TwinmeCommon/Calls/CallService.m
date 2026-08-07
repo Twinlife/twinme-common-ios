@@ -189,6 +189,7 @@ typedef void (^CallStartedAction) (BOOL success);
 @property (nonatomic, nullable) CallState *holdCall;
 @property (nonatomic, nullable) NSUUID *peerConnectionIdTerminated;
 @property (nonatomic) int nextParticipantId;
+@property (nonatomic, nullable) AudioDevice *currentAudioDevice;
 
 @property (nonatomic) TLLocationManager *locationManager;
 
@@ -372,12 +373,13 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 
 @implementation AudioDevice
 
-- (nonnull instancetype)initWithType:(AudioDeviceType)type name:(nullable NSString *)name {
+- (nonnull instancetype)initWithType:(AudioDeviceType)type name:(nullable NSString *)name isHeadsetAvailable:(BOOL)isHeadsetAvailable {
     self = [super init];
     
     if (self) {
         _type = type;
         _name = name;
+        _isHeadsetAvailable = isHeadsetAvailable;
     }
     return self;
 }
@@ -834,6 +836,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     if (!self.iosCallKitObligationFascism) {
         return nil;
     }
+    TL_DECL_START_MEASURE(startTime);
 
     // Create the provider on the first call (cannot be done earlier).
     CXProvider *provider = self.cxProviderInstance;
@@ -854,7 +857,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         @synchronized (self) {
             provider = self.cxProviderInstance;
             if (provider == nil) {
-                TL_DECL_START_MEASURE(startTime);
 
                 atomic_store(&_isProviderReady, 0);
                 provider = [[CXProvider alloc] initWithConfiguration:configuration];
@@ -874,16 +876,17 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                 // We can them resume our call correctly (see callObserver:callChanged:).
                 [[callController callObserver] setDelegate:self queue:self.providerQueue];
 
-                // It's a shame but this API is highly unreliable, pause until the providerDidBegin is called.
-                for (int i = 0; i < 1000 && atomic_load(&_isProviderReady) == 0; i++) {
-                    [NSThread sleepForTimeInterval:0.01];
-                }
                 self.cxProviderInstance = provider;
                 self.cxCallControllerInstance = callController;
-                TL_END_MEASURE(startTime, @"cxInitProvider");
             }
         }
     }
+
+    // It's a shame but CXProvider API is highly unreliable, pause until the providerDidBegin is called.
+    for (int i = 0; i < 100 && atomic_load(&_isProviderReady) == 0; i++) {
+        [NSThread sleepForTimeInterval:0.01];
+    }
+    TL_END_MEASURE(startTime, @"cxProvider");
     return provider;
 }
 
@@ -947,7 +950,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     callUpdate.supportsGrouping = YES;
     
     NSString *callerName = originator.name;
-    if (originator.identityCapabilities.hasDiscreet || !callerName) {
+    if (originator.identityCapabilities.hasDiscreet || !callerName || callerName.length == 0) {
         callerName = TwinmeLocalizedString(@"calls_view_incoming_call", nil);
     }
     callUpdate.localizedCallerName = callerName;
@@ -1343,7 +1346,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         // Honor the PushKit+CallKit invocation for iOS 13.
         if (self.cxProvider && fromPushKit) {
             CXCallUpdate *callUpdate = [self createCXCallUpdate:originator video:NO];
-
             // Report with the peerConnectionId because we have no call when this happens.
             [self.cxProvider reportNewIncomingCallWithUUID:peerConnectionId update:callUpdate completion:^(NSError * _Nullable error) {
                 [self.cxProvider reportCallWithUUID:peerConnectionId endedAtDate:nil reason:CXCallEndedReasonRemoteEnded];
@@ -1374,13 +1376,15 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     // (a kind of anti-democratic and fasist behavior).
     if (self.cxProvider && (self.iosCallKitObligationFascism || inBackground)) {
         CXCallUpdate *callUpdate = [self createCXCallUpdate:originator video:video];
-
         __weak CallService *weakSelf = self;
         self.cxProvider.configuration = [self getCallkitConfiguration:video originator:originator];
         [self.cxProvider reportNewIncomingCallWithUUID:call.callKitUUID update:callUpdate completion:^(NSError * _Nullable error) {
             if (weakSelf) {
                 __strong CallService *strongSelf = weakSelf;
                 if (error) {
+                    if (error.code == CXErrorCodeIncomingCallErrorCallUUIDAlreadyExists) {
+                        [self.cxProvider reportCallWithUUID:call.callKitUUID updated:callUpdate];
+                    }
                     // We may call reportNewIncomingCallWithUUID() two times for the same call.
                     // The DoNotDisturb may block the call.  The call is still processed so that
                     // it appears in the missed calls.
@@ -1404,7 +1408,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         // Calling reportNewIncomingCallWithUUID will display CallKit UI which is weird.
         if (self.cxCallController) {
             CXCallUpdate *callUpdate = [self createCXCallUpdate:originator video:video];
-            
             DDLogVerbose(@"%@ calling CallKit requestTransaction: %@", LOG_TAG, peerConnectionId);
             
             CXStartCallAction *startCallAction = [[CXStartCallAction alloc] initWithCallUUID:call.callKitUUID handle:callUpdate.remoteHandle];
@@ -1521,7 +1524,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    DDLogVerbose(@"%@ applicationWillEnterForeground: %@", LOG_TAG, application);
+    DDLogInfo(@"%@ applicationWillEnterForeground: %@", LOG_TAG, application);
     
     // Check if an Audio/Video call is in progress and there is no view: it means CallKit has
     // setup the call and the application is now in the foreground to handle the call.
@@ -1994,78 +1997,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     
     [[NSNotificationCenter defaultCenter] postNotificationName:CallEventCameraControlZoomUpdate object:[NSNumber numberWithInt:zoomLevel]];
 }
-
-- (void)setSpeaker:(BOOL)speaker {
-    DDLogVerbose(@"%@ setSpeaker: %d", LOG_TAG, speaker);
-    
-    self.speakerOn = speaker;
-    if (self.speakerOn) {
-        [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
-            RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-            [audioSession lockForConfiguration];
-            NSError *error = nil;
-            if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
-                DDLogError(@"Error overriding output port: %@", error.localizedDescription);
-            }
-            [audioSession unlockForConfiguration];
-        }];
-    } else {
-        [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
-            RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-            [audioSession lockForConfiguration];
-            NSError *error = nil;
-            if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error]) {
-                DDLogError(@"Error overriding output port: %@", error.localizedDescription);
-            }
-            [audioSession unlockForConfiguration];
-        }];
-    }
-}
-
-- (AudioDevice *)getCurrentAudioDevice {
-    DDLogVerbose(@"%@ getCurrentAudioDevice", LOG_TAG);
-    
-    AVAudioSessionRouteDescription *currentRoute = AVAudioSession.sharedInstance.currentRoute;
-    
-    AudioDeviceType type = AudioDeviceTypeNone;
-    NSString *name = nil;
-    
-    if (currentRoute.outputs.count > 0) {
-        AVAudioSessionPortDescription *port = currentRoute.outputs[0];
-        
-        name = port.portName;
-        
-        if ([port.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
-            type = AudioDeviceTypeSpeakerPhone;
-        } else if ([port.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
-            type = AudioDeviceTypeEarPiece;
-        } else if ([port.portType isEqualToString:AVAudioSessionPortBluetoothLE]
-                   || [port.portType isEqualToString:AVAudioSessionPortBluetoothHFP]
-                   || [port.portType isEqualToString:AVAudioSessionPortBluetoothA2DP]) {
-            type = AudioDeviceTypeBluetooth;
-        } else if ([port.portType isEqualToString:AVAudioSessionPortHeadphones]
-                   || [port.portType isEqualToString:AVAudioSessionPortUSBAudio]) {
-            type = AudioDeviceTypeWiredHeadset;
-        }
-    }
-    
-    return [[AudioDevice alloc] initWithType:type name:name];
-}
-
-- (BOOL)isHeadsetAvailable {
-    DDLogVerbose(@"%@ isHeadsetAvailable", LOG_TAG);
-
-    if (AVAudioSession.sharedInstance.availableInputs.count > 1) {
-        // We have the built-in mic + at least another one, so we can assume a headset is connected
-        return YES;
-    }
-    
-    // If we're connected to an external speaker without a mic it won't show up in the input list,
-    // but chances are it is the currently active device.
-    AudioDevice *currentDevice = self.getCurrentAudioDevice;
-    return currentDevice.type == AudioDeviceTypeBluetooth || currentDevice.type == AudioDeviceTypeWiredHeadset;
-}
-
 - (void)finishWithCall:(nonnull CallState *)call {
     DDLogVerbose(@"%@ finishWithCall: %@", LOG_TAG, call);
 
@@ -2629,33 +2560,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 #pragma mark - TLLocationManagerDelegate
 - (void)onUpdateLocation {
     [self sendGeolocation];
-}
-
-#pragma mark - RTCAudioSessionDelegate
-
-- (void)audioSessionDidStartPlayOrRecord:(RTC_OBJC_TYPE(RTCAudioSession) *)session {
-    DDLogVerbose(@"%@ audioSessionDidStartPlayOrRecord: %@", LOG_TAG, session);
-    
-    session.isAudioEnabled = YES;
-}
-
-- (void)audioSession:(RTC_OBJC_TYPE(RTCAudioSession) *)audioSession didSetActive:(BOOL)active {
-    DDLogVerbose(@"%@ didSetActive: %@ active: %d", LOG_TAG, audioSession, active);
-    
-}
-
-- (void)audioSessionDidStopPlayOrRecord:(RTC_OBJC_TYPE(RTCAudioSession) *)session {
-    DDLogVerbose(@"%@ audioSessionDidStopPlayOrRecord: %@", LOG_TAG, session);
-    
-}
-
-/// Called on a system notification thread when AVAudioSession changes the route.
-- (void)audioSessionDidChangeRoute:(RTC_OBJC_TYPE(RTCAudioSession) *)session
-                            reason:(AVAudioSessionRouteChangeReason)reason
-                     previousRoute:(AVAudioSessionRouteDescription *)previousRoute {
-    DDLogVerbose(@"%@ audioSessionDidChangeRoute: %@ reason: %ld previousRoute: %@", LOG_TAG, session, reason, previousRoute);
-
-    [self sendMessageWithCall:self.currentCall message:CallEventMessageAudioSinkUpdate];
 }
 
 #pragma mark - PeerCallServiceDelegate
@@ -3663,6 +3567,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         } else {
             isCallKitCall = NO;
         }
+        if (call == self.restartCameraCall) {
+            self.restartCameraCall = nil;
+        }
         if (call == self.activeCall) {
             self.activeCall = nil;
             if (!self.holdCall) {
@@ -3760,6 +3667,123 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     }
 }
 
+#pragma mark - RTCAudioSessionDelegate
+
+- (void)audioSessionDidStartPlayOrRecord:(RTC_OBJC_TYPE(RTCAudioSession) *)session {
+    DDLogVerbose(@"%@ audioSessionDidStartPlayOrRecord: %@", LOG_TAG, session);
+    
+    session.isAudioEnabled = YES;
+}
+
+- (void)audioSession:(RTC_OBJC_TYPE(RTCAudioSession) *)audioSession didSetActive:(BOOL)active {
+    DDLogVerbose(@"%@ didSetActive: %@ active: %d", LOG_TAG, audioSession, active);
+    
+}
+
+- (void)audioSessionDidStopPlayOrRecord:(RTC_OBJC_TYPE(RTCAudioSession) *)session {
+    DDLogVerbose(@"%@ audioSessionDidStopPlayOrRecord: %@", LOG_TAG, session);
+    
+}
+
+/// Called on a system notification thread when AVAudioSession starts an interruption event.
+- (void)audioSessionDidBeginInterruption:(RTC_OBJC_TYPE(RTCAudioSession) *)session {
+    DDLogVerbose(@"%@ audioSessionDidBeginInterruption: %@", LOG_TAG, session);
+
+}
+
+/// Called on a system notification thread when AVAudioSession ends an interruption event.
+- (void)audioSessionDidEndInterruption:(RTC_OBJC_TYPE(RTCAudioSession) *)session shouldResumeSession:(BOOL)shouldResumeSession {
+    DDLogVerbose(@"%@ audioSessionDidEndInterruption: %@ shouldResume: %d", LOG_TAG, session, shouldResumeSession);
+
+    // Record the new current route now because we are not allowed to call `currentRoute` from the main UI thread.
+    [self recordAudioDeviceWithRoute:session.currentRoute];
+}
+
+/// Called on a system notification thread when AVAudioSession changes the route.
+- (void)audioSessionDidChangeRoute:(RTC_OBJC_TYPE(RTCAudioSession) *)session
+                            reason:(AVAudioSessionRouteChangeReason)reason
+                     previousRoute:(AVAudioSessionRouteDescription *)previousRoute {
+    DDLogVerbose(@"%@ audioSessionDidChangeRoute: %@ reason: %ld previousRoute: %@", LOG_TAG, session, reason, previousRoute);
+
+    // Record the new current route now because we are not allowed to call `currentRoute` from the main UI thread.
+    [self recordAudioDeviceWithRoute:session.currentRoute];
+    [self sendMessageWithCall:self.currentCall message:CallEventMessageAudioSinkUpdate];
+}
+
+#pragma mark - Audio methods
+
+- (void)setSpeaker:(BOOL)speaker {
+    DDLogVerbose(@"%@ setSpeaker: %d", LOG_TAG, speaker);
+    
+    self.speakerOn = speaker;
+    if (self.speakerOn) {
+        [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
+            RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+            [audioSession lockForConfiguration];
+            NSError *error = nil;
+            if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:&error]) {
+                DDLogError(@"Error overriding output port: %@", error.localizedDescription);
+            }
+            [audioSession unlockForConfiguration];
+        }];
+    } else {
+        [RTC_OBJC_TYPE(RTCDispatcher) dispatchAsyncOnType:RTCDispatcherTypeAudioSession block:^{
+            RTC_OBJC_TYPE(RTCAudioSession) *audioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+            [audioSession lockForConfiguration];
+            NSError *error = nil;
+            if (![audioSession overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:&error]) {
+                DDLogError(@"Error overriding output port: %@", error.localizedDescription);
+            }
+            [audioSession unlockForConfiguration];
+        }];
+    }
+}
+
+- (AudioDevice *)getCurrentAudioDevice {
+    DDLogVerbose(@"%@ getCurrentAudioDevice", LOG_TAG);
+    
+    @synchronized (self) {
+        return self.currentAudioDevice;
+    }
+}
+
+- (void)recordAudioDeviceWithRoute:(AVAudioSessionRouteDescription *)currentRoute {
+    DDLogVerbose(@"%@ recordAudioDeviceWithRoute: %@", LOG_TAG, currentRoute);
+    
+    AudioDeviceType type = AudioDeviceTypeNone;
+    NSString *name = nil;
+    
+    if (currentRoute.outputs.count > 0) {
+        AVAudioSessionPortDescription *port = currentRoute.outputs[0];
+        
+        name = port.portName;
+        
+        if ([port.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
+            type = AudioDeviceTypeSpeakerPhone;
+        } else if ([port.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
+            type = AudioDeviceTypeEarPiece;
+        } else if ([port.portType isEqualToString:AVAudioSessionPortBluetoothLE]
+                   || [port.portType isEqualToString:AVAudioSessionPortBluetoothHFP]
+                   || [port.portType isEqualToString:AVAudioSessionPortBluetoothA2DP]) {
+            type = AudioDeviceTypeBluetooth;
+        } else if ([port.portType isEqualToString:AVAudioSessionPortHeadphones]
+                   || [port.portType isEqualToString:AVAudioSessionPortUSBAudio]) {
+            type = AudioDeviceTypeWiredHeadset;
+        }
+    }
+
+    // If we're connected to an external speaker without a mic it won't show up in the input list,
+    // but chances are it is the currently active device.
+    BOOL headsetAvailable = type == AudioDeviceTypeBluetooth || type == AudioDeviceTypeWiredHeadset;
+    if (!headsetAvailable) {
+        // We have the built-in mic + at least another one, so we can assume a headset is connected
+        headsetAvailable = AVAudioSession.sharedInstance.availableInputs.count > 1;
+    }
+    @synchronized (self) {
+        self.currentAudioDevice = [[AudioDevice alloc] initWithType:type name:name isHeadsetAvailable:headsetAvailable];
+    }
+}
+
 - (void)activateAudioWithCall:(nonnull CallState *)call {
     DDLogVerbose(@"%@ activateAudioWithCall: %@", LOG_TAG, call);
     
@@ -3789,9 +3813,11 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
             NSError *error = nil;
 
             [audioSession lockForConfiguration];
-            
+
+            // Record the current route now because we are not allowed to call `currentRoute` from the main UI thread.
+            AVAudioSessionRouteDescription *currentRoute = audioSession.currentRoute;
             AVAudioSessionPortOverride mode = AVAudioSessionPortOverrideNone;
-            for (AVAudioSessionPortDescription *portDescription in audioSession.currentRoute.outputs) {
+            for (AVAudioSessionPortDescription *portDescription in currentRoute.outputs) {
                 if ([portDescription.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker] || [portDescription.portType isEqualToString:AVAudioSessionPortBuiltInReceiver]) {
                     mode = AVAudioSessionPortOverrideSpeaker;
                     break;
@@ -3802,7 +3828,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                 DDLogError(@"Error overriding output port: %@", error.localizedDescription);
             }
             [audioSession unlockForConfiguration];
-            
+            [self recordAudioDeviceWithRoute:currentRoute];
+
             if (!self.notificationSound) {
                 [self startRingtoneWithNotificationSoundType:CALL_IS_VIDEO(callStatus) ? NotificationSoundTypeVideoCall : NotificationSoundTypeAudioCall];
             }
@@ -3885,7 +3912,6 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     CallState *call = [self getCallWithUUID:action.callUUID];
     if (call) {
         CXCallUpdate *callUpdate = [self createCXCallUpdate:call.originator video:action.video];
-
         self.cxProvider.configuration = [self getCallkitConfiguration:action.video originator:call.originator];
         [self.cxProvider reportOutgoingCallWithUUID:action.callUUID startedConnectingAtDate:nil];
         [self.cxProvider reportCallWithUUID:call.callKitUUID updated:callUpdate];
@@ -3920,6 +3946,19 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 
     CallState *call = [self getCallWithUUID:action.callUUID];
     if (call) {
+        // When the video call is accepted while the application is in background,
+        // we must not open the camera because it is not available, instead turn it OFF
+        // and setup to activate the camera when the application is in foreground.
+        if (self.inBackground) {
+            CallStatus callStatus = [call status];
+            if (CALL_IS_VIDEO(callStatus)) {
+                @synchronized (self) {
+                    self.cameraMuteOn = YES;
+                    call.videoSourceOn = NO;
+                    self.restartCameraCall = call;
+                }
+            }
+        }
         [self acceptCallWithCall:call];
         [action fulfill];
     } else {
@@ -4032,6 +4071,16 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
             [self sendMessageWithCall:call message:CallEventMessageCallOnHold];
         }
         if (!action.onHold && CALL_IS_PAUSED(callStatus)) {
+
+            // We must re-activate the audio session because the `didDeactivateAudioSession` was called
+            // when the call was put on hold.  When the call is resumed, the `didActivateAudioSession` is not called.
+            RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
+
+            [rtcAudioSession lockForConfiguration];
+            [rtcAudioSession audioSessionDidActivate:[AVAudioSession sharedInstance]];
+            [rtcAudioSession setIsAudioEnabled:YES];
+            [rtcAudioSession unlockForConfiguration];
+
             [call resume];
             [self sendMessageWithCall:call message:CallEventMessageCallResumed];
         }
@@ -4087,15 +4136,17 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     
     BOOL speaker = NO;
     RTC_OBJC_TYPE(RTCAudioSession) *rtcAudioSession = [RTC_OBJC_TYPE(RTCAudioSession) sharedInstance];
-    for (AVAudioSessionPortDescription *portDescription in rtcAudioSession.currentRoute.outputs) {
+    AVAudioSessionRouteDescription *currentRoute = rtcAudioSession.currentRoute;
+    for (AVAudioSessionPortDescription *portDescription in currentRoute.outputs) {
         if ([portDescription.portType isEqualToString:AVAudioSessionPortBuiltInSpeaker]) {
             speaker = YES;
             break;
         }
     }
     
-    [[RTC_OBJC_TYPE(RTCAudioSession) sharedInstance] audioSessionDidActivate:audioSession];
-    [[RTC_OBJC_TYPE(RTCAudioSession) sharedInstance] setIsAudioEnabled:YES];
+    [rtcAudioSession audioSessionDidActivate:audioSession];
+    [rtcAudioSession setIsAudioEnabled:YES];
+    [self recordAudioDeviceWithRoute:currentRoute];
 
     if (speaker) {
         [self setSpeaker:speaker];
@@ -4126,6 +4177,12 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     DDLogInfo(@"%@ call changed: %@ onHold: %d ended: %d", LOG_TAG, call.UUID, call.onHold, call.hasEnded);
 
     CallState *activeCall = [self currentCall];
+    
+    if (activeCall && !call.hasEnded) {
+        CXCallUpdate *callUpdate = [self createCXCallUpdate:activeCall.originator video:activeCall.isVideo];
+        [self.cxProvider reportCallWithUUID:activeCall.callKitUUID updated:callUpdate];
+    }
+    
     if (activeCall && ![activeCall.callKitUUID isEqual:call.UUID] && callObserver.calls.count == 1
         && CALL_IS_PAUSED(activeCall.status)) {
         [self resumeCallWithCall:activeCall];

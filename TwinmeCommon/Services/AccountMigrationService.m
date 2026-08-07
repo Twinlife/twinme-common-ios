@@ -318,8 +318,12 @@ static const int STOP_SERVICE = 1 << 20;
 }
 
 - (void)outgoingMigrationWithAccountMigrationId:(nonnull NSUUID *)accountMigrationId {
-    DDLogVerbose(@"%@ outgoingMigrationWithAccountMigrationId: %@", LOG_TAG, accountMigrationId);
+    DDLogVerbose(@"%@ outgoingMigrationWithAccountMigrationId: %@ incoming: %@", LOG_TAG, accountMigrationId, self.incomingAccountMigrationId);
 
+    // If the incoming account migration is already running, we must ignore this outgoing migration.
+    if ([accountMigrationId isEqual:self.incomingAccountMigrationId]) {
+        return;
+    }
     self.work |= OUTGOING_MIGRATION;
     if (!self.twinmeContextDelegate) {
         self.twinmeContextDelegate = [[AccountMigrationServiceTwinmeContextDelegate alloc] initWithService:self];
@@ -377,18 +381,52 @@ static const int STOP_SERVICE = 1 << 20;
     }
 }
 
-- (void)dispose {
-    DDLogVerbose(@"%@ dispose", LOG_TAG);
+- (void)stopService {
+    DDLogVerbose(@"%@ cleanup", LOG_TAG);
+
+    self.work |= STOP_SERVICE;
+    self.work &= ~(GET_ACCOUNT_MIGRATION | OUTGOING_MIGRATION | ACCEPT_MIGRATION | START_MIGRATION | QUERY_STAT | TERMINATE_PHASE1 | TERMINATE_PHASE2);
+    self.state &= ~STOP_SERVICE;
     
-    if (self.isTwinlifeReady) {
-        [self.accountMigrationService removeDelegate:self.accountMigrationServiceDelegate];
-    }
+    [self startOperation];
+}
+
+- (void)cleanup {
+    DDLogVerbose(@"%@ cleanup", LOG_TAG);
+
+    // if (self.isTwinlifeReady) {
+    //    [self.accountMigrationService removeDelegate:self.accountMigrationServiceDelegate];
+    // }
     if (self.networkLock) {
         [self.networkLock releaseLock];
         self.networkLock = nil;
     }
-    
+
+    // Reset state to make sure the service is ready for a next account migration (after a cancel for example).
+    self.work = 0;
+    self.acceptAny = NO;
+    self.migrationState = TLAccountMigrationStateStarting;
+    self.commit = NO;
+    self.initiator = NO;
+    self.startTime = 0;
+    self.accountMigration = nil;
+    self.accountMigrationId = nil;
+    self.peerQueryInfo = nil;
+    self.localQueryInfo = nil;
+    self.incomingPeerConnectionId = nil;
+    self.peerVersion = nil;
+    self.incomingAccountMigrationId = nil;
+    self.status = nil;
+    [self.requestIds removeAllObjects];
+
     [self.accountMigrationService cleanup];
+}
+
+- (void)dispose {
+    DDLogVerbose(@"%@ dispose", LOG_TAG);
+
+    NSAssert(NO, @"the dispose() on the AccountMigrationService must never be called!");
+    
     [super dispose];
 }
 
@@ -643,7 +681,7 @@ static const int STOP_SERVICE = 1 << 20;
     if ((self.work & STOP_SERVICE) != 0) {
         if ((self.state & STOP_SERVICE) == 0) {
             self.state |= STOP_SERVICE;
-            [self dispose];
+            [self cleanup];
         }
     }
 }
@@ -752,8 +790,13 @@ static const int STOP_SERVICE = 1 << 20;
         self.state |= TERMINATE_PHASE1 | TERMINATE_PHASE1_DONE;
         self.work |= FINAL_SHUTDOWN | STOP_SERVICE;
         self.terminateRequestId = requestId;
+        // If we received a TERMINATE_MIGRATION IQ with commit and not done, we are not the initiator.
+        // Make sure to invalidate that flag in case the user tapped "Start migration" on both devices.
+        if (commit) {
+            self.initiator = NO;
+        }
 
-   } else if (operation == nil && !self.initiator) {
+    } else if (operation == nil && !self.initiator) {
         self.state |= TERMINATE_PHASE2 | TERMINATE_PHASE2_DONE;
         self.terminateRequestId = requestId;
 
@@ -771,7 +814,7 @@ static const int STOP_SERVICE = 1 << 20;
    self.work |= DELETE_MIGRATION | TERMINATE_PHASE2;
 }
 
-- (void) onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {
+- (void)onErrorWithOperationId:(int)operationId errorCode:(TLBaseServiceErrorCode)errorCode errorParameter:(NSString *)errorParameter {
     DDLogVerbose(@"%@ onErrorWithOperationId: %d errorCode: %d errorParameter:%@", LOG_TAG, operationId, errorCode, errorParameter);
     
     if (errorCode == TLBaseServiceErrorCodeTwinlifeOffline) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2017-2025 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -97,8 +97,9 @@ typedef enum {
 
 @property (readonly) AudioDeviceType type;
 @property (nullable, readonly) NSString *name;
+@property (readonly) BOOL isHeadsetAvailable;
 
-- (nonnull instancetype)initWithType:(AudioDeviceType)type name:(nullable NSString *)name;
+- (nonnull instancetype)initWithType:(AudioDeviceType)type name:(nullable NSString *)name isHeadsetAvailable:(BOOL)isHeadsetAvailable;
 
 @end
 
@@ -183,8 +184,6 @@ typedef enum {
 - (void)setSpeaker:(BOOL)speaker;
 
 - (nonnull AudioDevice *)getCurrentAudioDevice;
-
-- (BOOL)isHeadsetAvailable;
 
 - (void)switchCamera;
 

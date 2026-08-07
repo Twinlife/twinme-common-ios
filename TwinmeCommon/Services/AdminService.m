@@ -18,6 +18,7 @@
 
 #import <Twinme/TLContact.h>
 #import <Twinme/TLGroup.h>
+#import "TwinmeApplication.h"
 #import "AdminService.h"
 #import "AbstractTwinmeService+Protected.h"
 
@@ -101,6 +102,7 @@ static const int UPDATE_SCORES = 1 << 4;
 @interface AdminService ()<TLJob>
 
 @property (nonatomic, readonly, nonnull) TLTwinmeContext *twinmeContext;
+@property (nonatomic, readonly, nonnull) TwinmeApplication *twinmeApplication;
 
 @property (nonatomic) BOOL connected;
 
@@ -309,13 +311,14 @@ static const int UPDATE_SCORES = 1 << 4;
 
 @implementation AdminService
 
-- (instancetype)initWithTwinmeContext:(TLTwinmeContext *)twinmeContext {
+- (nullable instancetype)initWithTwinmeContext:(nonnull TLTwinmeContext *)twinmeContext twinmeApplication:(nonnull TwinmeApplication *)twinmeApplication {
     DDLogVerbose(@"%@ initWithTwinmeContext: %@", LOG_TAG, twinmeContext);
     
     self = [super init];
     
     if (self) {
         _twinmeContext = twinmeContext;
+        _twinmeApplication = twinmeApplication;
         
         _connected = [_twinmeContext isConnected];
         
@@ -353,6 +356,8 @@ static const int UPDATE_SCORES = 1 << 4;
     DDLogVerbose(@"%@ onTwinlifeReady", LOG_TAG);
     
     [[self.twinmeContext getConversationService] addDelegate:self.conversationServiceDelegate];
+    [[self.twinmeContext getPeerConnectionService] setIceTransportModeWithMode:self.twinmeApplication.iceTransportMode];
+
     self.isTwinlifeReady = YES;
     
     // Build and setup the group weight table to update the group usage score.

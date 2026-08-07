@@ -12,6 +12,7 @@
 
 #import <Twinlife/TLImageService.h>
 #import <Twinlife/TLTwinlife.h>
+#import <Twinlife/TLCryptoService.h>
 
 #import <Twinme/TLTwinmeContext.h>
 #import <Twinme/TLContact.h>
@@ -20,6 +21,7 @@
 #import <Twinme/TLMessage.h>
 #import <Twinme/TLTyping.h>
 #import <Twinme/TLTwinmeAttributes.h>
+#import <Twinme/TLInvitation.h>
 
 #import "ConversationService.h"
 #import "AbstractTwinmeService+Protected.h"
@@ -51,6 +53,12 @@ static const int PUSH_GEOLOCATION = 1 << 15;
 static const int SAVE_GEOLOCATION_MAP = 1 << 16;
 static const int UPDATE_DESCRIPTOR = 1 << 17;
 static const int PUSH_POLL = 1 << 18;
+static const int GET_SHARE_CONTACT = 1 << 19;
+static const int GET_SHARE_CONTACT_DONE = 1 << 20;
+static const int PUSH_SHARE_CONTACT = 1 << 21;
+static const int ANSWER_SHARE_CONTACT = 1 << 22;
+static const int GET_DESCRIPTOR = 1 << 23;
+static const int GET_DESCRIPTOR_DONE = 1 << 24;
 //
 // Interface: ConversationService ()
 //
@@ -78,6 +86,10 @@ static const int PUSH_POLL = 1 << 18;
 @property (nonatomic) NSMutableDictionary<NSUUID *, TLGroupMember *> *groupMembers;
 @property (nonatomic) NSArray<TLDescriptor *> *descriptors;
 @property (nonatomic) TLDisplayCallsMode callsMode;
+@property (nonatomic) NSUUID *shareContactId;
+@property (nonatomic, nullable) TLDescriptorId *shareContactDescriptorId;
+@property (nonatomic, nullable) TLContactShareDescriptor *shareContactDescriptor;
+@property (nonatomic) TLInvitationDescriptorStatusType answer;
 
 @property (nonatomic) ConversationServiceConversationServiceDelegate *conversationServiceDelegate;
 
@@ -593,6 +605,29 @@ static const int PUSH_POLL = 1 << 18;
     [self.twinmeContext pushPollWithRequestId:requestId conversation:self.conversation multipleChoicesAllowed:multipleAnswersAllowed question:question choices:choices copyAllowed:copyAllowed expiration:expiration];
 }
 
+- (void)pushContactShareWithContactId:(nonnull NSUUID *)contactId {
+    DDLogVerbose(@"%@ pushContactShareWithContactId:%@", LOG_TAG, contactId);
+
+    self.shareContactId = contactId;
+    self.state &= ~GET_SHARE_CONTACT;
+    self.state &= ~GET_SHARE_CONTACT_DONE;
+    
+    [self startOperation];
+}
+
+- (void)answerContactShareWithDescriptorId:(nonnull TLDescriptorId *)descriptorId answer:(TLInvitationDescriptorStatusType)answer {
+    DDLogVerbose(@"%@ answerContactShareWithDescriptorId:%@ answer:%d", LOG_TAG, descriptorId, answer);
+    
+    self.shareContactDescriptorId = descriptorId;
+    self.answer = answer;
+    
+    self.state &= ~(GET_DESCRIPTOR | GET_DESCRIPTOR_DONE | ANSWER_SHARE_CONTACT);
+    
+    [self startOperation];
+}
+
+
+
 - (void)submitPollVotes:(nonnull TLDescriptorId *)descriptorId choices:(nonnull NSArray<TLChoice *> *)choices {
     DDLogVerbose(@"%@ submitPollVotes:%@ choices:%@", LOG_TAG, descriptorId, choices);
     
@@ -768,6 +803,62 @@ static const int PUSH_POLL = 1 << 18;
             return;
         }
     }
+
+    if (self.shareContactId) {
+        if ((self.state & GET_SHARE_CONTACT) == 0) {
+            self.state |= GET_SHARE_CONTACT;
+            
+            [self.twinmeContext getContactWithContactId:self.shareContactId withBlock:^(TLBaseServiceErrorCode errorCode, TLContact * _Nullable contact) {
+                [self onGetShareContactWithErrorCode:errorCode contact:contact];
+            }];
+            return;
+        }
+        
+        if ((self.state  & GET_SHARE_CONTACT_DONE) == 0) {
+            return;
+        }
+    }
+    
+    //
+    // Answer contact share (accept / deny)
+    //
+    if (self.shareContactDescriptorId) {
+        
+        if ((self.state & GET_DESCRIPTOR) == 0) {
+            self.state |= GET_DESCRIPTOR;
+            
+            [self.twinmeContext getDescriptorWithDescriptorId:self.shareContactDescriptorId withBlock:^(TLDescriptor * _Nullable descriptor) {
+                [self onGetDescriptor:descriptor];
+            }];
+            return;
+        }
+        
+        if ((self.state & GET_DESCRIPTOR_DONE) == 0) {
+            return;
+        }
+        
+        if ((self.state & ANSWER_SHARE_CONTACT) == 0) {
+            self.state |= ANSWER_SHARE_CONTACT;
+            
+            if (self.conversation) {                
+                [self.twinmeContext answerContactShareWithConversation:self.conversation contactShareDescriptor:self.shareContactDescriptor space:self.contact.space answer:self.answer autoAnswer:NO];
+            }
+        }
+    }
+}
+
+- (void)onGetDescriptor:(nullable TLDescriptor *)descriptor {
+    DDLogVerbose(@"%@ onGetDescriptor: %@", LOG_TAG, descriptor);
+
+    self.state |= GET_DESCRIPTOR_DONE;
+    
+    if (![descriptor isKindOfClass:TLContactShareDescriptor.class]) {
+        [self onErrorWithOperationId:GET_DESCRIPTOR errorCode:TLBaseServiceErrorCodeItemNotFound errorParameter:nil];
+    } else {
+        self.shareContactDescriptor = (TLContactShareDescriptor *)descriptor;
+    }
+    
+    [self onOperation];
 }
 
 - (void)onTwinlifeReady {
@@ -992,6 +1083,31 @@ static const int PUSH_POLL = 1 << 18;
     dispatch_async(dispatch_get_main_queue(), ^{
         [(id<ConversationServiceDelegate>)self.delegate onDeleteDescriptors:descriptors];
     });
+    [self onOperation];
+}
+
+- (void)onGetShareContactWithErrorCode:(TLBaseServiceErrorCode)errorCode contact:(nullable TLContact *)contact {
+    DDLogVerbose(@"%@ onGetShareContactWithErrorCode: %u contact: %@", LOG_TAG, errorCode, contact);
+    
+    self.state |= GET_SHARE_CONTACT_DONE;
+    
+    if (!self.conversation) {
+        DDLogError(@"%@ conversation is null, cannot send contact share for contact: %@", LOG_TAG, contact);
+        [self onOperation];
+        return;
+    }
+
+    if (contact) {
+        UIImage *avatar = [self getImageWithContact:contact];
+        NSData *avatarData = UIImagePNGRepresentation(avatar);
+        
+        int64_t requestId = [self newOperation:PUSH_SHARE_CONTACT];
+    
+        [self.twinmeContext pushContactShareWithRequestId:requestId conversation:self.conversation name:contact.name avatar:avatarData contactId:self.shareContactId expiration:0L];
+    } else {
+        [self onErrorWithOperationId:GET_SHARE_CONTACT errorCode:errorCode errorParameter:nil];
+    }
+    
     [self onOperation];
 }
 

@@ -81,6 +81,19 @@ TL_CREATE_ASSERT_POINT(CONTACT_CHANGED, 4004)
     [self.service onOperation];
 }
 
+- (void)onTwinlifeSuspend {
+    DDLogVerbose(@"%@ onTwinlifeSuspend", LOG_TAG);
+    
+    self.service.isTwinlifeReady = NO;
+}
+
+- (void)onTwinlifeResume {
+    DDLogVerbose(@"%@ onTwinlifeSuspend", LOG_TAG);
+    
+    self.service.isTwinlifeReady = YES;
+    [self.service onOperation];
+}
+
 - (void)onConnectionStatusChange:(TLConnectionStatus)connectionStatus {
     DDLogVerbose(@"%@ onConnectionStatusChange: %d", LOG_TAG, connectionStatus);
     
@@ -447,6 +460,12 @@ TL_CREATE_ASSERT_POINT(CONTACT_CHANGED, 4004)
             });
         }];
     });
+}
+
+- (void)updateIceTransportMode:(TLPeerConnectionServiceIceTransportMode)iceTransportMode {
+    DDLogVerbose(@"%@ updateIceTransportMode: %lu", LOG_TAG, (unsigned long)iceTransportMode);
+    
+    [[self.twinmeContext getPeerConnectionService] setIceTransportModeWithMode:iceTransportMode];
 }
 
 # pragma mark Delegate runners

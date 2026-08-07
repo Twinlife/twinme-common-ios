@@ -12,6 +12,7 @@
 #import <Twinlife/TLBaseService.h>
 
 #import <Twinme/TLTwinmeApplication.h>
+#import <Twinlife/TLPeerConnectionService.h>
 #import <Twinme/TLProfile.h>
 
 #import <Notification/NotificationSettings.h>
@@ -65,6 +66,7 @@ typedef enum {
     OnboardingTypeRestore,
     OnboardingTypeVerifyBackup,
     OnboardingTypeBackupBeta,
+    OnboardingTypeShareContact,
     OnboardingTypeCount
 } OnboardingType;
 
@@ -218,7 +220,7 @@ typedef enum {
 #endif
 
 //
-// Haptic Feedback
+// Sounds and Vibrations
 //
 
 - (HapticFeedbackMode)hapticFeedbackMode;
@@ -228,6 +230,19 @@ typedef enum {
 - (BOOL)allowHapticFeedback;
 
 - (void)setHapticFeedbackEnableWithState:(BOOL)state;
+
+- (BOOL)allowSoundEffects;
+
+- (void)setSoundEffectsEnableWithState:(BOOL)state;
+
+//
+// Security Level
+//
+
+- (TLPeerConnectionServiceIceTransportMode)iceTransportMode;
+
+- (void)setIceTransportModeWithMode:(TLPeerConnectionServiceIceTransportMode)iceTransportMode;
+
 
 //
 // Call

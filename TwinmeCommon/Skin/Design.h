@@ -445,6 +445,16 @@ typedef enum {
 #endif
 
 //
+// Dash line
+//
+
++ (CGFloat)LINE_DASH_LONG_LENGTH;
+
++ (CGFloat)LINE_DASH_SHORT_LENGTH;
+
++ (CGFloat)LINE_DASH_SPACING;
+
+//
 // Emoji
 //
 

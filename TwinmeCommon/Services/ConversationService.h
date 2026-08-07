@@ -95,6 +95,10 @@ typedef BOOL (^TLDescriptorFilter) (TLDescriptor *_Nonnull descriptor);
 
 - (void)pushPollWithMultipleAnswersAllowed:(BOOL)multipleAnswersAllowed question:(nonnull NSString *)question choices:(nonnull NSArray<TLChoice *> *)choices copyAllowed:(BOOL)copyAllowed expiration:(int64_t)expiration;
 
+- (void)pushContactShareWithContactId:(nonnull NSUUID *)contactId;
+
+- (void)answerContactShareWithDescriptorId:(nonnull TLDescriptorId *)descriptorId answer:(TLInvitationDescriptorStatusType)answer;
+
 - (void)submitPollVotes:(nonnull TLDescriptorId *)descriptorId choices:(nonnull NSArray<TLChoice *> *)choices;
 
 - (void)saveGeolocationMapWithPath:(nonnull NSString *)path descriptorId:(nonnull TLDescriptorId *)descriptorId;

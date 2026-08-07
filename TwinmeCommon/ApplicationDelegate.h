@@ -13,6 +13,7 @@
 #import <Twinlife/TLApplication.h>
 
 #define CONVERSATION_ACTION [NSString stringWithFormat:@"conversation.%@",[TLTwinlife TWINLIFE_DOMAIN]]
+#define PREVIEW_ACTION [NSString stringWithFormat:@"preview.%@",[TLTwinlife TWINLIFE_DOMAIN]]
 #define MIGRATION_ACTION [NSString stringWithFormat:@"migration.%@",[TLTwinlife TWINLIFE_DOMAIN]]
 #define NotificationsRequestAuthorizationFinish @"NotificationsRequestAuthorizationFinish"
 

@@ -172,4 +172,6 @@
 
 - (void)createUriWithKind:(TLTwincodeURIKind)kind twincodeOutbound:(nonnull TLTwincodeOutbound *)twincodeOutbound withBlock:(nonnull void (^)(TLBaseServiceErrorCode errorCode, TLTwincodeURI *_Nullable twincodeUri))block;
 
+- (void)updateIceTransportMode:(TLPeerConnectionServiceIceTransportMode)iceTransportMode;
+
 @end

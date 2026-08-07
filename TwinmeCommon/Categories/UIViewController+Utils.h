@@ -19,4 +19,6 @@
 
 - (BOOL)hasLandscapeMode;
 
+- (void)clearBottomSheetViews;
+
 @end

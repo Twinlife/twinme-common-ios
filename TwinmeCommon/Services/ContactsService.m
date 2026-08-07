@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2019-2024 twinlife SA.
+ *  Copyright (c) 2019-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -9,9 +9,10 @@
 
 #import <CocoaLumberjack.h>
 
+#import <Twinme/TLContact.h>
+#import <Twinme/TLSpace.h>
 #import <Twinme/TLTwinmeContext.h>
 
-#import <Twinme/TLContact.h>
 #import <Twinlife/TLFilter.h>
 
 #import "ContactsService.h"
@@ -154,7 +155,12 @@ static const int FIND_CONTACTS_DONE = 1 << 5;
     DDLogVerbose(@"%@ getContacts", LOG_TAG);
     
     [self showProgressIndicator];
-    self.state &= ~(GET_CONTACTS | GET_CONTACTS_DONE | GET_CURRENT_SPACE | GET_CURRENT_SPACE_DONE);
+    if (self.space) {
+        self.state &= ~(GET_CONTACTS | GET_CONTACTS_DONE);
+    } else {
+        self.state &= ~(GET_CONTACTS | GET_CONTACTS_DONE | GET_CURRENT_SPACE | GET_CURRENT_SPACE_DONE);
+    }
+    
     [self startOperation];
 }
 
@@ -171,6 +177,13 @@ static const int FIND_CONTACTS_DONE = 1 << 5;
     DDLogVerbose(@"%@ isGetContactsDone", LOG_TAG);
     
     return (self.state & GET_CONTACTS_DONE) != 0;
+}
+
+- (void)updateSpace:(nonnull TLSpace *)space {
+    DDLogVerbose(@"%@ updateSpace: %@", LOG_TAG, space);
+    
+    self.space = space;
+    [self getContacts];
 }
 
 #pragma mark - Private methods
@@ -259,10 +272,13 @@ static const int FIND_CONTACTS_DONE = 1 << 5;
     //
     // Step 2: We must get the list of contacts for the space.
     //
-    if ((self.state & GET_CONTACTS) == 0) {
+    if ((self.state & GET_CONTACTS) == 0 && self.space) {
         self.state |= GET_CONTACTS;
         
-        [self.twinmeContext findContactsWithFilter:[self.twinmeContext createSpaceFilter] withBlock:^(NSMutableArray<TLContact *> *contacts) {
+        TLFilter *filter = [TLFilter alloc];
+        filter.owner = self.space;
+        
+        [self.twinmeContext findContactsWithFilter:filter withBlock:^(NSMutableArray<TLContact *> *contacts) {
             self.state |= GET_CONTACTS_DONE;
             [self runOnGetContacts:contacts];
             [self onOperation];
@@ -280,7 +296,8 @@ static const int FIND_CONTACTS_DONE = 1 << 5;
         if ((self.state & FIND_CONTACTS) == 0) {
             self.state |= FIND_CONTACTS;
                        
-            TLFilter *filter = [self.twinmeContext createSpaceFilter];
+            TLFilter *filter = [TLFilter alloc];
+            filter.owner = self.space;
             NSString *findName = self.findName;
             if (findName) {
                 filter.acceptWithObject = ^BOOL(id<TLDatabaseObject> object) {
