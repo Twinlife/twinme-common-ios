@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -40,8 +40,6 @@
 - (void)refreshWithGroup:(nonnull TLGroup *)group;
 
 - (void)updateGroupWithName:(nonnull TLGroup *)group name:(nonnull NSString *)name description:(nullable NSString *)description;
-
-- (void)updateGroupWithName:(nonnull TLGroup *)group name:(nonnull NSString *)name description:(nullable NSString *)description avatar:(nonnull UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar permissions:(int64_t)permissions capabilities:(nullable TLCapabilities *)capabilities;
 
 - (void)updateGroupWithName:(nonnull TLGroup *)group name:(nonnull NSString *)name description:(nullable NSString *)description avatar:(nonnull UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar;
 

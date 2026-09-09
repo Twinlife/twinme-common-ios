@@ -27,6 +27,8 @@
 
 - (void)onDeleteGroup:(nonnull NSUUID *)groupId;
 
+- (void)onUpdatePermissionsError:(TLBaseServiceErrorCode) errorCode;
+
 - (void)onErrorGroupNotFound;
 
 @end

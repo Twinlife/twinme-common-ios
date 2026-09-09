@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018-2025 twinlife SA.
+ *  Copyright (c) 2018-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -84,6 +84,7 @@ static const int GET_CURRENT_SPACE_DONE = 1 << 29;
 @property (nonatomic, nullable) id<TLGroupConversation> groupConversation;
 @property (nonatomic, nullable) NSString *findName;
 @property (nonatomic) int64_t joinPermissions;
+@property (nonatomic) int64_t memberPermissions;
 @property (nonatomic) int work;
 @property (nonatomic, readonly) GroupServiceConversationServiceDelegate *conversationServiceDelegate;
 @property (nonatomic) TLGroupMember *groupMember;
@@ -371,6 +372,7 @@ static const int GET_CURRENT_SPACE_DONE = 1 << 29;
     self.avatarImage = avatar;
     self.avatarLargeImage = avatarLarge;
     self.joinPermissions = permissions;
+    self.memberPermissions = TL_ALL_PERMISSIONS;
     [self inviteGroupWithContacts:members];
 }
 
@@ -766,7 +768,7 @@ static const int GET_CURRENT_SPACE_DONE = 1 << 29;
             self.state |= CREATE_GROUP;
             
             int64_t requestId = [self newOperation:CREATE_GROUP];
-            [self.twinmeContext createGroupWithRequestId:requestId name:self.groupName description:self.groupDescription avatar:self.avatarImage largeAvatar:self.avatarLargeImage];
+            [self.twinmeContext createGroupWithRequestId:requestId name:self.groupName description:self.groupDescription avatar:self.avatarImage largeAvatar:self.avatarLargeImage memberPermissions:self.memberPermissions joinPermissions:self.joinPermissions];
             return;
         }
         if ((self.state & CREATE_GROUP_DONE) == 0) {

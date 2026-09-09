@@ -24,23 +24,23 @@ typedef enum {
 
 // Operations on the Call (note: they can override the operations on the CallConnection
 // but we try to avoid that and reserve the first 16 values for the call).
-#define WAIT_CONFERENCE                    (1 << 13)
-#define JOIN_CONFERENCE                    (1 << 14)
-#define JOIN_CONFERENCE_DONE               (1 << 15)
-#define START_CALL                         (1 << 0)
-#define START_CALL_DONE                    (1 << 1)
-#define START_OUTGOING_RINGTONE            (1 << 2)
-#define SEND_DEVICE_RINGING                (1 << 3)
-#define ACCEPTED_CALL                      (1 << 4)
-#define ACCEPTED_CALL_DONE                 (1 << 5)
-#define DELETE_INCOMING_NOTIFICATION       (1 << 6)
-#define DELETE_INCOMING_NOTIFICATION_DONE  (1 << 7)
-#define TERMINATE_CALL                     (1 << 8)
-#define TERMINATE_CALL_DONE                (1 << 9)
-#define CREATE_CALL_ROOM                   (1 << 10)
-#define CREATE_CALL_ROOM_DONE              (1 << 11)
-#define CALLKIT_DONE                       (1 << 12)
-#define FINISH_CALLKIT                     (1 << 13)
+#define WAIT_CONFERENCE                    (1 << 0)
+#define JOIN_CONFERENCE                    (1 << 1)
+#define JOIN_CONFERENCE_DONE               (1 << 2)
+#define START_CALL                         (1 << 3)
+#define START_CALL_DONE                    (1 << 4)
+#define START_OUTGOING_RINGTONE            (1 << 5)
+#define SEND_DEVICE_RINGING                (1 << 6)
+#define ACCEPTED_CALL                      (1 << 7)
+#define ACCEPTED_CALL_DONE                 (1 << 8)
+#define DELETE_INCOMING_NOTIFICATION       (1 << 9)
+#define DELETE_INCOMING_NOTIFICATION_DONE  (1 << 10)
+#define TERMINATE_CALL                     (1 << 11)
+#define TERMINATE_CALL_DONE                (1 << 12)
+#define CREATE_CALL_ROOM                   (1 << 13)
+#define CREATE_CALL_ROOM_DONE              (1 << 14)
+#define CALLKIT_DONE                       (1 << 15)
+#define FINISH_CALLKIT                     (1 << 16)
 
 @protocol RTC_OBJC_TYPE(RTCVideoRenderer);
 @class TLPeerConnectionService;
@@ -93,6 +93,7 @@ typedef enum {
 @property (nonatomic, nullable) NSString *callRoomMemberId;
 @property (nonatomic, nullable) TLDescriptorId *descriptorId;
 @property (nonatomic) int64_t connectionStartTime;
+@property (nonatomic) int64_t acceptTime;
 @property (nonatomic) int maxMemberCount;
 @property (nonatomic) BOOL peerConnected;
 @property (nonatomic) TLPeerConnectionServiceTerminateReason terminateReason;

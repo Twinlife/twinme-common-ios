@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2020-2024 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
@@ -177,29 +177,13 @@ static const int GET_GROUP_AVATAR_DONE = 1 << 6;
 
 - (void)updateGroupWithCapabilities:(nonnull TLGroup *)group capabilities:(nullable TLCapabilities *)capabilities {
     DDLogVerbose(@"%@ updateGroupWithCapabilities group: %@ capabilities: %@", LOG_TAG, group, capabilities);
-    
+
     self.work |= UPDATE_GROUP;
     self.state &= ~(UPDATE_GROUP | UPDATE_GROUP_DONE);
     self.group = group;
     self.name = self.group.name;
     self.capabilities = capabilities;
     self.avatar = nil;
-    [self showProgressIndicator];
-    [self startOperation];
-}
-
-- (void)updateGroupWithName:(nonnull TLGroup *)group name:(nonnull NSString *)name description:(nullable NSString *)description avatar:(nonnull UIImage *)avatar largeAvatar:(nullable UIImage *)largeAvatar permissions:(int64_t)permissions capabilities:(nullable TLCapabilities *)capabilities{
-    DDLogVerbose(@"%@ updateGroupWithName group: %@ name: %@ avatar:%@ largeAvatar: %@ permissions: %lld", LOG_TAG, group, name, avatar, largeAvatar, permissions);
-    
-    self.work |= UPDATE_GROUP;
-    self.state &= ~(UPDATE_GROUP | UPDATE_GROUP_DONE);
-    self.group = group;
-    self.name = name;
-    self.groupDescription = description;
-    self.avatar = avatar;
-    self.largeAvatar = largeAvatar;
-    self.capabilities = capabilities;
-    [[self.twinmeContext getConversationService] setPermissionsWithSubject:self.group memberTwincodeId:nil permissions:permissions];
     [self showProgressIndicator];
     [self startOperation];
 }

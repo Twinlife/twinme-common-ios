@@ -1,10 +1,11 @@
 /*
- *  Copyright (c) 2017-2024 twinlife SA.
+ *  Copyright (c) 2017-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
  *   Chedi Baccari (Chedi.Baccari@twinlife-systems.com)
  *   Stephane Carrez (Stephane.Carrez@twin.life)
+ *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
  */
 
 #import <AVFoundation/AVFoundation.h>
@@ -26,6 +27,8 @@ static const int ddLogLevel = DDLogLevelWarning;
 
 static AudioPlayerManager *sharedInstance = nil;
 
+NSString * const AudioPlayerDidFinishPlayingDescriptorId = @"AudioPlayerDidFinishPlayingDescriptorId";
+
 //
 // Interface: AudioSessionManager ()
 //
@@ -46,6 +49,8 @@ static AudioPlayerManager *sharedInstance = nil;
 @interface AudioPlayerManager () <AVAudioPlayerDelegate>
 
 @property (nonatomic, nullable) AVAudioPlayer *audioPlayer;
+@property (nonatomic) BOOL observingProximityChanges;
+@property (nonatomic) BOOL previousProximityMonitoringEnabled;
 
 @end
 
@@ -187,6 +192,7 @@ static AudioPlayerManager *sharedInstance = nil;
             self.audioPlayer.enableRate = YES;
             self.audioPlayer.rate = [twinmeApplication getAudioPlayerRate];
             
+            [self startProximityMonitoring];
             [self.audioPlayer play];
             if (currentTime > 0.0) {
                 [self.audioPlayer setCurrentTime:currentTime];
@@ -203,11 +209,17 @@ static AudioPlayerManager *sharedInstance = nil;
 
     [self releaseAudioSession];
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:@"audioPlayerDidFinishPlaying" object:nil];
+    NSDictionary *userInfo = nil;
+    if (flag && self.descriptorId) {
+        userInfo = @{AudioPlayerDidFinishPlayingDescriptorId: self.descriptorId};
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"audioPlayerDidFinishPlaying" object:nil userInfo:userInfo];
 }
 
 - (void)releaseAudioSession {
     DDLogVerbose(@"%@ releaseAudioSession", LOG_TAG);
+
+    [self stopProximityMonitoring];
 
     if (self.audioPlayer) {
         [self.audioPlayer stop];
@@ -215,6 +227,37 @@ static AudioPlayerManager *sharedInstance = nil;
     }
 
     [super releaseAudioSession];
+}
+
+- (void)startProximityMonitoring {
+    DDLogVerbose(@"%@ startProximityMonitoring", LOG_TAG);
+
+    if (self.observingProximityChanges) {
+        return;
+    }
+
+    UIDevice *device = [UIDevice currentDevice];
+    self.previousProximityMonitoringEnabled = device.proximityMonitoringEnabled;
+    device.proximityMonitoringEnabled = YES;
+
+    if (device.proximityMonitoringEnabled) {
+        self.observingProximityChanges = YES;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(proximityChanged) name:UIDeviceProximityStateDidChangeNotification object:nil];
+    }
+    
+    [self proximityChanged];
+}
+
+- (void)stopProximityMonitoring {
+    DDLogVerbose(@"%@ stopProximityMonitoring", LOG_TAG);
+
+    if (!self.observingProximityChanges) {
+        return;
+    }
+
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceProximityStateDidChangeNotification object:nil];
+    [UIDevice currentDevice].proximityMonitoringEnabled = self.previousProximityMonitoringEnabled;
+    self.observingProximityChanges = NO;
 }
 
 - (void)updateRate {

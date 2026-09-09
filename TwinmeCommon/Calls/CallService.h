@@ -210,9 +210,10 @@ typedef enum {
 
 - (void)onUnknownIncomingCall;
 
-- (void)applicationDidEnterBackground:(nonnull UIApplication *)application;
+/// The application is loosing the focus and the camera will be frozen if it is used..
+- (void)applicationWillResignActive:(nonnull UIApplication *)application;
 
-- (void)applicationWillEnterForeground:(nonnull UIApplication *)application;
+- (void)applicationDidBecomeActive:(nonnull UIApplication *)application;
 
 - (void)sendMessageWithCall:(nonnull CallState *)call message:(nonnull NSString *)message;
 

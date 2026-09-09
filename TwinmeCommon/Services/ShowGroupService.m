@@ -1,9 +1,10 @@
 /*
- *  Copyright (c) 2020-2025 twinlife SA.
+ *  Copyright (c) 2020-2026 twinlife SA.
  *  SPDX-License-Identifier: AGPL-3.0-only
  *
  *  Contributors:
  *   Fabrice Trescartes (Fabrice.Trescartes@twin.life)
+ *   Stephane Carrez (Stephane.Carrez@twin.life)
  */
 
 #import <CocoaLumberjack.h>
@@ -42,6 +43,8 @@ static const int DELETE_GROUP_DONE = 1 << 12;
 static const int MEMBER_LEAVE_GROUP = 1 << 13;
 static const int GET_TWINCODE = 1 << 14;
 static const int GET_TWINCODE_DONE = 1 << 15;
+static const int UPDATE_PERMISSIONS = 1 << 16;
+static const int UPDATE_PERMISSIONS_DONE = 1 << 17;
 
 //
 // Interface: ShowGroupService ()
@@ -62,6 +65,7 @@ static const int GET_TWINCODE_DONE = 1 << 15;
 @property (nonatomic, nullable) id<TLGroupConversation> groupConversation;
 @property (nonatomic) int work;
 @property (nonatomic, readonly) ShowGroupServiceConversationServiceDelegate *conversationServiceDelegate;
+@property (nonatomic) int64_t memberPermissions;
 
 - (void)onOperation;
 
@@ -263,25 +267,20 @@ static const int GET_TWINCODE_DONE = 1 << 15;
 - (void)updatePermissions:(BOOL)allowInvitation allowMessage:(BOOL)allowMessage allowInviteMemberAsContact:(BOOL)allowInviteMemberAsContact {
     DDLogVerbose(@"%@ updatePermissions: %@ allowMessage: %@ allowInviteMemberAsContact: %@", LOG_TAG, allowInvitation ? @"YES":@"NO", allowMessage ? @"YES":@"NO", allowInviteMemberAsContact ? @"YES":@"NO");
     
-    long permissions = ~0;
-    permissions &= ~(1 << TLPermissionTypeUpdateMember);
-    permissions &= ~(1 << TLPermissionTypeRemoveMember);
-    permissions &= ~(1 << TLPermissionTypeResetConversation);
-    if (!allowInvitation) {
-        permissions &= ~(1 << TLPermissionTypeInviteMember);
+    int64_t permissions = (1 << TLPermissionTypeReceiveMessage);
+    if (allowInvitation) {
+        permissions |= TL_MANAGE_MEMBER_PERMISSIONS;
     }
-    if (!allowMessage) {
-        permissions &= ~(1 << TLPermissionTypeSendMessage);
-        permissions &= ~(1 << TLPermissionTypeSendAudio);
-        permissions &= ~(1 << TLPermissionTypeSendVideo);
-        permissions &= ~(1 << TLPermissionTypeSendImage);
-        permissions &= ~(1 << TLPermissionTypeSendFile);
+    if (allowMessage) {
+        permissions |= TL_ALLOW_POST_PERMISSIONS;
     }
-    if (!allowInviteMemberAsContact) {
-        permissions &= ~(1 << TLPermissionTypeSendTwincode);
+    if (allowInviteMemberAsContact) {
+        permissions |= (1 << TLPermissionTypeSendTwincode);
     }
-    
-    [[self.twinmeContext getConversationService] setPermissionsWithSubject:self.group memberTwincodeId:nil permissions:permissions];
+    self.memberPermissions = permissions;
+    self.work |= UPDATE_PERMISSIONS;
+    self.state &= ~(UPDATE_PERMISSIONS | UPDATE_PERMISSIONS_DONE);
+    [self startOperation];
 }
 
 - (void)leaveGroupWithMemberTwincodeId:(nonnull NSUUID *)memberTwincodeId {
@@ -542,6 +541,20 @@ static const int GET_TWINCODE_DONE = 1 << 15;
         }
     }
     
+    // We must get the group object.
+    if ((self.work & UPDATE_PERMISSIONS) != 0) {
+        if ((self.state & UPDATE_PERMISSIONS) == 0) {
+            self.state |= UPDATE_PERMISSIONS;
+            
+            int64_t requestId = [self newOperation:UPDATE_PERMISSIONS];
+            [self.twinmeContext updateGroupPermissionsWithRequestId:requestId group:self.group memberPermissions:self.memberPermissions];
+            return;
+        }
+        if ((self.state & UPDATE_PERMISSIONS_DONE) == 0) {
+            return;
+        }
+    }
+    
     //
     // Last Step
     //
@@ -562,9 +575,10 @@ static const int GET_TWINCODE_DONE = 1 << 15;
     // Wait for reconnection
     if (errorCode == TLBaseServiceErrorCodeTwinlifeOffline) {
         self.restarted = YES;
+        
         return;
     }
-    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired) {
+    if (errorCode == TLBaseServiceErrorCodeItemNotFound || errorCode == TLBaseServiceErrorCodeExpired || errorCode == TLBaseServiceErrorCodeTimeoutError || TLBaseServiceErrorCodeNotAuthorizedOperation) {
         switch (operationId) {
             case GET_GROUP:
                 self.state |= GET_GROUP_DONE;
@@ -591,6 +605,16 @@ static const int GET_TWINCODE_DONE = 1 << 15;
                 if ([(id)self.delegate respondsToSelector:@selector(onErrorGroupNotFound)]) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [(id<ShowGroupServiceDelegate>)self.delegate onErrorGroupNotFound];
+                    });
+                }
+                return;
+                
+            case UPDATE_PERMISSIONS:
+                self.state |= UPDATE_PERMISSIONS_DONE;
+                
+                if ([(id)self.delegate respondsToSelector:@selector(onUpdatePermissionsError:)]) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [(id<ShowGroupServiceDelegate>)self.delegate onUpdatePermissionsError:errorCode];
                     });
                 }
                 return;

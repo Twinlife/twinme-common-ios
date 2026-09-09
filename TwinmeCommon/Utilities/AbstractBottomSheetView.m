@@ -108,11 +108,18 @@ static const int ddLogLevel = DDLogLevelWarning;
 - (void)showConfirmView {
     DDLogVerbose(@"%@ showConfirmView", LOG_TAG);
     
+    UIView *containerView = self.superview;
+    if (!containerView) {
+        return;
+    }
+    
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+    
     [NSLayoutConstraint activateConstraints:@[
-        [self.topAnchor constraintEqualToAnchor:self.superview.topAnchor],
-        [self.bottomAnchor constraintEqualToAnchor:self.superview.bottomAnchor],
-        [self.leadingAnchor constraintEqualToAnchor:self.superview.leadingAnchor],
-        [self.trailingAnchor constraintEqualToAnchor:self.superview.trailingAnchor],
+        [self.topAnchor constraintEqualToAnchor:containerView.topAnchor],
+        [self.bottomAnchor constraintEqualToAnchor:containerView.bottomAnchor],
+        [self.leadingAnchor constraintEqualToAnchor:containerView.leadingAnchor],
+        [self.trailingAnchor constraintEqualToAnchor:containerView.trailingAnchor],
     ]];
     
     [self updateFont];
@@ -123,7 +130,7 @@ static const int ddLogLevel = DDLogLevelWarning;
                         options:0
                      animations:^{
         self.overlayView.alpha = 0.3f;
-        self.actionView.frame = CGRectMake(0, self.superview.frame.size.height - self.actionView.frame.size.height, self.superview.frame.size.width, self.actionView.frame.size.height);
+        self.actionView.frame = CGRectMake(0, containerView.frame.size.height - self.actionView.frame.size.height, containerView.frame.size.width, self.actionView.frame.size.height);
     }
                      completion:nil];
 }
@@ -342,4 +349,3 @@ static const int ddLogLevel = DDLogLevelWarning;
 }
 
 @end
-

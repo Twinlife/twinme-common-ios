@@ -1202,7 +1202,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
             // It is critical that we make a call to CallKit API otherwise iOS 13 will kill us.
             // The call to reportNewIncomingCallWithUUID() could have been made before when
             // the session-initiate event was handled before the pushKit operation.
-            callIsKnown = call && [call isDoneOperation:CALLKIT_DONE];
+            callIsKnown = call && [call checkOperation:CALLKIT_DONE] == NO;
             mustTerminate = call == nil;
             
         } else if (call && [call status] != CallStatusTerminated) {
@@ -1215,7 +1215,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                     [call addPeerWithConnection:connection];
                     autoAccept = YES;
                 }
-                callIsKnown = [call isDoneOperation:CALLKIT_DONE];
+                callIsKnown = [call checkOperation:CALLKIT_DONE] == NO;
 
             } else if ([call autoAcceptNewParticipantWithOriginator:originator]) {
                 // Create the call connection and proceed to honor PushKit+CallKit rules.
@@ -1268,6 +1268,9 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                 }
 
                 [call setAudioVideoStateWithCallStatus:mode];
+
+                // Set the CALLKIT_DONE flag because we will inform CallKit.
+                [call checkOperation:CALLKIT_DONE];
                 
                 if (!self.activeCall) {
                     self.activeCall = call;
@@ -1396,9 +1399,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
                 } else if (strongSelf) {
                     DDLogVerbose(@"%@ completion: reportNewIncomingCallWithUUID: %@", LOG_TAG, peerConnectionId);
                     
-                    // Remember this was a successfull CallKit invocation so that we close it.
                     long callCount = 1;
-                    [call checkOperation:CALLKIT_DONE];
                     [[strongSelf.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
                 }
             }
@@ -1423,9 +1424,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
 
                 } else if (strongSelf) {
                     
-                    // Remember this was a successfull CallKit invocation so that we close it.
                     long callCount = 1;
-                    [call checkOperation:CALLKIT_DONE];
                     [[strongSelf.twinmeContext getJobService] reportActiveVoIPWithCallCount:callCount fetchCompletionHandler:nil];
 
                     [self.cxProvider reportCallWithUUID:call.callKitUUID updated:callUpdate];
@@ -1510,8 +1509,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     [self onOperationWithConnection:connection];
 }
 
-- (void)applicationDidEnterBackground:(nonnull UIApplication *)application {
-    DDLogVerbose(@"%@ applicationDidEnterBackground: %@", LOG_TAG, application);
+- (void)applicationWillResignActive:(nonnull UIApplication *)application {
+    DDLogVerbose(@"%@ applicationWillResignActive: %@", LOG_TAG, application);
 
     // Mute the camera if we have an active call which is using it.
     // By muting the camera, the peer will display our avatar instead of a freezed image.
@@ -1523,8 +1522,8 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     }
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    DDLogInfo(@"%@ applicationWillEnterForeground: %@", LOG_TAG, application);
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+    DDLogInfo(@"%@ applicationDidBecomeActive: %@", LOG_TAG, application);
     
     // Check if an Audio/Video call is in progress and there is no view: it means CallKit has
     // setup the call and the application is now in the foreground to handle the call.
@@ -1548,10 +1547,43 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
         }
     }
 
-    // The camera was muted while we are in background, restore it if the call is running and currently active, otherwise only restore the call's videoSourceOn
+    // The camera was muted while we are in background or when the incoming call was received if we are in background,
+    // restore it if the call is running and currently active, otherwise only restore the call's videoSourceOn.
     if (restartCameraCall) {
-        if (restartCameraCall == call && CALL_IS_ACTIVE(callStatus)) {
-            [self setCameraMute:NO];
+        if (restartCameraCall == call && (CALL_IS_ACTIVE(callStatus) || CALL_IS_ACCEPTED(callStatus))) {
+            // Camera is available immediately for the UI.
+            self.cameraMuteOn = NO;
+
+            // For the incoming video call, we must no trigger a call to initSourcesAfterOperation() immediately
+            // after the session-accept: the receiving device will receive a session-update too close to the session-accept
+            // and it will "forget" the video track.  Impose a 1s delay from the call accept time.
+            int64_t now = [[NSDate date] timeIntervalSince1970] * 1000L;
+            int64_t delay = call.acceptTime + 1000L - now;
+            if (delay <= 100) {
+                // For an outgoing call or if the call is already running for a long time, impose a minimum of 100ms to recover the stream.
+                delay = 100;
+                
+            } else if (delay > 1000) {
+                delay = 1000;
+                // Should not occur but just in case.
+            }
+            DDLogInfo(@"%@ restart video track for %@ in %lld ms", LOG_TAG, call.uuid, delay);
+
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, delay * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+                // Check again the call status because it could have been terminated while we wait.
+                CallStatus callStatus = [call status];
+                if (CALL_IS_ACTIVE(callStatus) || CALL_IS_ACCEPTED(callStatus)) {
+
+                    // After the 100ms..1s delay, we can turn the video stream and trigger the session-update with the video track.
+                    call.videoSourceOn = YES;
+
+                    NSArray<CallConnection *> *connections = [call getConnections];
+                    for (CallConnection *connection in connections) {
+                        [connection initSourcesAfterOperation:CREATED_PEER_CONNECTION];
+                    }
+                }
+            });
+
         } else {
             restartCameraCall.videoSourceOn = YES;
         }
@@ -1793,6 +1825,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
             return;
         }
         switchCall = call == self.holdCall;
+        call.acceptTime = [[NSDate date] timeIntervalSince1970] * 1000L;
     }
 
     if (status == CallStatusIncomingVideoBell) {
@@ -3967,7 +4000,7 @@ TL_CREATE_ASSERT_POINT(CALLKIT_RESET, 4109);
     
     // We are in foreground and the call was accepted from CallKit: display the audio/video view controller.
     if (!self.inBackground) {
-        [self applicationWillEnterForeground:[UIApplication sharedApplication]];
+        [self applicationDidBecomeActive:[UIApplication sharedApplication]];
     }
 }
 

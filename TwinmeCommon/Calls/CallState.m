@@ -99,6 +99,8 @@ static const int ddLogLevel = DDLogLevelWarning;
         _videoSourceOn = NO;
         _frontCameraOn = YES;
         _uuid = [NSUUID UUID];
+        _acceptTime = 0;
+        _connectionStartTime = 0;
     }
     
     return self;
